@@ -1,0 +1,10 @@
+{
+  "expo": {
+    "name": "chearingyou",
+    "slug": "chearingyou",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
