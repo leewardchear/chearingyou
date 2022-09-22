@@ -6,9 +6,10 @@ import {
   Text,
   TouchableHighlight,
   Image,
+  Button,
 } from "react-native";
 
-function MainScreen(props) {
+function MainScreen({ navigation }) {
   return (
     <View style={styles.background}>
       <View style={styles.topBar}>
@@ -29,7 +30,12 @@ function MainScreen(props) {
       <TextInput style={styles.journalinput} multiline={true} />
       <View style={styles.categories}>
         <Text>Categories</Text>
-        <View></View>
+        <View>
+            <Button
+                title="Submit"
+                onPress={() => navigation.navigate("Splash")}
+            />
+        </View>
       </View>
     </View>
   );
