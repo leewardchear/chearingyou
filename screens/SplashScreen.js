@@ -1,7 +1,13 @@
 import React from "react";
 import { View, Button, StyleSheet} from "react-native";
+import { useSelector, useDispatch } from 'react-redux';
+import { setLoaded, setUnloaded } from '../app/loadedappslice.js'
 
 function SplashScreen({ navigation }) {
+    const loadedvalue = useSelector((state) => state.loadedapp.loadedvalue);
+    const dispatch = useDispatch();
+    console.log(loadedvalue);
+    dispatch(setLoaded());
     setTimeout(()=> {
         navigation.replace('Main');
     }, 500);
