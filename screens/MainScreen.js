@@ -31,10 +31,10 @@ function MainScreen({ navigation }) {
       <View style={styles.categories}>
         <Text>Categories</Text>
         <View>
-            <Button
-                title="Submit"
-                onPress={() => navigation.navigate("Splash")}
-            />
+          <Button
+            title="Submit"
+            onPress={() => navigation.navigate("Splash")}
+          />
         </View>
       </View>
     </View>
