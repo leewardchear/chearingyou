@@ -8,6 +8,8 @@ import {
   Image,
   Button,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+
 
 function MainScreen({ navigation }) {
   return (
@@ -47,7 +49,7 @@ const styles = StyleSheet.create({
   background: {
     flexDirection: "column",
     flex: 1,
-    backgroundColor: "dodgerblue",
+    backgroundColor: "teal",
 
     alignContent: "space-around",
   },
