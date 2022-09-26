@@ -12,13 +12,13 @@ function SplashScreen({ navigation }) {
   console.log(loadedvalue);
 
   setTimeout(() => {
-    navigation.navigate("Main");
+    navigation.navigate("TabsScreen");
   }, 500);
   return (
     <View style={styles.splash}>
       <Button
         title="ChearIng You"
-        onPress={() => navigation.navigate("Main")}
+        onPress={() => navigation.navigate("TabsScreen")}
       />
     </View>
   );
