@@ -1,30 +1,36 @@
 import React from "react";
-import { View, Button, StyleSheet } from "react-native";
-import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
+import { View, Text, Button, StyleSheet } from "react-native";
+import { Calendar, CalendarList, Agenda } from "react-native-calendars";
+import { LinearGradient } from "expo-linear-gradient";
 
 function CalendarScreen() {
   return (
     <View>
       <Calendar
-        // Collection of dates that have to be colored in a special way. Default = {}
+        markingType={"custom"}
         markedDates={{
-          "2012-05-20": { textColor: "green" },
-          "2012-05-22": { startingDay: true, color: "green" },
-          "2012-05-23": {
+          "2022-09-23": {
+            moodColors: ["#272424", "#2F95AF", "#965FB4"],
             selected: true,
-            endingDay: true,
             color: "green",
             textColor: "gray",
+            customStyles: {
+              container: {
+                borderRadius: 5,
+              },
+            },
           },
-          "2012-05-04": {
-            disabled: true,
-            startingDay: true,
+          "2022-09-04": {
             color: "green",
-            endingDay: true,
+            selected: true,
+            moodColors: ["#272424", "#2F95AF", "#965FB4"],
+            customStyles: {
+              container: {
+                borderRadius: 5,
+              },
+            },
           },
         }}
-        // Date marking style [simple/period/multi-dot/custom]. Default = 'simple'
-        markingType={"period"}
       />
     </View>
   );

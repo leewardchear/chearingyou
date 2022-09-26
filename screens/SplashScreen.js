@@ -1,10 +1,19 @@
-import React from "react";
-import { View, Button, StyleSheet} from "react-native";
+import React, { useEffect } from "react";
+import { View, Button, StyleSheet } from "react-native";
+import { useSelector, useDispatch } from "react-redux";
+import { setLoaded, setUnloaded } from "../app/loadedappslice.js";
 
 function SplashScreen({ navigation }) {
-    setTimeout(()=> {
-        navigation.replace('Main');
-    }, 500);
+  const loadedvalue = useSelector((state) => state.loadedapp.loadedvalue);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(setLoaded());
+  });
+  console.log(loadedvalue);
+
+  setTimeout(() => {
+    navigation.navigate("Main");
+  }, 500);
   return (
     <View style={styles.splash}>
       <Button
@@ -16,10 +25,10 @@ function SplashScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-    splash: {
-        flex: 1,
-        justifyContent: "center",
-        alignContent: "center"
-    }
-})
+  splash: {
+    flex: 1,
+    justifyContent: "center",
+    alignContent: "center",
+  },
+});
 export default SplashScreen;
