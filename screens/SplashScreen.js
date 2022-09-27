@@ -18,7 +18,7 @@ function SplashScreen({ navigation }) {
     <View style={styles.splash}>
       <Button
         title="ChearIng You"
-        onPress={() => navigation.navigate("Main")}
+        onPress={() => navigation.replace("Main")}
       />
     </View>
   );
