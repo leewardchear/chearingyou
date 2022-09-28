@@ -2,79 +2,83 @@ import React from "react";
 import {
   StyleSheet,
   TextInput,
-  View,
-  Text,
-  TouchableHighlight,
   Image,
-  Button,
+  View,
+  TouchableOpacity,
+  Text,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 function MainScreen({ navigation }) {
   return (
-    <View style={styles.background}>
-      <View style={styles.topBar}>
-        <TouchableHighlight>
-          <Image source={require("../assets/text.png")}></Image>
-        </TouchableHighlight>
-        <Text>ChearIng You</Text>
-        <TouchableHighlight>
-          <Image source={require("../assets/text.png")}></Image>
-        </TouchableHighlight>
+    <SafeAreaView style={[styles.background]}>
+      <View style={styles.topView}>
+        <Text style={styles.date}>2022 Sept 04 - Friday</Text>
+        <MaterialCommunityIcons style={styles.saveButton} name="content-save-edit" size={35} />
+        <Image style={styles.colorButton}source={require("../assets/color-wheel.png")} />
       </View>
-      <View style={styles.midBar}>
-        <Text>Mood</Text>
-        <TouchableHighlight>
-          <Image source={require("../assets/text.png")}></Image>
-        </TouchableHighlight>
-      </View>
-      <TextInput style={styles.journalinput} multiline={true} />
-      <View style={styles.categories}>
-        <Text>Categories</Text>
-        <View>
-          <Button
-            title="Submit"
-            onPress={() => navigation.navigate("Splash")}
-          />
-        </View>
-      </View>
-    </View>
+
+      <TextInput
+        style={styles.noteInput}
+        multiline={true}
+        scrollEnabled={true}
+        selectionColor={'black'}
+        placeholder={"How do you feel today?"}
+      />
+    </SafeAreaView>
   );
 }
 
 export default MainScreen;
 
 const styles = StyleSheet.create({
+  topView: {
+    flexDirection: "row",
+    flex: 0.2,
+  },
+
   background: {
     flexDirection: "column",
     flex: 1,
-    backgroundColor: "dodgerblue",
-
+    backgroundColor: "#171A21",
     alignContent: "space-around",
   },
-  topBar: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    height: 120,
-  },
-  midBar: {
-    flexDirection: "column",
-    justifyContent: "space-around",
-    alignItems: "center",
-  },
-  topItems: {
+
+  date: {
     flex: 1,
+    alignSelf: 'center',
+    paddingStart: 30,
+    color: "white",
+    fontSize: 16,
+    fontFamily: "notoserif",
+    alignContent: "space-around",
   },
-  journalinput: {
-    flex: 1,
-    justifyContent: "space-around",
-    alignItems: "center",
-    backgroundColor: "lightgrey",
+
+  noteInput: {
+    flex: 0.9,
+    padding: 15,
+    textAlignVertical: "top",
+    backgroundColor: "#F1F0EA",
     alignSelf: "center",
     width: "90%",
+    marginBottom: 15,
+    fontSize: 18,
+    borderRadius: 10,
   },
-  categories: {
-    flexDirection: "row",
-    flex: 0.2,
+
+  saveButton: {
+    alignSelf: 'center',
+    color: 'white',
+    marginRight: 15,
+
+  },
+
+  colorButton: {
+    alignSelf: 'center',
+    resizeMode: 'contain',
+    marginRight: 20,
+    width: 32,
+    height: 32,
   },
 });
