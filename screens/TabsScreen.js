@@ -3,7 +3,7 @@ import { View } from "react-native";
 import MainScreen from "./MainScreen";
 import SplashScreen from "./SplashScreen";
 import CalendarScreen from "./CalendarScreen";
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -24,8 +24,9 @@ function TabsScreen(props) {
       >
         <Tab.Screen
           key={Date.now()}
-          name="home"
+          name="HomeTab"
           component={MainScreen}
+          initialParams={{ day: {} }}
           options={{
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="home" color={color} size={26} />
@@ -34,7 +35,7 @@ function TabsScreen(props) {
         />
         <Tab.Screen
           key={Date.now()}
-          name="Calendar"
+          name="CalendarTab"
           component={CalendarScreen}
           navigation={props.navigation}
           options={{
@@ -50,4 +51,3 @@ function TabsScreen(props) {
 }
 
 export default TabsScreen;
-

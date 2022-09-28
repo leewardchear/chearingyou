@@ -1,5 +1,7 @@
 PODS:
   - boost (1.76.0)
+  - BVLinearGradient (2.6.2):
+    - React-Core
   - DoubleConversion (1.1.6)
   - EXApplication (4.2.2):
     - ExpoModulesCore
@@ -14,6 +16,8 @@ PODS:
   - Expo (46.0.10):
     - ExpoModulesCore
   - ExpoKeepAwake (10.2.0):
+    - ExpoModulesCore
+  - ExpoLinearGradient (11.4.0):
     - ExpoModulesCore
   - ExpoModulesCore (0.11.5):
     - React-Core
@@ -246,6 +250,8 @@ PODS:
     - RCTTypeSafety
     - React
     - ReactCommon/turbomodule/core
+  - react-native-sqlite-storage (6.0.1):
+    - React-Core
   - React-perflogger (0.69.5)
   - React-RCTActionSheet (0.69.5):
     - React-Core/RCTActionSheetHeaders (= 0.69.5)
@@ -348,10 +354,15 @@ PODS:
   - RNScreens (3.15.0):
     - React-Core
     - React-RCTImage
+  - RNSVG (13.2.0):
+    - React-Core
+  - RNVectorIcons (9.2.0):
+    - React-Core
   - Yoga (1.14.0)
 
 DEPENDENCIES:
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
+  - BVLinearGradient (from `../node_modules/react-native-linear-gradient`)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXApplication (from `../node_modules/expo-application/ios`)
   - EXConstants (from `../node_modules/expo-constants/ios`)
@@ -360,6 +371,7 @@ DEPENDENCIES:
   - EXFont (from `../node_modules/expo-font/ios`)
   - Expo (from `../node_modules/expo`)
   - ExpoKeepAwake (from `../node_modules/expo-keep-awake/ios`)
+  - ExpoLinearGradient (from `../node_modules/expo-linear-gradient/ios`)
   - ExpoModulesCore (from `../node_modules/expo-modules-core/ios`)
   - EXSplashScreen (from `../node_modules/expo-splash-screen/ios`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
@@ -381,6 +393,7 @@ DEPENDENCIES:
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
+  - react-native-sqlite-storage (from `../node_modules/react-native-sqlite-storage`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../node_modules/react-native/Libraries/NativeAnimation`)
@@ -398,6 +411,8 @@ DEPENDENCIES:
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
+  - RNSVG (from `../node_modules/react-native-svg`)
+  - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -407,6 +422,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   boost:
     :podspec: "../node_modules/react-native/third-party-podspecs/boost.podspec"
+  BVLinearGradient:
+    :path: "../node_modules/react-native-linear-gradient"
   DoubleConversion:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   EXApplication:
@@ -423,6 +440,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo"
   ExpoKeepAwake:
     :path: "../node_modules/expo-keep-awake/ios"
+  ExpoLinearGradient:
+    :path: "../node_modules/expo-linear-gradient/ios"
   ExpoModulesCore:
     :path: "../node_modules/expo-modules-core/ios"
   EXSplashScreen:
@@ -463,6 +482,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/logger"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
+  react-native-sqlite-storage:
+    :path: "../node_modules/react-native-sqlite-storage"
   React-perflogger:
     :path: "../node_modules/react-native/ReactCommon/reactperflogger"
   React-RCTActionSheet:
@@ -497,11 +518,16 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
+  RNSVG:
+    :path: "../node_modules/react-native-svg"
+  RNVectorIcons:
+    :path: "../node_modules/react-native-vector-icons"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
   boost: a7c83b31436843459a1961bfd74b96033dc77234
+  BVLinearGradient: 34a999fda29036898a09c6a6b728b0b4189e1a44
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EXApplication: e418d737a036e788510f2c4ad6c10a7d54d18586
   EXConstants: 7c44785d41d8e959d527d23d29444277a4d1ee73
@@ -510,6 +536,7 @@ SPEC CHECKSUMS:
   EXFont: a5d80bd9b3452b2d5abbce2487da89b0150e6487
   Expo: fcdb32274e2ca9c7638d3b21b30fb665c6869219
   ExpoKeepAwake: 0e8f18142e71bbf2c7f6aa66ebed249ba1420320
+  ExpoLinearGradient: 1a3af07c6dab3c612967a294836df9ae717431df
   ExpoModulesCore: 5a973701f4400d70254bc836305228731c829010
   EXSplashScreen: 799bece80089219b2c989c1082d70f3b00995cda
   FBLazyVector: 0045cf98ca4a48af3bf7108d85b1c243740fa289
@@ -531,6 +558,7 @@ SPEC CHECKSUMS:
   React-jsinspector: e385fb7a1440ae3f3b2cd1a139ca5aadaab43c10
   React-logger: 15c734997c06fe9c9b88e528fb7757601e7a56df
   react-native-safe-area-context: 6c12e3859b6f27b25de4fee8201cfb858432d8de
+  react-native-sqlite-storage: f6d515e1c446d1e6d026aa5352908a25d4de3261
   React-perflogger: 367418425c5e4a9f0f80385ee1eaacd2a7348f8e
   React-RCTActionSheet: e4885e7136f98ded1137cd3daccc05eaed97d5a6
   React-RCTAnimation: 7c5a74f301c9b763343ba98a3dd776ed2676993f
@@ -548,6 +576,8 @@ SPEC CHECKSUMS:
   RNGestureHandler: bad495418bcbd3ab47017a38d93d290ebd406f50
   RNReanimated: 7faa787e8d4493fbc95fab2ad331fa7625828cfa
   RNScreens: 4a1af06327774490d97342c00aee0c2bafb497b7
+  RNSVG: 07037623c36f12e41312730622d5f6b3656227ca
+  RNVectorIcons: fcc2f6cb32f5735b586e66d14103a74ce6ad61f8
   Yoga: c2b1f2494060865ac1f27e49639e72371b1205fa
 
 PODFILE CHECKSUM: fa5f5f5dee08ed426259297f50019f9a1de2a557
