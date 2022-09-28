@@ -11,7 +11,7 @@ function TabsScreen(props) {
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
       <Tab.Navigator
-        initialRouteName="Feed"
+        initialRouteName="home"
         labeled={false}
         tabBarOptions={{
           showIcon: true,
@@ -20,11 +20,11 @@ function TabsScreen(props) {
             opacity: 0,
           },
         }}
-        barStyle={{ backgroundColor: "black" }}
+        barStyle={{ backgroundColor: "" }}
       >
         <Tab.Screen
           key={Date.now()}
-          name="Feed"
+          name="home"
           component={MainScreen}
           options={{
             tabBarIcon: ({ color, size }) => (
