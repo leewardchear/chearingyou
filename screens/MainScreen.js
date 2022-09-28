@@ -2,11 +2,11 @@ import React, { useEffect } from "react";
 import {
   StyleSheet,
   TextInput,
-  View,
-  Text,
-  TouchableHighlight,
   Image,
-  Button,
+  View,
+  TouchableOpacity,
+  TouchableHighlight,
+  Text,
 } from "react-native";
 import Database from "../db/database";
 import { useSelector, useDispatch } from "react-redux";
@@ -14,6 +14,8 @@ import { useState } from "react";
 const db = new Database();
 import { LinearGradient } from "expo-linear-gradient";
 import Moment from "moment";
+import { SafeAreaView } from "react-native-safe-area-context";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 function MainScreen({ route, navigation }) {
   const [entryvalue, setEntryValue] = useState("");
@@ -29,93 +31,132 @@ function MainScreen({ route, navigation }) {
     return unsubscribe;
   }, [navigation]);
   return (
-    <View style={styles.background}>
-      <View style={styles.topBar}>
-        <TouchableHighlight>
-          <Image source={require("../assets/text.png")}></Image>
-        </TouchableHighlight>
-        <Text>ChearIng You</Text>
-        <TouchableHighlight>
-          <Image source={require("../assets/text.png")}></Image>
-        </TouchableHighlight>
-      </View>
+    // <View style={styles.background}>
+    //   <View style={styles.topBar}>
+    //     <TouchableHighlight>
+    //       <Image source={require("../assets/text.png")}></Image>
+    //     </TouchableHighlight>
+    //     <Text>ChearIng You</Text>
+    //     <TouchableHighlight>
+    //       <Image source={require("../assets/text.png")}></Image>
+    //     </TouchableHighlight>
+    //   </View>
 
-      <View style={styles.midBar}>
-        <Text>Mood</Text>
-        <Text>{formattedDate}</Text>
-        <TouchableHighlight>
-          <Image source={require("../assets/text.png")}></Image>
+    //   <View style={styles.midBar}>
+    //     <Text>Mood</Text>
+    //     <Text>{formattedDate}</Text>
+    //     <TouchableHighlight>
+    //       <Image source={require("../assets/text.png")}></Image>
+    //     </TouchableHighlight>
+    //   </View>
+
+    //   <TextInput
+    //     style={styles.journalinput}
+    //     multiline={true}
+    //     onChangeText={(value) => {
+    //       setEntryValue(value);
+    //     }}
+    //     value={entryvalue}
+    //   ></TextInput>
+    //   <TouchableHighlight
+    //     style={styles.button}
+    //     onPress={() => {
+    //       // navigation.navigate("Splash");
+    //       navigation.navigate("CalendarTab");
+    //       db.newItem(entryvalue, "happy");
+    //     }}
+    //   >
+    //     <Text>Submit test</Text>
+    //   </TouchableHighlight>
+    //   <View style={styles.categories}>
+    //     <Text>Categories</Text>
+    //   </View>
+    // </View>
+
+    <SafeAreaView style={[styles.background]}>
+      <View style={styles.topView}>
+        <Text style={styles.date}>{formattedDate}</Text>
+        <TouchableHighlight
+          style={styles.saveButton}
+          onPress={() => {
+            // navigation.navigate("Splash");
+            navigation.navigate("CalendarTab");
+            db.newItem(entryvalue, "happy");
+          }}
+        >
+          <MaterialCommunityIcons name="content-save-edit" size={35} />
         </TouchableHighlight>
+
+        <Image
+          style={styles.colorButton}
+          source={require("../assets/color-wheel.png")}
+        />
       </View>
 
       <TextInput
-        style={styles.journalinput}
+        style={styles.noteInput}
         multiline={true}
+        scrollEnabled={true}
+        selectionColor={"black"}
+        placeholder={"How do you feel today?"}
         onChangeText={(value) => {
           setEntryValue(value);
         }}
         value={entryvalue}
-      ></TextInput>
-      <TouchableHighlight
-        style={styles.button}
-        onPress={() => {
-          // navigation.navigate("Splash");
-          navigation.navigate("CalendarTab");
-          db.newItem(entryvalue, "happy");
-        }}
-      >
-        <Text>Submit test</Text>
-      </TouchableHighlight>
-      <View style={styles.categories}>
-        <Text>Categories</Text>
-      </View>
-    </View>
+      />
+    </SafeAreaView>
   );
 }
 
 export default MainScreen;
 
 const styles = StyleSheet.create({
+  topView: {
+    flexDirection: "row",
+    flex: 0.2,
+  },
+
   background: {
     flexDirection: "column",
     flex: 1,
-    backgroundColor: "teal",
-
+    backgroundColor: "#171A21",
     alignContent: "space-around",
   },
-  topBar: {
-    margin: 10,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    height: 120,
-  },
-  midBar: {
-    margin: 10,
 
-    flexDirection: "column",
-    justifyContent: "space-around",
-    alignItems: "center",
-  },
-  topItems: {
+  date: {
     flex: 1,
+    alignSelf: "center",
+    paddingStart: 30,
+    color: "white",
+    fontSize: 16,
+    // fontFamily: "notoserif",
+    alignContent: "space-around",
   },
-  journalinput: {
-    margin: 0,
-    padding: 7,
-    flex: 1,
-    justifyContent: "space-around",
-    alignItems: "center",
-    backgroundColor: "lightgrey",
+
+  noteInput: {
+    flex: 0.9,
+    padding: 15,
+    textAlignVertical: "top",
+    backgroundColor: "#F1F0EA",
     alignSelf: "center",
     width: "90%",
+    marginBottom: 15,
+    fontSize: 18,
     borderRadius: 10,
   },
-  categories: {
-    margin: 10,
 
-    flexDirection: "row",
-    flex: 0.2,
+  saveButton: {
+    alignSelf: "center",
+    color: "white",
+    marginRight: 15,
+  },
+
+  colorButton: {
+    alignSelf: "center",
+    resizeMode: "contain",
+    marginRight: 20,
+    width: 32,
+    height: 32,
   },
   button: {
     borderRadius: 10,
