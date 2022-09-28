@@ -9,11 +9,25 @@ import {
   Button,
 } from "react-native";
 import Database from "../db/database";
+import { useSelector, useDispatch } from "react-redux";
+import { useState } from "react";
 const db = new Database();
-function MainScreen({ navigation }) {
+import { LinearGradient } from "expo-linear-gradient";
+import Moment from "moment";
+
+function MainScreen({ route, navigation }) {
+  const [entryvalue, setEntryValue] = useState("");
+
+  const { day } = route.params;
+  formattedDate = Moment(day.dateString).format("LL");
+  console.log(formattedDate);
   useEffect(() => {
-    db.listItems();
-  });
+    const unsubscribe = navigation.addListener("tabPress", (e) => {
+      setEntryValue("");
+      console.log(formattedDate);
+    });
+    return unsubscribe;
+  }, [navigation]);
   return (
     <View style={styles.background}>
       <View style={styles.topBar}>
@@ -28,17 +42,26 @@ function MainScreen({ navigation }) {
 
       <View style={styles.midBar}>
         <Text>Mood</Text>
+        <Text>{formattedDate}</Text>
         <TouchableHighlight>
           <Image source={require("../assets/text.png")}></Image>
         </TouchableHighlight>
       </View>
 
-      <TextInput style={styles.journalinput} multiline={true} />
+      <TextInput
+        style={styles.journalinput}
+        multiline={true}
+        onChangeText={(value) => {
+          setEntryValue(value);
+        }}
+        value={entryvalue}
+      ></TextInput>
       <TouchableHighlight
         style={styles.button}
         onPress={() => {
-          navigation.navigate("Splash");
-          db.newItem("testest");
+          // navigation.navigate("Splash");
+          navigation.navigate("CalendarTab");
+          db.newItem(entryvalue, "happy");
         }}
       >
         <Text>Submit test</Text>
@@ -56,8 +79,8 @@ const styles = StyleSheet.create({
   background: {
     flexDirection: "column",
     flex: 1,
-    backgroundColor: "dodgerblue",
-    alignItems: "center",
+    backgroundColor: "teal",
+
     alignContent: "space-around",
   },
   topBar: {

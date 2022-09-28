@@ -8,17 +8,16 @@ function SplashScreen({ navigation }) {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(setLoaded());
+    setTimeout(() => {
+      navigation.navigate("TabsScreen");
+    }, 500);
   });
-  console.log(loadedvalue);
 
-  setTimeout(() => {
-    navigation.navigate("Main");
-  }, 500);
   return (
     <View style={styles.splash}>
       <Button
         title="ChearIng You"
-        onPress={() => navigation.replace("Main")}
+        onPress={() => navigation.navigate("TabsScreen")}
       />
     </View>
   );
