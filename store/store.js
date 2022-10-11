@@ -7,6 +7,6 @@ export const store = configureStore({
   reducer: {
     loadedapp: loadedappslice,
     journal: journalentry,
-    entries: journalentries,
+    calendar: journalentries,
   },
 });

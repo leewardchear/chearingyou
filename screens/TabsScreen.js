@@ -4,16 +4,18 @@ import MainScreen from "./MainScreen";
 import SplashScreen from "./SplashScreen";
 import CalendarScreen from "./CalendarScreen";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Tab = createMaterialBottomTabNavigator();
 
 function TabsScreen(props) {
   return (
-    <View style={{ flex: 1, backgroundColor: "white" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#171A21" }}>
       <Tab.Navigator
         initialRouteName="home"
         labeled={false}
         tabBarOptions={{
+          style: { height: 0 },
           showIcon: true,
           showLabel: false,
           indicatorStyle: {
@@ -46,7 +48,7 @@ function TabsScreen(props) {
           }}
         />
       </Tab.Navigator>
-    </View>
+    </SafeAreaView>
   );
 }
 
