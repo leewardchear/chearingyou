@@ -28,8 +28,8 @@ function CalendarScreen({ route, navigation }) {
   const dispatch = useDispatch();
 
   const daylistshowing = useSelector((state) => state.calendar.daylistui);
-  console.log(daylistshowing);
   const [selectedDate, setSelectedDate] = useState("");
+  const [sumentries, setEntrySum] = useState(0);
 
   function mapColors(colour) {
     // console.log(color);
@@ -97,8 +97,9 @@ function CalendarScreen({ route, navigation }) {
 
   useFocusEffect(
     React.useCallback(() => {
+      console.log("ufe");
       reloadData();
-    }, [])
+    }, [selectedDate, daylistshowing])
   );
 
   useEffect(() => {
@@ -115,10 +116,10 @@ function CalendarScreen({ route, navigation }) {
     });
 
     return unsubscribe;
-  }, [navigation]);
+  }, [navigation, selectedDate, daylistshowing, sumentries]);
   const today = new Date().toISOString().split("T")[0];
   return (
-    <Animated.View style={{ flex: 1 }}>
+    <Animated.View style={{ flex: 1, backgroundColor: "black" }}>
       <View>
         <Calendar
           markingType={"custom"}
@@ -130,9 +131,9 @@ function CalendarScreen({ route, navigation }) {
               typeof journalentries[day.dateString] !== "undefined" &&
               typeof journalentries[day.dateString].moodColors !== "undefined"
             ) {
-              console.log("setDAyList");
               dispatch(setDayListUI(true));
               setSelectedDate(day);
+              setEntrySum(journalentries[day.dateString].moodColors.length);
             } else {
               navigation.navigate("HomeTab", { day: day });
             }
@@ -149,6 +150,7 @@ function CalendarScreen({ route, navigation }) {
           style={{ flex: 1 }}
           selecteddate={selectedDate}
           navigation={navigation}
+          entrysum={sumentries}
         />
       )}
     </Animated.View>

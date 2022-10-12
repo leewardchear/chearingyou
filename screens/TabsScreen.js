@@ -10,7 +10,7 @@ const Tab = createMaterialBottomTabNavigator();
 
 function TabsScreen(props) {
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#171A21" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "black" }}>
       <Tab.Navigator
         initialRouteName="home"
         labeled={false}
@@ -22,7 +22,7 @@ function TabsScreen(props) {
             opacity: 0,
           },
         }}
-        barStyle={{ backgroundColor: "" }}
+        barStyle={{ backgroundColor: "black" }}
       >
         <Tab.Screen
           key={Date.now()}

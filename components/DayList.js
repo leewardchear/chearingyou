@@ -10,17 +10,16 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { setDayListUI } from "../app/calendar.js";
 import { useSelector, useDispatch } from "react-redux";
 
-const DayList = ({ style, selecteddate, navigation }) => {
-  const [datelist, setDateList] = useState([]);
+const DayList = ({ style, selecteddate, navigation, entrysum }) => {
   const dispatch = useDispatch();
 
+  const [datelist, setDateList] = useState({});
   const db = new Database();
-  formattedDate = Moment(selecteddate).format("LL");
+  formattedDate = Moment(selecteddate.dateString).format("LL");
 
   useEffect(() => {
     db.listDate(selecteddate.dateString)
       .then((resultSet) => {
-        // console.log("resultSet", resultSet);
         var marked = {};
         var childCount = 0;
         var newlist = [];
@@ -35,7 +34,7 @@ const DayList = ({ style, selecteddate, navigation }) => {
       .catch((error) => {
         console.log(error);
       });
-  }, [selecteddate]);
+  }, [selecteddate, entrysum]);
 
   const renderItem = ({ item }) => <Item entry={item} />;
 
@@ -55,22 +54,37 @@ const DayList = ({ style, selecteddate, navigation }) => {
   );
 
   return (
-    <View style={{ ...style }}>
-      <Text>{formattedDate}</Text>
-      <View>
+    <View style={{ ...style, backgroundColor: "black", color: "white" }}>
+      <View
+        style={{
+          justifyContent: "space-between",
+          flexDirection: "row",
+          padding: 10,
+          color: "white",
+        }}
+      >
         <TouchableHighlight
           onPress={() => {
             navigation.navigate("HomeTab", { day: selecteddate });
           }}
         >
-          <MaterialCommunityIcons name="note-plus-outline" size={32} />
+          <MaterialCommunityIcons
+            style={{ color: "white" }}
+            name="note-plus-outline"
+            size={32}
+          />
         </TouchableHighlight>
+        <Text style={{ color: "white" }}>{formattedDate}</Text>
         <TouchableHighlight
           onPress={() => {
             dispatch(setDayListUI(false));
           }}
         >
-          <MaterialCommunityIcons name="window-close" size={32} />
+          <MaterialCommunityIcons
+            style={{ color: "white" }}
+            name="window-close"
+            size={32}
+          />
         </TouchableHighlight>
       </View>
       <FlatList
