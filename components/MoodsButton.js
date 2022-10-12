@@ -6,6 +6,7 @@ import {
   Easing,
   View,
 } from "react-native";
+
 import { Text as SvgText, Svg, Path, Circle } from "react-native-svg";
 import React, { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
