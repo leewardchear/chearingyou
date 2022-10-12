@@ -30,6 +30,7 @@ function CalendarScreen({ route, navigation }) {
   const daylistshowing = useSelector((state) => state.calendar.daylistui);
   const [selectedDate, setSelectedDate] = useState("");
   const [sumentries, setEntrySum] = useState(0);
+  const { newEntry } = route.params;
 
   function mapColors(colour) {
     // console.log(color);
@@ -150,7 +151,7 @@ function CalendarScreen({ route, navigation }) {
           style={{ flex: 1 }}
           selecteddate={selectedDate}
           navigation={navigation}
-          entrysum={sumentries}
+          newEntry={newEntry}
         />
       )}
     </Animated.View>

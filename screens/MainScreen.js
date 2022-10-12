@@ -179,8 +179,15 @@ const MainScreen = ({ route, navigation }) => {
             <TouchableHighlight
               onPress={() => {
                 // navigation.navigate("Splash");
-                navigation.navigate("CalendarTab");
-                db.newItem(entryvalue, mood, day.dateString);
+                db.newItem(entryvalue, mood, day.dateString)
+                  .then((resultSet) => {
+                    navigation.navigate("CalendarTab", {
+                      newEntry: resultSet.insertId,
+                    });
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                  });
 
                 setEntryValue("");
               }}

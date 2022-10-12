@@ -10,7 +10,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { setDayListUI } from "../app/calendar.js";
 import { useSelector, useDispatch } from "react-redux";
 
-const DayList = ({ style, selecteddate, navigation, entrysum }) => {
+const DayList = ({ style, selecteddate, navigation, newEntry }) => {
   const dispatch = useDispatch();
 
   const [datelist, setDateList] = useState({});
@@ -34,7 +34,7 @@ const DayList = ({ style, selecteddate, navigation, entrysum }) => {
       .catch((error) => {
         console.log(error);
       });
-  }, [selecteddate, entrysum]);
+  }, [selecteddate, newEntry]);
 
   const renderItem = ({ item }) => <Item entry={item} />;
 
