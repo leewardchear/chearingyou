@@ -1,10 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const journalentry = createSlice({
+export const journalentry = createSlice({
   name: "entry",
   initialState: {
     entryvalue: "",
     day: "",
+    moodshow: false,
+    mood: "default",
   },
   reducers: {
     setEntryValue: (state) => {
@@ -14,9 +16,20 @@ const journalentry = createSlice({
     setDay: (state) => {
       state.day = state.day;
     },
+
+    setMoodUi: (state) => {
+      state.moodshow = !state.moodshow;
+    },
+
+    setMood: (state, value) => {
+      state.mood = value.payload;
+    },
   },
 });
 
-export const { setEntryValue, setDay } = journalentry.actions;
+export const { setEntryValue, setDay, setMoodUi, setMood } =
+  journalentry.actions;
+
+// export const selectQuestions = state => state.entry
 
 export default journalentry.reducer;
