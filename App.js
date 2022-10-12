@@ -9,6 +9,7 @@ import Database from "./db/database";
 
 import SplashScreen from "./screens/SplashScreen";
 import TabsScreen from "./screens/TabsScreen";
+import ColorWheelScreen from "./screens/StatisticsScreen";
 
 const Stack = createStackNavigator();
 
@@ -40,6 +41,12 @@ export class App extends Component {
             <Stack.Screen
               name="TabsScreen"
               component={TabsScreen}
+              options={{ headerShown: false }}
+            />
+
+            <Stack.Screen
+              name="ColorWheelScreen"
+              component={ColorWheelScreen}
               options={{ headerShown: false }}
             />
           </Stack.Navigator>

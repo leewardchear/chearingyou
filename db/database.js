@@ -1,4 +1,5 @@
 import SQLite from "react-native-sqlite-storage";
+SQLite.DEBUG(true)
 SQLite.enablePromise(true);
 
 // SQLite.DEBUG(true);
@@ -7,7 +8,7 @@ export default class Database {
     return new Promise((resolve, reject) => {
       SQLite.openDatabase({
         name: "my.db",
-        createFromLocation: "./assets/db/chearingyou.db",
+        // createFromLocation: "./assets/db/chearingyou.db",
       })
         .then((DB) => {
           db = DB;
@@ -19,10 +20,13 @@ export default class Database {
           });
         })
         .catch((error) => {
-          console.log(error);
+          console.log("ERROR: " + error);
 
-          reject(handleError(error));
+          reject(handleError(error))
         });
+    }).catch((error) =>{
+      reject(error)
+
     });
   };
 

@@ -1,8 +1,9 @@
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { View } from "react-native";
 import MainScreen from "./MainScreen";
-import SplashScreen from "./SplashScreen";
 import CalendarScreen from "./CalendarScreen";
+import StatisticsScreen from "./StatisticsScreen";
+
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 const Tab = createMaterialBottomTabNavigator();
@@ -12,7 +13,7 @@ function TabsScreen(props) {
     <View style={{ flex: 1, backgroundColor: "white" }}>
       <Tab.Navigator
         initialRouteName="home"
-        labeled={false}
+        labeled={true}
         tabBarOptions={{
           showIcon: true,
           showLabel: false,
@@ -24,12 +25,12 @@ function TabsScreen(props) {
       >
         <Tab.Screen
           key={Date.now()}
-          name="HomeTab"
+          name="New Entry"
           component={MainScreen}
           initialParams={{ day: {} }}
           options={{
             tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons name="home" color={color} size={26} />
+              <MaterialCommunityIcons name="note-edit-outline" color={color} size={26} />
             ),
           }}
         />
@@ -42,6 +43,19 @@ function TabsScreen(props) {
             tabBarLabel: "Calendar",
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="calendar" color={color} size={26} />
+            ),
+          }}
+        />
+
+        <Tab.Screen
+          key={Date.now()}
+          name="StatisticsTab"
+          component={StatisticsScreen}
+          navigation={props.navigation}
+          options={{
+            tabBarLabel: "Statistics",
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons name="chart-bar" color={color} size={26} />
             ),
           }}
         />

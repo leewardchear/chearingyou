@@ -6,20 +6,18 @@ import {
   View,
   TouchableOpacity,
   TouchableHighlight,
+  Dimensions,
   Text,
 } from "react-native";
 import Database from "../db/database";
-import { useSelector, useDispatch } from "react-redux";
 import { useState } from "react";
 const db = new Database();
-import { LinearGradient } from "expo-linear-gradient";
 import Moment from "moment";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 function MainScreen({ route, navigation }) {
   const [entryvalue, setEntryValue] = useState("");
-
   const { day } = route.params;
   formattedDate = Moment(day.dateString).format("LL");
   console.log(formattedDate);
@@ -30,67 +28,35 @@ function MainScreen({ route, navigation }) {
     });
     return unsubscribe;
   }, [navigation]);
+
   return (
-    // <View style={styles.background}>
-    //   <View style={styles.topBar}>
-    //     <TouchableHighlight>
-    //       <Image source={require("../assets/text.png")}></Image>
-    //     </TouchableHighlight>
-    //     <Text>ChearIng You</Text>
-    //     <TouchableHighlight>
-    //       <Image source={require("../assets/text.png")}></Image>
-    //     </TouchableHighlight>
-    //   </View>
-
-    //   <View style={styles.midBar}>
-    //     <Text>Mood</Text>
-    //     <Text>{formattedDate}</Text>
-    //     <TouchableHighlight>
-    //       <Image source={require("../assets/text.png")}></Image>
-    //     </TouchableHighlight>
-    //   </View>
-
-    //   <TextInput
-    //     style={styles.journalinput}
-    //     multiline={true}
-    //     onChangeText={(value) => {
-    //       setEntryValue(value);
-    //     }}
-    //     value={entryvalue}
-    //   ></TextInput>
-    //   <TouchableHighlight
-    //     style={styles.button}
-    //     onPress={() => {
-    //       // navigation.navigate("Splash");
-    //       navigation.navigate("CalendarTab");
-    //       db.newItem(entryvalue, "happy");
-    //     }}
-    //   >
-    //     <Text>Submit test</Text>
-    //   </TouchableHighlight>
-    //   <View style={styles.categories}>
-    //     <Text>Categories</Text>
-    //   </View>
-    // </View>
-
     <SafeAreaView style={[styles.background]}>
       <View style={styles.topView}>
         <Text style={styles.date}>{formattedDate}</Text>
         <TouchableHighlight
-          style={styles.saveButton}
+          style={styles.buttonOverlay}
           onPress={() => {
-            // navigation.navigate("Splash");
             navigation.navigate("CalendarTab");
             db.newItem(entryvalue, "happy");
           }}
         >
-          <MaterialCommunityIcons name="content-save-edit" size={35} />
+          <MaterialCommunityIcons
+            name="content-save-edit"
+            size={25}
+            color={"white"}
+          />
         </TouchableHighlight>
 
-        <Image
-          style={styles.colorButton}
-          source={require("../assets/color-wheel.png")}
-        />
+        <TouchableHighlight 
+          style={styles.buttonOverlay} 
+          onPress={() => {
+          navigation.navigate('ColorWheelScreen')
+        }}>
+          <Image
+            style={styles.colorButton}
+            source={require("../assets/color-wheel.png")}
+          />
+        </TouchableHighlight>
       </View>
 
       <TextInput
@@ -114,6 +80,7 @@ const styles = StyleSheet.create({
   topView: {
     flexDirection: "row",
     flex: 0.2,
+    marginRight: 15,
   },
 
   background: {
@@ -129,7 +96,6 @@ const styles = StyleSheet.create({
     paddingStart: 30,
     color: "white",
     fontSize: 16,
-    // fontFamily: "notoserif",
     alignContent: "space-around",
   },
 
@@ -145,27 +111,17 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 
-  saveButton: {
+  buttonOverlay: {
     alignSelf: "center",
-    color: "white",
-    marginRight: 15,
+    marginRight: 5,
+    borderRadius: 10,
+    padding: 5,
   },
 
   colorButton: {
     alignSelf: "center",
     resizeMode: "contain",
-    marginRight: 20,
-    width: 32,
-    height: 32,
-  },
-  button: {
-    borderRadius: 10,
-    width: 100,
-    height: 30,
-    margin: 10,
-
-    backgroundColor: "purple",
-    alignItems: "center",
-    justifyContent: "center",
+    width: 23,
+    height: 23,
   },
 });
