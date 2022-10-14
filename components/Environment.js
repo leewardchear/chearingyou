@@ -8,18 +8,19 @@ import {
 } from "react-native";
 import React, { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { Colours, Env } from "../constants.js";
 
-import { setMoodUi, setMood } from "../app/journalentry";
+import { setEnvUi, setEnv } from "../app/journalentry";
 
 function Environment(props) {
   const dispatch = useDispatch();
-  const showmood = useSelector((state) => state.journal.moodshow);
+  const showenv = useSelector((state) => state.journal.envshow);
 
   const openanim = useRef(new Animated.Value(0)).current;
   const radianim = useRef(new Animated.Value(0)).current;
   const [hideButtons, hidem] = useState(false);
 
-  const [mood, setThisMood] = useState(false);
+  const [env, setThisEnv] = useState(false);
 
   useEffect(() => {
     Animated.timing(openanim, {
@@ -39,12 +40,12 @@ function Environment(props) {
     }).start();
   }, [openanim]);
   endAnim = () => {
-    dispatch(setMoodUi());
-    dispatch(setMood(mood));
+    dispatch(setEnvUi());
+    dispatch(setEnv(env));
   };
 
-  toggleShow = (moodclick) => {
-    setThisMood(moodclick);
+  toggleShow = (envclick) => {
+    setThisEnv(envclick);
     Animated.timing(openanim, {
       toValue: 0,
       duration: 150,
@@ -60,6 +61,16 @@ function Environment(props) {
     }).start(({ finished }) => {});
   };
 
+  const EnvButtons = ({ env, style }) => {
+    return (
+      <View style={{ ...style, backgroundColor: env.code }}>
+        <TouchableWithoutFeedback onPress={() => toggleShow(env.val)}>
+          <Text>{env.name}</Text>
+        </TouchableWithoutFeedback>
+      </View>
+    );
+  };
+
   return (
     <Animated.View
       style={{
@@ -73,36 +84,10 @@ function Environment(props) {
     >
       {hideButtons && (
         <View>
-          <View style={styles.buttons}>
-            <TouchableWithoutFeedback onPress={() => toggleShow("happy")}>
-              <Text>Happy</Text>
-            </TouchableWithoutFeedback>
-          </View>
-          <View style={styles.buttons}>
-            <TouchableWithoutFeedback onPress={() => toggleShow("angry")}>
-              <Text>Angry</Text>
-            </TouchableWithoutFeedback>
-          </View>
-          <View style={styles.buttons}>
-            <TouchableWithoutFeedback onPress={() => toggleShow("scared")}>
-              <Text>Scared</Text>
-            </TouchableWithoutFeedback>
-          </View>
-          <View style={styles.buttons}>
-            <TouchableWithoutFeedback onPress={() => toggleShow("joyful")}>
-              <Text>Joyful</Text>
-            </TouchableWithoutFeedback>
-          </View>
-          <View style={styles.buttons}>
-            <TouchableWithoutFeedback onPress={() => toggleShow("zen")}>
-              <Text>Zen</Text>
-            </TouchableWithoutFeedback>
-          </View>
-          <View style={styles.buttons}>
-            <TouchableWithoutFeedback onPress={() => toggleShow("sad")}>
-              <Text>Sad</Text>
-            </TouchableWithoutFeedback>
-          </View>
+          <EnvButtons env={Env.home} style={styles.buttons}></EnvButtons>
+          <EnvButtons env={Env.work} style={styles.buttons}></EnvButtons>
+          <EnvButtons env={Env.park} style={styles.buttons}></EnvButtons>
+          <EnvButtons env={Env.restaurant} style={styles.buttons}></EnvButtons>
         </View>
       )}
     </Animated.View>

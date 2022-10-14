@@ -7,6 +7,8 @@ export const journalentry = createSlice({
     day: "",
     moodshow: false,
     mood: "default",
+    envshow: false,
+    env: "default",
   },
   reducers: {
     setEntryValue: (state) => {
@@ -24,10 +26,18 @@ export const journalentry = createSlice({
     setMood: (state, value) => {
       state.mood = value.payload;
     },
+
+    setEnvUi: (state) => {
+      state.envshow = !state.envshow;
+    },
+
+    setEnv: (state, value) => {
+      state.env = value.payload;
+    },
   },
 });
 
-export const { setEntryValue, setDay, setMoodUi, setMood } =
+export const { setEntryValue, setDay, setMoodUi, setMood, setEnvUi, setEnv } =
   journalentry.actions;
 
 // export const selectQuestions = state => state.entry

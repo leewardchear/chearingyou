@@ -38,6 +38,7 @@ function TabsScreen(props) {
         <Tab.Screen
           key={Date.now()}
           name="CalendarTab"
+          initialParams={{ newEntry: {} }}
           component={CalendarScreen}
           navigation={props.navigation}
           options={{

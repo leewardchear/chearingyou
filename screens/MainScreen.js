@@ -22,9 +22,10 @@ import Moment from "moment";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MoodsButton from "../components/MoodsButton";
-import { setMoodUi } from "../app/journalentry";
+import { setMoodUi, setEnvUi } from "../app/journalentry";
 import { Colors } from "react-native-paper";
 import { Colours } from "../constants.js";
+import Environment from "../components/Environment";
 
 const MainScreen = ({ route, navigation }) => {
   const [entryvalue, setEntryValue] = useState("");
@@ -35,6 +36,9 @@ const MainScreen = ({ route, navigation }) => {
   const dispatch = useDispatch();
   const showmood = useSelector((state) => state.journal.moodshow);
   const mood = useSelector((state) => state.journal.mood);
+
+  const showenv = useSelector((state) => state.journal.envshow);
+  const env = useSelector((state) => state.journal.env);
 
   const entryBottom = useRef(new Animated.Value(20)).current;
 
@@ -77,6 +81,10 @@ const MainScreen = ({ route, navigation }) => {
 
   mainToggleShow = () => {
     dispatch(setMoodUi());
+  };
+
+  envToggleShow = () => {
+    dispatch(setEnvUi());
   };
 
   return (
@@ -135,6 +143,24 @@ const MainScreen = ({ route, navigation }) => {
           />
         )}
 
+        {showenv && (
+          <Environment
+            style={{
+              position: "relative",
+              margin: 10,
+              bottom: ctop,
+
+              shadowColor: "#000000",
+              shadowOffset: {
+                width: -3,
+                height: -3,
+              },
+              shadowRadius: 15,
+              shadowOpacity: 0.25,
+            }}
+          />
+        )}
+
         <View>
           <View
             style={{ flexDirection: "row", justifyContent: "space-evenly" }}
@@ -163,14 +189,7 @@ const MainScreen = ({ route, navigation }) => {
                 <Text>{Colours[mood].name}</Text>
               </View>
             </TouchableHighlight>
-            <TouchableHighlight
-              onPress={() => {
-                // navigation.navigate("Splash");
-                // navigation.navigate("CalendarTab");
-                // db.newItem(entryvalue, mood, day.dateString);
-                // setEntryValue("");
-              }}
-            >
+            <TouchableHighlight onPress={envToggleShow}>
               <View style={{ ...styles.button, ...styles.saveButton }}>
                 <MaterialCommunityIcons name="content-save-edit" size={32} />
                 <Text>Environment</Text>
@@ -179,8 +198,15 @@ const MainScreen = ({ route, navigation }) => {
             <TouchableHighlight
               onPress={() => {
                 // navigation.navigate("Splash");
-                navigation.navigate("CalendarTab");
-                db.newItem(entryvalue, mood, day.dateString);
+                db.newItem(entryvalue, mood, env, day.dateString)
+                  .then((resultSet) => {
+                    navigation.navigate("CalendarTab", {
+                      newEntry: resultSet.insertId,
+                    });
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                  });
 
                 setEntryValue("");
               }}

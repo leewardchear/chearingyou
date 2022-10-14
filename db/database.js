@@ -13,7 +13,7 @@ export default class Database {
           db = DB;
           db.transaction((tx) => {
             tx.executeSql(
-              "CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY AUTOINCREMENT, text TEXT, savedate TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, mood STRING, meta STRING)"
+              "CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY AUTOINCREMENT, text TEXT, savedate TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, mood STRING, meta STRING, env STRING)"
             );
             resolve(DB);
           });
@@ -26,14 +26,15 @@ export default class Database {
     });
   };
 
-  newItem = (gibberish, mood, date) => {
+  newItem = (gibberish, mood, env, date) => {
     console.log(date);
     return new Promise((resolve, reject) => {
-      qry = "INSERT INTO items (text, mood) values (?, ?)";
+      qry = "INSERT INTO items (text, mood, env) values (?, ?, ?)";
       vals = [gibberish, mood];
       if (typeof date != "undefined") {
-        qry = "INSERT INTO items (text, mood, savedate) values (?, ?, ?)";
-        vals = [gibberish, mood, date];
+        qry =
+          "INSERT INTO items (text, mood, env, savedate) values (?, ?, ?, ?)";
+        vals = [gibberish, mood, env, date];
       }
 
       this.initDatabase()
