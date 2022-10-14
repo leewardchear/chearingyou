@@ -7,7 +7,7 @@ export default class Database {
     return new Promise((resolve, reject) => {
       SQLite.openDatabase({
         name: "my.db",
-        createFromLocation: "./assets/db/chearingyou.db",
+        createFromLocation: 2,
       })
         .then((DB) => {
           db = DB;
