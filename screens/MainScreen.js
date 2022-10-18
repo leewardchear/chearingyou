@@ -79,6 +79,14 @@ const MainScreen = ({ route, navigation }) => {
     return unsubscribe;
   }, [navigation]);
 
+  useEffect(() => {
+    console.log("mood: ", mood);
+  }, [mood]);
+
+  useEffect(() => {
+    console.log("env: ", env);
+  }, [env]);
+
   mainToggleShow = () => {
     dispatch(setMoodUi());
   };

@@ -25,7 +25,7 @@ const DayList = ({ style, selecteddate, navigation, newEntry }) => {
         var newlist = [];
 
         for (let i = 0; i < resultSet.rows.length; i++) {
-          //   console.log("dl", resultSet.rows.item(i));
+          console.log("dl", resultSet.rows.item(i));
           newlist.push(resultSet.rows.item(i));
         }
         setDateList(newlist);
@@ -49,6 +49,7 @@ const DayList = ({ style, selecteddate, navigation, newEntry }) => {
     >
       <Text style={styles.title}>{entry.text}</Text>
       <Text>{entry.mood}</Text>
+      <Text>{entry.env}</Text>
       <Text style={styles.title}>{entry.savedate}</Text>
     </View>
   );

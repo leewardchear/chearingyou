@@ -27,10 +27,10 @@ export default class Database {
   };
 
   newItem = (gibberish, mood, env, date) => {
-    console.log(date);
+    console.log("newItem", gibberish, mood, env, date);
     return new Promise((resolve, reject) => {
       qry = "INSERT INTO items (text, mood, env) values (?, ?, ?)";
-      vals = [gibberish, mood];
+      vals = [gibberish, mood, env];
       if (typeof date != "undefined") {
         qry =
           "INSERT INTO items (text, mood, env, savedate) values (?, ?, ?, ?)";

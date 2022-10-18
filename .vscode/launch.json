@@ -5,19 +5,13 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug iOS Hermes - Experimental",
+      "name": "Debug in Exponent",
       "request": "launch",
-      "type": "reactnativedirect",
+      "type": "reactnative",
       "cwd": "${workspaceFolder}",
-      "platform": "ios"
-    },
-
-    {
-      "type": "chrome",
-      "request": "launch",
-      "name": "Launch Chrome against localhost",
-      "url": "http://localhost:8080",
-      "webRoot": "${workspaceFolder}"
+      "platform": "exponent",
+      "expoHostType": "local"
     }
   ]
 }
+i

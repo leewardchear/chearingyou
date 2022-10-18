@@ -16,17 +16,10 @@ import pSBC from "shade-blend-color";
 
 function MoodsButton(props) {
   const dispatch = useDispatch();
-  const showmood = useSelector((state) => state.journal.moodshow);
 
   const openanim = useRef(new Animated.Value(0)).current;
   const radianim = useRef(new Animated.Value(0)).current;
   const [hideButtons, hidem] = useState(false);
-  const [angryColor, setAngryColor] = useState(Colours.angry.code);
-  const [happyColor, setHappyColor] = useState(Colours.happy.code);
-  const [sadColor, setSadColor] = useState(Colours.sad.code);
-  const [anxiousColor, setAnxiousColor] = useState(Colours.anxious.code);
-  const [surprisedColor, setSurprisedColor] = useState(Colours.surprised.code);
-  const [afraidColor, setAfraidColor] = useState(Colours.afraid.code);
 
   const [mood, setThisMood] = useState(false);
 
