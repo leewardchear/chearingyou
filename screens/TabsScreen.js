@@ -3,6 +3,7 @@ import { View } from "react-native";
 import MainScreen from "./MainScreen";
 import SplashScreen from "./SplashScreen";
 import CalendarScreen from "./CalendarScreen";
+import StatisticsScreen from "./StatisticsScreen";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -45,6 +46,23 @@ function TabsScreen(props) {
             tabBarLabel: "Calendar",
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons name="calendar" color={color} size={26} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          key={Date.now()}
+          name="StatisticsTab"
+          initialParams={{ newEntry: {} }}
+          component={StatisticsScreen}
+          navigation={props.navigation}
+          options={{
+            tabBarLabel: "Statistics",
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons
+                name="chart-bar"
+                color={color}
+                size={26}
+              />
             ),
           }}
         />

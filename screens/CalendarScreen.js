@@ -1,44 +1,44 @@
 import React, { useEffect } from "react";
-import { View, Text, Button, StyleSheet, Animated } from "react-native";
-import {
-  Calendar,
-  CalendarList,
-  Agenda,
-  WeekCalendar,
-} from "react-native-calendars";
-import { LinearGradient } from "expo-linear-gradient";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { View, StyleSheet, Animated } from "react-native";
+import { Calendar } from "react-native-calendars";
 import { useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-
 import Moment from "moment";
-
 import Database from "../db/database";
-import { isRejected } from "@reduxjs/toolkit";
 import { Colours } from "../constants.js";
 import DayList from "../components/DayList.js";
 import { setDayListUI } from "../app/calendar.js";
 import { useSelector, useDispatch } from "react-redux";
+import { ScrollView } from "react-native-gesture-handler";
+import MyLineGraph from "../components/Charts/LineChart";
+import MyPieChart from "../components/Charts/PieChart";
+import { current } from "@reduxjs/toolkit";
+import moment from "moment";
+// import BottomSheet from "reanimated-bottom-sheet";
+// import Animated from "react-native-reanimated";
 
 const db = new Database();
 
 function CalendarScreen({ route, navigation }) {
   const [journalentries, setEntries] = useState({});
-  // const [daylistshowing, showDayList] = useState(false);
   const dispatch = useDispatch();
-
   const daylistshowing = useSelector((state) => state.calendar.daylistui);
   const [selectedDate, setSelectedDate] = useState("");
-  const [sumentries, setEntrySum] = useState(0);
+  const [sumEntries, setEntrySum] = useState(0);
   const { newEntry } = route.params;
 
+  const [currentMonth, setCurrentMonth] = useState({
+    dateString: moment().format("YYYY-MM-DD"),
+    day: parseInt(moment().format("DD")),
+    month: parseInt(moment().format("MM")),
+    timestamp: parseInt(moment().toDate().getTime()),
+    year: parseInt(moment().format("YYYY")),
+  });
+
   function mapColors(colour) {
-    // console.log(color);
     if (colour == "") {
-      // console.log("nulled");
       return Colours.default.code;
     }
-
     try {
       return Colours[colour].code;
     } catch (err) {
@@ -50,20 +50,12 @@ function CalendarScreen({ route, navigation }) {
     db.listItems()
       .then((resultSet) => {
         var marked = {};
-        var childCount = 0;
         for (let i = 0; i < resultSet.rows.length; i++) {
           formattedDate = Moment(resultSet.rows.item(i).savedate).format(
             "YYYY-MM-DD"
           );
           var dateObj = {
             moodColors: [],
-            color: "green",
-            selected: true,
-            customStyles: {
-              container: {
-                borderRadius: 5,
-              },
-            },
           };
 
           if (resultSet.rows.item(i).mood != null) {
@@ -71,7 +63,6 @@ function CalendarScreen({ route, navigation }) {
           }
 
           if (typeof marked[formattedDate] === "undefined") {
-            childCount++;
             marked[formattedDate] = dateObj;
           } else {
             if (resultSet.rows.item(i).mood != null) {
@@ -79,7 +70,6 @@ function CalendarScreen({ route, navigation }) {
                 mapColors(resultSet.rows.item(i).mood)
               );
             }
-            // entries[formattedDate] = test;
           }
         }
 
@@ -89,7 +79,6 @@ function CalendarScreen({ route, navigation }) {
           }
         }
         setEntries(marked);
-        // console.log("marked", JSON.stringify(marked, null, 2));
       })
       .catch((error) => {
         console.log(error);
@@ -98,36 +87,38 @@ function CalendarScreen({ route, navigation }) {
 
   useFocusEffect(
     React.useCallback(() => {
-      console.log("ufe");
       reloadData();
     }, [selectedDate, daylistshowing])
   );
 
   useEffect(() => {
     reloadData();
-    // setEntries(stuff);
-    // db.fakeData();
-    // console.log(JSON.stringify(journalentries, null, 2));
-
     const unsubscribe = navigation.addListener("tabPress", (e) => {
       reloadData();
-      // console.log(JSON.stringify(journalentries, null, 2));
-
-      // setEntries(stuff);
     });
-
     return unsubscribe;
-  }, [navigation, selectedDate, daylistshowing, sumentries]);
-  const today = new Date().toISOString().split("T")[0];
+  }, [navigation, selectedDate, daylistshowing, sumEntries]);
+
   return (
     <Animated.View style={{ flex: 1, backgroundColor: "black" }}>
+      {/* <BottomSheet
+        ref={this.modalRef}
+        snapPoints={[330, 0]}
+        initialSnap={1}
+        callbackNode={this.fall}
+        enabledGestureInteraction={true}
+        renderContent={this.showContent}
+        renderHeader={this.showHeader}
+      /> */}
+
       <View>
         <Calendar
           markingType={"custom"}
           markedDates={journalentries}
+          onMonthChange={(month) => {
+            setCurrentMonth(month);
+          }}
           onDayPress={(day) => {
-            // navigation.navigate("HomeTab", { day: day });
-
             if (
               typeof journalentries[day.dateString] !== "undefined" &&
               typeof journalentries[day.dateString].moodColors !== "undefined"
@@ -140,11 +131,13 @@ function CalendarScreen({ route, navigation }) {
             }
           }}
           // Handler which gets executed on day long press. Default = undefined
-          onDayLongPress={(day) => {
-            // console.log("selected day", day);
-          }}
-        ></Calendar>
+          onDayLongPress={(day) => {}}
+        />
       </View>
+
+      {/* <ScrollView>
+        <MyPieChart month={currentMonth.month} year={currentMonth.year} />
+      </ScrollView> */}
 
       {daylistshowing && (
         <DayList

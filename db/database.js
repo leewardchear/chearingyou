@@ -45,10 +45,33 @@ export default class Database {
               vals,
               (txObj, resultSet) => {
                 resolve(resultSet);
-                console.log(resultSet);
+                console.log("SHOW: ", resultSet);
               },
               (txObj, error) => {
                 console.log("Error", error);
+                reject(error);
+              }
+            );
+          });
+        })
+        .catch((error) => console.error(error));
+    });
+  };
+
+  getMonthlyMoods = (month, year) => {
+    return new Promise((resolve, reject) => {
+      str = year + "-" + month;
+
+      this.initDatabase()
+        .then((db) => {
+          db.transaction((tx) => {
+            tx.executeSql(
+              "SELECT * FROM items WHERE strftime('%Y-%m', savedate) = ? ",
+              [str],
+              (txObj, resultSet) => {
+                resolve(resultSet);
+              },
+              (txObj, error) => {
                 reject(error);
               }
             );
