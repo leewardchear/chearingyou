@@ -1,0 +1,88 @@
+diff --git a/node_modules/react-native-calendars/src/calendar/day/basic/index.js b/node_modules/react-native-calendars/src/calendar/day/basic/index.js
+index 6e1e36a..96241e0 100644
+--- a/node_modules/react-native-calendars/src/calendar/day/basic/index.js
++++ b/node_modules/react-native-calendars/src/calendar/day/basic/index.js
+@@ -1,8 +1,11 @@
+-import React, { Fragment, useCallback, useRef } from 'react';
++import React, {StyleSheet, Fragment, useCallback, useRef } from 'react';
+ import { TouchableOpacity, Text, View } from 'react-native';
+ import { xdateToData } from '../../../interface';
+ import styleConstructor from './style';
+ import Marking from '../marking';
++import { LinearGradient } from "expo-linear-gradient";
++
++
+ const BasicDay = (props) => {
+     const { theme, date, onPress, onLongPress, markingType, marking, state, disableAllTouchEventsForDisabledDays, disableAllTouchEventsForInactiveDays, accessibilityLabel, children, testID } = props;
+     const style = useRef(styleConstructor(theme));
+@@ -15,6 +18,8 @@ const BasicDay = (props) => {
+     const isMultiPeriod = markingType === Marking.markings.MULTI_PERIOD;
+     const isCustom = markingType === Marking.markings.CUSTOM;
+     const dateData = date ? xdateToData(date) : undefined;
++    const isGradient = typeof _marking.moodColors !== 'undefined' ? _marking.moodColors : ['black','black', 'black']; // Change black to theme of calendar 
++
+     const shouldDisableTouchEvent = () => {
+         const { disableTouchEvent } = _marking;
+         let disableTouch = false;
+@@ -89,6 +94,7 @@ const BasicDay = (props) => {
+         {String(children)}
+       </Text>);
+     };
++
+     const renderContent = () => {
+         return (<Fragment>
+         {renderText()}
+@@ -96,10 +102,20 @@ const BasicDay = (props) => {
+       </Fragment>);
+     };
+     const renderContainer = () => {
++
+         const { activeOpacity } = _marking;
+-        return (<TouchableOpacity testID={testID} style={getContainerStyle()} disabled={shouldDisableTouchEvent()} activeOpacity={activeOpacity} onPress={!shouldDisableTouchEvent() ? _onPress : undefined} onLongPress={!shouldDisableTouchEvent() ? _onLongPress : undefined} accessible accessibilityRole={isDisabled ? undefined : 'button'} accessibilityLabel={accessibilityLabel}>
+-        {isMultiPeriod ? renderText() : renderContent()}
+-      </TouchableOpacity>);
++        return (
++            <LinearGradient 
++            style={getContainerStyle()}
++            start={{ x: 0, y: 0.5 }} // change angle of the gradient transition
++            end={{ x: 1, y: 1 }}
++            colors={isGradient}>
++                <TouchableOpacity testID={testID}  disabled={shouldDisableTouchEvent()} activeOpacity={activeOpacity} onPress={!shouldDisableTouchEvent() ? _onPress : undefined} onLongPress={!shouldDisableTouchEvent() ? _onLongPress : undefined} accessible accessibilityRole={isDisabled ? undefined : 'button'} accessibilityLabel={accessibilityLabel}>
++                    {isMultiPeriod ? renderText() : renderContent()}
++                </TouchableOpacity>
++            </LinearGradient>
++
++        );
+     };
+     const renderPeriodsContainer = () => {
+         return (<View style={style.current.container}>
+@@ -109,5 +125,7 @@ const BasicDay = (props) => {
+     };
+     return isMultiPeriod ? renderPeriodsContainer() : renderContainer();
+ };
++
++
+ export default BasicDay;
+ BasicDay.displayName = 'BasicDay';
+diff --git a/node_modules/react-native-calendars/src/calendar/style.js b/node_modules/react-native-calendars/src/calendar/style.js
+index c9af755..7faa778 100644
+--- a/node_modules/react-native-calendars/src/calendar/style.js
++++ b/node_modules/react-native-calendars/src/calendar/style.js
+@@ -6,7 +6,7 @@ export default function getStyle(theme = {}) {
+         container: {
+             paddingLeft: 5,
+             paddingRight: 5,
+-            backgroundColor: appStyle.calendarBackground
++            backgroundColor: 'black'
+         },
+         dayContainer: {
+             flex: 1,
+@@ -16,7 +16,7 @@ export default function getStyle(theme = {}) {
+             flex: 1
+         },
+         monthView: {
+-            backgroundColor: appStyle.calendarBackground
++            backgroundColor: 'black'
+         },
+         week: {
+             marginVertical: appStyle.weekVerticalMargin,
