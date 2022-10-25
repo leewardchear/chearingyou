@@ -58,7 +58,7 @@ export default class Database {
     });
   };
 
-  getMonthlyMoods = (month, year) => {
+  getMonthlyData = (month, year) => {
     return new Promise((resolve, reject) => {
       str = year + "-" + month;
 
@@ -68,6 +68,48 @@ export default class Database {
             tx.executeSql(
               "SELECT * FROM items WHERE strftime('%Y-%m', savedate) = ? ",
               [str],
+              (txObj, resultSet) => {
+                resolve(resultSet);
+              },
+              (txObj, error) => {
+                reject(error);
+              }
+            );
+          });
+        })
+        .catch((error) => console.error(error));
+    });
+  };
+
+  getWeeklyData = (start, end) => {
+    return new Promise((resolve, reject) => {
+      this.initDatabase()
+        .then((db) => {
+          db.transaction((tx) => {
+            tx.executeSql(
+              "SELECT * FROM items WHERE savedate BETWEEN ? AND ?",
+              [start, end],
+              (txObj, resultSet) => {
+                resolve(resultSet);
+              },
+              (txObj, error) => {
+                reject(error);
+              }
+            );
+          });
+        })
+        .catch((error) => console.error(error));
+    });
+  };
+
+  getYearlyData = (year) => {
+    return new Promise((resolve, reject) => {
+      this.initDatabase()
+        .then((db) => {
+          db.transaction((tx) => {
+            tx.executeSql(
+              "SELECT * FROM items WHERE strftime('%Y', savedate) = ? ",
+              [year],
               (txObj, resultSet) => {
                 resolve(resultSet);
               },

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { View, StyleSheet, Animated } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { useState } from "react";
@@ -9,13 +9,9 @@ import { Colours } from "../constants.js";
 import DayList from "../components/DayList.js";
 import { setDayListUI } from "../app/calendar.js";
 import { useSelector, useDispatch } from "react-redux";
-import { ScrollView } from "react-native-gesture-handler";
-import MyLineGraph from "../components/Charts/LineChart";
-import MyPieChart from "../components/Charts/PieChart";
 import { current } from "@reduxjs/toolkit";
+
 import moment from "moment";
-// import BottomSheet from "reanimated-bottom-sheet";
-// import Animated from "react-native-reanimated";
 
 const db = new Database();
 
@@ -100,17 +96,7 @@ function CalendarScreen({ route, navigation }) {
   }, [navigation, selectedDate, daylistshowing, sumEntries]);
 
   return (
-    <Animated.View style={{ flex: 1, backgroundColor: "black" }}>
-      {/* <BottomSheet
-        ref={this.modalRef}
-        snapPoints={[330, 0]}
-        initialSnap={1}
-        callbackNode={this.fall}
-        enabledGestureInteraction={true}
-        renderContent={this.showContent}
-        renderHeader={this.showHeader}
-      /> */}
-
+    <Animated.View style={[styles.container]}>
       <View>
         <Calendar
           markingType={"custom"}
@@ -155,7 +141,6 @@ export default CalendarScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "column",
     backgroundColor: "black",
     flex: 1,
   },
