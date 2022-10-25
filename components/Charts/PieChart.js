@@ -7,7 +7,7 @@ import { Colours } from "../../constants";
 
 const db = new Database();
 
-const MyPieChart = ({ month, year }) => {
+const MyPieChart = ({ month, year, weekStart, weekEnd, frequency }) => {
   var moodList = [];
   var legendList = [];
   var graphicColor = [];
@@ -18,44 +18,43 @@ const MyPieChart = ({ month, year }) => {
   const [totalCount, setTotal] = useState(0);
 
   function getData() {
-    db.getMonthlyMoods(("0" + month).slice(-2), year)
+    switch (frequency) {
+      case 0:
+        getWeeklyData();
+        break;
+      case 1:
+        getMonthlyData();
+        break;
+      case 2:
+        getYearlyData();
+        break;
+    }
+  }
+
+  function getYearlyData() {
+    db.getYearlyData(year)
       .then((resultSet) => {
-        var total = 0;
+        plotPie(resultSet);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
-        for (let i = 0; i < resultSet.rows.length; i++) {
-          var mood = resultSet.rows.item(i).mood;
-          // console.log(resultSet.rows.item(i));
+  function getMonthlyData() {
+    db.getMonthlyData(("0" + month).slice(-2), year)
+      .then((resultSet) => {
+        plotPie(resultSet);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
-          const found = moodList.some((m) => m.mood === mood);
-          if (!found) {
-            var moodObj = {
-              x: 0,
-              y: 0,
-              mood: mood,
-              color: Colours[mood].code,
-            };
-
-            var legendObj = {
-              name: mood,
-              symbol: { fill: Colours[mood].code, type: "square" },
-              labels: { fill: Colours[mood].code },
-            };
-            legendList.push(legendObj);
-            moodList.push(moodObj);
-            graphicColor.push(Colours[mood].code);
-          }
-
-          total++;
-
-          moodList.find((m) => m.mood == mood).x++;
-          moodList.find((m) => m.mood == mood).y++;
-        }
-
-        console.log(total);
-        setTotal(total);
-        setColorData(graphicColor);
-        setLegendData(legendList);
-        setGraphicData(moodList);
+  function getWeeklyData() {
+    db.getWeeklyData(weekStart, weekEnd)
+      .then((resultSet) => {
+        plotPie(resultSet);
       })
       .catch((error) => {
         console.log(error);
@@ -64,12 +63,48 @@ const MyPieChart = ({ month, year }) => {
 
   useEffect(() => {
     getData();
-  }, [month]);
+  }, [frequency]);
+
+  function plotPie(resultSet) {
+    var total = 0;
+
+    for (let i = 0; i < resultSet.rows.length; i++) {
+      var mood = resultSet.rows.item(i).mood;
+      console.log(resultSet.rows.item(i));
+
+      const found = moodList.some((m) => m.mood === mood);
+      if (!found) {
+        var moodObj = {
+          x: 0,
+          y: 0,
+          mood: mood,
+          color: Colours[mood].code,
+        };
+
+        var legendObj = {
+          name: mood,
+          symbol: { fill: Colours[mood].code, type: "square" },
+          labels: { fill: Colours[mood].code },
+        };
+        legendList.push(legendObj);
+        moodList.push(moodObj);
+        graphicColor.push(Colours[mood].code);
+      }
+
+      total++;
+
+      moodList.find((m) => m.mood == mood).x++;
+      moodList.find((m) => m.mood == mood).y++;
+    }
+
+    setTotal(total);
+    setColorData(graphicColor);
+    setLegendData(legendList);
+    setGraphicData(moodList);
+  }
 
   return (
     <View style={pistyles.pieColumn}>
-      <Text style={pistyles.title}>Monthly Mood Frequency</Text>
-
       <View style={pistyles.pieRow}>
         <VictoryPie
           height={250}
@@ -104,7 +139,7 @@ export default MyPieChart;
 
 const pistyles = StyleSheet.create({
   pieColumn: {
-    height: 250,
+    height: 225,
     flexDirection: "column",
     justifyContent: "space-around",
     backgroundColor: "#33343d",
@@ -116,14 +151,6 @@ const pistyles = StyleSheet.create({
     height: 250,
     flexDirection: "row",
     justifyContent: "space-around",
-  },
-
-  title: {
-    fontWeight: "bold",
-    color: "white",
-    textAlign: "center",
-    marginTop: 20,
-    fontSize: 18,
   },
 
   myPieChart: {
