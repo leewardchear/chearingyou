@@ -45,7 +45,6 @@ export default class Database {
               vals,
               (txObj, resultSet) => {
                 resolve(resultSet);
-                console.log("SHOW: ", resultSet);
               },
               (txObj, error) => {
                 console.log("Error", error);
@@ -61,7 +60,6 @@ export default class Database {
   getMonthlyData = (month, year) => {
     return new Promise((resolve, reject) => {
       str = year + "-" + month;
-
       this.initDatabase()
         .then((db) => {
           db.transaction((tx) => {

@@ -48,59 +48,9 @@ function StatisticsScreen() {
 
   const getWeekly = () => {
     var startDate = moment().startOf("isoWeek").format("MMM D");
-    var endDate = moment().endOf("isoWeek").format("D, YYYY");
+    var endDate = moment().endOf("isoWeek").format("MMM D, YYYY");
     return `${startDate} -  ${endDate}`;
   };
-
-  // const MAX_TRANSLATE_Y = -SCREEN_HEIGHT;
-  // const STARTING_HEIGHT = -SCREEN_HEIGHT / 1.9; // Change divided by to alter starting height of sheet
-
-  // const BottomSheet = () => {
-  //   const translateY = useSharedValue(0);
-  //   const context = useSharedValue({ y: 0 });
-
-  //   const gesture = Gesture.Pan()
-  //     .onStart(() => {
-  //       context.value = { y: translateY.value };
-  //     })
-  //     .onUpdate((event) => {
-  //       translateY.value = event.translationY + context.value.y;
-  //       translateY.value = Math.max(translateY.value, MAX_TRANSLATE_Y);
-  //     })
-  //     .onEnd(() => {
-  //       if (translateY.value > -SCREEN_HEIGHT / 1.5) {
-  //         translateY.value = withSpring(STARTING_HEIGHT, { damping: 50 });
-  //       } else if (translateY.value < -SCREEN_HEIGHT / 1.5) {
-  //         translateY.value = withSpring(MAX_TRANSLATE_Y, { damping: 50 });
-  //       }
-  //     });
-
-  //   const rBottomSheetStyle = useAnimatedStyle(() => {
-  //     const borderRadius = interpolate(
-  //       translateY.value,
-  //       [MAX_TRANSLATE_Y + 50, MAX_TRANSLATE_Y],
-  //       [25, 5],
-  //       Extrapolate.CLAMP
-  //     );
-
-  //     return {
-  //       borderRadius,
-  //       transform: [{ translateY: translateY.value }],
-  //     };
-  //   });
-
-  //   useEffect(() => {
-  //     translateY.value = STARTING_HEIGHT;
-  //   });
-
-  //   return (
-  //     <GestureDetector gesture={gesture}>
-  //       <Animated.View style={[styles.bottomSheetContainer, rBottomSheetStyle]}>
-  //         <View style={styles.line} />
-  //       </Animated.View>
-  //     </GestureDetector>
-  //   );
-  // };
 
   return (
     <Animated.View style={{ flex: 1, backgroundColor: "black" }}>
@@ -181,3 +131,53 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
 });
+
+// const MAX_TRANSLATE_Y = -SCREEN_HEIGHT;
+// const STARTING_HEIGHT = -SCREEN_HEIGHT / 1.9; // Change divided by to alter starting height of sheet
+
+// const BottomSheet = () => {
+//   const translateY = useSharedValue(0);
+//   const context = useSharedValue({ y: 0 });
+
+//   const gesture = Gesture.Pan()
+//     .onStart(() => {
+//       context.value = { y: translateY.value };
+//     })
+//     .onUpdate((event) => {
+//       translateY.value = event.translationY + context.value.y;
+//       translateY.value = Math.max(translateY.value, MAX_TRANSLATE_Y);
+//     })
+//     .onEnd(() => {
+//       if (translateY.value > -SCREEN_HEIGHT / 1.5) {
+//         translateY.value = withSpring(STARTING_HEIGHT, { damping: 50 });
+//       } else if (translateY.value < -SCREEN_HEIGHT / 1.5) {
+//         translateY.value = withSpring(MAX_TRANSLATE_Y, { damping: 50 });
+//       }
+//     });
+
+//   const rBottomSheetStyle = useAnimatedStyle(() => {
+//     const borderRadius = interpolate(
+//       translateY.value,
+//       [MAX_TRANSLATE_Y + 50, MAX_TRANSLATE_Y],
+//       [25, 5],
+//       Extrapolate.CLAMP
+//     );
+
+//     return {
+//       borderRadius,
+//       transform: [{ translateY: translateY.value }],
+//     };
+//   });
+
+//   useEffect(() => {
+//     translateY.value = STARTING_HEIGHT;
+//   });
+
+//   return (
+//     <GestureDetector gesture={gesture}>
+//       <Animated.View style={[styles.bottomSheetContainer, rBottomSheetStyle]}>
+//         <View style={styles.line} />
+//       </Animated.View>
+//     </GestureDetector>
+//   );
+// };

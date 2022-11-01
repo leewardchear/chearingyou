@@ -70,7 +70,6 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency }) => {
 
     for (let i = 0; i < resultSet.rows.length; i++) {
       var mood = resultSet.rows.item(i).mood;
-      console.log(resultSet.rows.item(i));
 
       const found = moodList.some((m) => m.mood === mood);
       if (!found) {
@@ -96,7 +95,6 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency }) => {
       moodList.find((m) => m.mood == mood).x++;
       moodList.find((m) => m.mood == mood).y++;
     }
-
     setTotal(total);
     setColorData(graphicColor);
     setLegendData(legendList);
