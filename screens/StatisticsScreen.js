@@ -67,13 +67,6 @@ function StatisticsScreen() {
 
       <View>
         <Text style={styles.title}>{stitle}</Text>
-
-        {/* <Calendar
-          markingType={"custom"}
-          onMonthChange={(month) => {
-            setCurrentMonth(month);
-          }}
-        /> */}
       </View>
 
       <ScrollView>
