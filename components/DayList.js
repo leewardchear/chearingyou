@@ -9,8 +9,10 @@ import { TouchableHighlight } from "react-native-gesture-handler";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { setDayListUI } from "../app/calendar.js";
 import { useSelector, useDispatch } from "react-redux";
+import { useFocusEffect } from "@react-navigation/native";
+import { setEntryId } from "../app/journalentry.js";
 
-const DayList = ({ style, selecteddate, navigation, entrysum }) => {
+const DayList = ({ style, selecteddate, navigation, newEntry }) => {
   const dispatch = useDispatch();
 
   const [datelist, setDateList] = useState({});
@@ -18,6 +20,12 @@ const DayList = ({ style, selecteddate, navigation, entrysum }) => {
   formattedDate = Moment(selecteddate.dateString).format("LL");
 
   useEffect(() => {
+    getData();
+  }, [selecteddate, newEntry]);
+
+  const renderItem = ({ item }) => <Item entry={item} />;
+
+  const getData = () => {
     db.listDate(selecteddate.dateString)
       .then((resultSet) => {
         var marked = {};
@@ -25,36 +33,50 @@ const DayList = ({ style, selecteddate, navigation, entrysum }) => {
         var newlist = [];
 
         for (let i = 0; i < resultSet.rows.length; i++) {
-          //   console.log("dl", resultSet.rows.item(i));
           newlist.push(resultSet.rows.item(i));
         }
         setDateList(newlist);
-        // console.log("marked", JSON.stringify(newlist, null, 2));
       })
       .catch((error) => {
         console.log(error);
       });
-  }, [selecteddate, entrysum]);
+  };
 
-  const renderItem = ({ item }) => <Item entry={item} />;
+  useFocusEffect(
+    React.useCallback(() => {
+      getData();
+    }, [])
+  );
 
   const Item = ({ entry }) => (
-    <View
-      style={{
-        borderRadius: 10,
-        padding: 10,
-        margin: 5,
-        backgroundColor: Colours[entry.mood].code,
+    <TouchableHighlight
+      onPress={() => {
+        navigation.navigate("HomeTab", {
+          day: selecteddate,
+          newEntry: false,
+          // entryId: entry.id,
+        });
+        dispatch(setEntryId(entry.id));
       }}
     >
-      <Text style={styles.title}>{entry.text}</Text>
-      <Text>{entry.mood}</Text>
-      <Text style={styles.title}>{entry.savedate}</Text>
-    </View>
+      <View
+        style={{
+          borderRadius: 10,
+          padding: 10,
+          margin: 5,
+          backgroundColor: Colours[entry.mood].code,
+        }}
+      >
+        <Text style={styles.title}>{entry.text}</Text>
+        <Text>{entry.mood}</Text>
+        <Text>{entry.env}</Text>
+        <Text style={styles.title}>{entry.savedate}</Text>
+      </View>
+    </TouchableHighlight>
   );
 
   return (
-    <View style={{ ...style, backgroundColor: "black", color: "white" }}>
+    <View style={{ ...style, color: "white" }}>
       <View
         style={{
           justifyContent: "space-between",
@@ -65,7 +87,10 @@ const DayList = ({ style, selecteddate, navigation, entrysum }) => {
       >
         <TouchableHighlight
           onPress={() => {
-            navigation.navigate("HomeTab", { day: selecteddate });
+            navigation.navigate("HomeTab", {
+              day: selecteddate,
+              newEntry: true,
+            });
           }}
         >
           <MaterialCommunityIcons

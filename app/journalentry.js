@@ -5,8 +5,11 @@ export const journalentry = createSlice({
   initialState: {
     entryvalue: "",
     day: "",
-    moodshow: false,
+    moodshow: true,
     mood: "default",
+    envshow: false,
+    env: "",
+    entryId: null,
   },
   reducers: {
     setEntryValue: (state) => {
@@ -21,14 +24,63 @@ export const journalentry = createSlice({
       state.moodshow = !state.moodshow;
     },
 
+    setShowMoods: (state) => {
+      state.moodshow = true;
+    },
+
+    setHideMoods: (state) => {
+      state.moodshow = false;
+    },
+
     setMood: (state, value) => {
       state.mood = value.payload;
+    },
+
+    setEnvUi: (state) => {
+      state.envshow = !state.envshow;
+    },
+
+    setShowEnv: (state) => {
+      state.envshow = true;
+    },
+
+    setHideEnv: (state) => {
+      state.envshow = false;
+    },
+
+    setEnv: (state, value) => {
+      state.env = value.payload;
+    },
+
+    setEntryId: (state, value) => {
+      state.entryId = value.payload;
+    },
+
+    clearEntry: (state, value) => {
+      console.log("CLEAR");
+      state.entryvalue = "";
+      // state.day = "";
+      state.mood = "default";
+      state.env = "";
+      state.entryId = null;
     },
   },
 });
 
-export const { setEntryValue, setDay, setMoodUi, setMood } =
-  journalentry.actions;
+export const {
+  setEntryValue,
+  setDay,
+  setMoodUi,
+  setMood,
+  setEnvUi,
+  setEnv,
+  setShowEnv,
+  setHideEnv,
+  setShowMoods,
+  setHideMoods,
+  setEntryId,
+  clearEntry,
+} = journalentry.actions;
 
 // export const selectQuestions = state => state.entry
 

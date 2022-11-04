@@ -9,3 +9,9 @@ install pods (usually needed after installing new node modules)
 install the app on iOS
 
 `npx react-native run-ios`
+
+clone
+npm install
+npx patch-packages
+npx expo install
+npx react-native run-android

@@ -22,12 +22,31 @@ import Moment from "moment";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MoodsButton from "../components/MoodsButton";
-import { setMoodUi } from "../app/journalentry";
+import {
+  setMoodUi,
+  setEnvUi,
+  setShowEnv,
+  setHideEnv,
+  setShowMoods,
+  setHideMoods,
+  setEntryId,
+  setMood,
+  setEntryValue,
+  clearEntry,
+} from "../app/journalentry";
 import { Colors } from "react-native-paper";
 import { Colours } from "../constants.js";
+import Environment from "../components/Environment";
+import { useFocusEffect } from "@react-navigation/native";
+import {
+  GestureDetector,
+  Gesture,
+  Directions,
+} from "react-native-gesture-handler";
 
 const MainScreen = ({ route, navigation }) => {
-  const [entryvalue, setEntryValue] = useState("");
+  const entryvalue = useSelector((state) => state.journal.entryvalue);
+  const [entryData, setEntryData] = useState(entryvalue);
 
   const [cleft, setLeft] = useState(0);
   const [ctop, setTop] = useState(0);
@@ -36,30 +55,68 @@ const MainScreen = ({ route, navigation }) => {
   const showmood = useSelector((state) => state.journal.moodshow);
   const mood = useSelector((state) => state.journal.mood);
 
-  const entryBottom = useRef(new Animated.Value(20)).current;
+  const showenv = useSelector((state) => state.journal.envshow);
+  const env = useSelector((state) => state.journal.env);
+  const entryId = useSelector((state) => state.journal.entryId);
+
+  const entryBottom = useRef(new Animated.Value(0)).current;
 
   const db = new Database();
-  const { day } = route.params;
-  formattedDate = Moment(day.dateString).format("LL");
-  keyboardWillShow = (event) => {
-    Animated.timing(entryBottom, {
-      duration: event.duration,
-      toValue: event.endCoordinates.height - 20,
-      useNativeDriver: false,
-      easing: Easing.sin,
-    }).start();
-  };
+  const { day, newEntry } = route.params;
+  // console.log("initday", { day, entryId });
 
-  keyboardWillHide = (event) => {
-    Animated.timing(entryBottom, {
-      duration: event.duration,
-      toValue: 20,
-      useNativeDriver: false,
-      easing: Easing.sin,
-    }).start();
-  };
+  useFocusEffect(
+    React.useCallback(() => {
+      if (newEntry) {
+        console.log(mood);
+        dispatch(clearEntry());
+        setEntryData(entryvalue);
+        setMood(Colours.default.val);
+      }
+    }, [newEntry])
+  );
 
   useEffect(() => {
+    console.log("entryId", entryId);
+    if (entryId != null) {
+      db.getItem(entryId)
+        .then((resultSet) => {
+          // console.log(resultSet.rows.item(0));
+          setEntryData(resultSet.rows.item(0).text);
+          dispatch(setMood(resultSet.rows.item(0).mood));
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, [entryId]);
+
+  formattedDate = Moment(day.dateString).format("LL");
+
+  useEffect(() => {
+    const keyboardWillShow = (event) => {
+      Animated.timing(entryBottom, {
+        duration: event.duration,
+        toValue: event.endCoordinates.height - 135,
+        useNativeDriver: false,
+        easing: Easing.sin,
+      }).start();
+      console.log("env", env);
+
+      if (env == "") {
+        dispatch(setShowEnv());
+      }
+      dispatch(setHideMoods());
+    };
+
+    const keyboardWillHide = (event) => {
+      Animated.timing(entryBottom, {
+        duration: event.duration,
+        toValue: 0,
+        useNativeDriver: false,
+        easing: Easing.sin,
+      }).start();
+    };
     const keyboardWillShowSub = Keyboard.addListener(
       "keyboardWillShow",
       keyboardWillShow
@@ -68,6 +125,14 @@ const MainScreen = ({ route, navigation }) => {
       "keyboardWillHide",
       keyboardWillHide
     );
+
+    return () => {
+      keyboardWillShowSub.remove();
+      keyboardWillHideSub.remove();
+    };
+  }, [env]);
+
+  useEffect(() => {
     const unsubscribe = navigation.addListener("tabPress", (e) => {
       setEntryValue("");
     });
@@ -75,125 +140,248 @@ const MainScreen = ({ route, navigation }) => {
     return unsubscribe;
   }, [navigation]);
 
+  // useEffect(() => {
+  //   console.log("mood change", mood);
+  // }, [mood]);
+
+  useEffect(() => {}, [env]);
+  useEffect(() => {
+    if (showmood) {
+      dispatch(setHideEnv());
+      Keyboard.dismiss();
+    } else {
+      // dispatch(setShowEnv());
+    }
+  }, [showmood]);
+
+  useEffect(() => {
+    if (showenv) {
+      dispatch(setHideMoods());
+    } else {
+      // dispatch(setShowMoods());
+    }
+  }, [showenv]);
+
+  useEffect(() => {
+    // console.log("useEffect", { entryData, mood, env, day, entryId });
+
+    if (entryData === "" && mood === "default" && env === "") {
+      return;
+    }
+    if (entryId == null) {
+      console.log("newItem");
+
+      db.newItem(entryData, mood, env, day.dateString)
+        .then((resultSet) => {
+          console.log("useEffect", resultSet.insertId);
+
+          dispatch(setEntryId(resultSet.insertId));
+          storeDraft(resultSet.insertId);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else {
+      console.log("updateItem", entryId);
+
+      db.updateItem(entryId, entryData, mood, env)
+        .then((resultSet) => {
+          // dispatch(setEntryId(resultSet.insertId));
+          storeDraft(resultSet.insertId);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, [mood, env, entryData]);
+
+  const getDraft = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem("@lastentry");
+
+      if (jsonValue != null) {
+        setCategories(JSON.parse(jsonValue));
+      }
+    } catch (e) {
+      // error reading value
+    }
+  };
+
+  const storeDraft = async (value) => {
+    try {
+      const jsonValue = JSON.stringify(value);
+      await AsyncStorage.setItem("@lastentry", jsonValue);
+    } catch (e) {
+      // saving error
+    }
+  };
+
   mainToggleShow = () => {
     dispatch(setMoodUi());
   };
 
+  envToggleShow = () => {
+    dispatch(setEnvUi());
+  };
+
+  const flingGesture = Gesture.Fling()
+    .direction(Directions.DOWN)
+    .onStart((e) => {
+      Keyboard.dismiss();
+    });
+
   return (
-    <ScrollView
-      contentContainerStyle={{
-        backgroundColor: "#171A21",
-        flex: 0,
-        flexGrow: 1,
-      }}
-      style={{
-        flex: 1,
-        backgroundColor: "#171A21",
-      }}
-      pagingEnabled
-      directionalLockEnabled
-      keyboardDismissMode="interactive"
-      keyboardShouldPersistTaps="always"
-    >
+    <GestureDetector gesture={flingGesture}>
       <Animated.View
         style={{
+          // borderWidth: 1,
+          // borderColor: "red",
           flex: 1,
-          backgroundColor: "#171A21",
           paddingBottom: entryBottom,
         }}
       >
-        <View style={styles.topView}>
-          <Text style={styles.date}>{formattedDate}</Text>
-        </View>
-
-        <TextInput
-          style={styles.noteInput}
-          multiline={true}
-          scrollEnabled={true}
-          selectionColor={"black"}
-          placeholder={"How do you feel today?"}
-          onChangeText={(value) => {
-            setEntryValue(value);
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "flex-start",
+            alignContent: "center",
+            padding: 5,
           }}
-          value={entryvalue}
-        />
-        {showmood && (
+        >
+          <TouchableHighlight
+            onPress={() => {
+              db.deleteAll();
+            }}
+          >
+            <View>
+              <MaterialCommunityIcons
+                name="microsoft-xbox-controller-menu"
+                size={60}
+              />
+            </View>
+          </TouchableHighlight>
+          <View
+            style={{
+              padding: 10,
+              flexDirection: "column",
+              alignSelf: "center",
+              justifyContent: "flex-end",
+            }}
+          >
+            <Text style={styles.date}>{formattedDate}</Text>
+          </View>
+        </View>
+        <View style={{ flex: 1, marginTop: -20 }}>
           <MoodsButton
             style={{
-              position: "relative",
+              zIndex: 10,
               margin: 10,
-              bottom: ctop,
-
+              backgroundColor: "rgba(0, 0, 0, 0.0)",
               shadowColor: "#000000",
+
               shadowOffset: {
                 width: -3,
                 height: -3,
               },
-              shadowRadius: 15,
+
+              shadowRadius: 2,
               shadowOpacity: 0.25,
             }}
           />
-        )}
-
-        <View>
-          <View
-            style={{ flexDirection: "row", justifyContent: "space-evenly" }}
+          <TouchableHighlight
+            onPress={envToggleShow}
+            style={{
+              backgroundColor: "#F1F0EA",
+              borderTopLeftRadius: 10,
+              borderTopRightRadius: 10,
+              marginHorizontal: 10,
+              marginTop: showmood ? 40 : 0,
+            }}
           >
-            <TouchableHighlight
-              onPress={mainToggleShow}
-              onLayout={(event) => {
-                event.target.measure((x, y, width, height, pageX, pageY) => {
-                  setLeft(Dimensions.get("window").width - x - width);
-                  setTop(y);
-                });
-              }}
-            >
-              <View
+            <View style={{ padding: 10, alignSelf: "flex-start" }}>
+              <Text
                 style={{
-                  ...styles.button,
-                  backgroundColor: Colours[mood].code,
+                  fontStyle: "italic",
+                  color:
+                    env == "" || env == null
+                      ? "lightgrey"
+                      : Colours.default.code,
                 }}
               >
-                <Image
-                  style={{
-                    ...styles.colorButton,
-                  }}
-                  source={require("../assets/color-wheel.png")}
-                />
-                <Text>{Colours[mood].name}</Text>
-              </View>
-            </TouchableHighlight>
-            <TouchableHighlight
-              onPress={() => {
-                // navigation.navigate("Splash");
-                // navigation.navigate("CalendarTab");
-                // db.newItem(entryvalue, mood, day.dateString);
-                // setEntryValue("");
-              }}
-            >
-              <View style={{ ...styles.button, ...styles.saveButton }}>
-                <MaterialCommunityIcons name="content-save-edit" size={32} />
-                <Text>Environment</Text>
-              </View>
-            </TouchableHighlight>
-            <TouchableHighlight
-              onPress={() => {
-                // navigation.navigate("Splash");
-                navigation.navigate("CalendarTab");
-                db.newItem(entryvalue, mood, day.dateString);
+                {env == "" || env == null ? "Select a category" : env}
+              </Text>
+            </View>
+          </TouchableHighlight>
 
-                setEntryValue("");
+          <View
+            style={{
+              flex: 1,
+              flexDirection: "column",
+
+              marginHorizontal: 10,
+              marginBottom: 10,
+            }}
+          >
+            <TextInput
+              style={{
+                ...styles.noteInput,
+                flex: 1,
+                flexDirection: "row",
+                backgroundColor: "#F1F0EA",
+                borderBottomLeftRadius: 10,
+                borderBottomRightRadius: 10,
               }}
+              multiline={true}
+              scrollEnabled={true}
+              selectionColor={"black"}
+              placeholder={"How do you feel today?"}
+              onChangeText={(value) => {
+                setEntryData(value);
+              }}
+              value={entryData}
+            ></TextInput>
+          </View>
+          <Environment
+            style={{
+              position: "relative",
+              marginHorizontal: 10,
+              bottom: ctop,
+
+              // shadowColor: "#000000",
+              // shadowOffset: {
+              //   width: -3,
+              //   height: -3,
+              // },
+              // shadowRadius: 15,
+              // shadowOpacity: 0.25,
+            }}
+          />
+
+          <View>
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-evenly" }}
             >
-              <View style={{ ...styles.button, ...styles.saveButton }}>
-                <MaterialCommunityIcons name="content-save-edit" size={32} />
-                <Text>Save</Text>
-              </View>
-            </TouchableHighlight>
+              <TouchableHighlight
+                onPress={() => {
+                  // navigation.navigate("Splash");
+                  console.log("SAVE DAY", day);
+                  navigation.navigate("CalendarTab", {
+                    newEntry: entryId,
+                    focusDate: day,
+                  });
+
+                  // setEntryData("");
+                }}
+              >
+                <View style={{ ...styles.button, ...styles.saveButton }}>
+                  <Text style={{ fontSize: 17 }}>Save This</Text>
+                </View>
+              </TouchableHighlight>
+            </View>
           </View>
         </View>
       </Animated.View>
-    </ScrollView>
+    </GestureDetector>
   );
 };
 
@@ -202,39 +390,31 @@ export default MainScreen;
 const styles = StyleSheet.create({
   topView: {
     flexDirection: "row",
-    flex: 0.2,
+    justifyContent: "space-around",
   },
 
   background: {
     flexDirection: "column",
     flex: 1,
-    backgroundColor: "#171A21",
   },
 
   date: {
-    flex: 1,
-    alignSelf: "center",
-    paddingStart: 30,
     color: "white",
-    fontSize: 16,
+    fontSize: 20,
+    textAlignVertical: "bottom",
     // fontFamily: "notoserif",
-    alignContent: "space-around",
   },
 
   noteInput: {
-    flex: 1,
-    padding: 15,
-    margin: 10,
     textAlignVertical: "top",
-    backgroundColor: "#F1F0EA",
+    padding: 10,
     fontSize: 18,
-    borderRadius: 10,
   },
 
   saveButton: {
     alignSelf: "center",
     color: "white",
-    backgroundColor: "blue",
+    backgroundColor: "#be94f5",
   },
 
   colorButton: {
@@ -245,8 +425,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   button: {
-    borderRadius: 10,
-    padding: 5,
+    borderRadius: 20,
+    padding: 10,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",

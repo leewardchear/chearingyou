@@ -27,14 +27,15 @@ function CalendarScreen({ route, navigation }) {
   // const [daylistshowing, showDayList] = useState(false);
   const dispatch = useDispatch();
 
+  const { newEntry, focusDate } = route.params;
   const daylistshowing = useSelector((state) => state.calendar.daylistui);
-  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedDate, setSelectedDate] = useState({
+    dateString: Moment(focusDate.dateString).format("YYYY-MM-DD"),
+  });
   const [sumentries, setEntrySum] = useState(0);
 
   function mapColors(colour) {
-    // console.log(color);
     if (colour == "") {
-      // console.log("nulled");
       return Colours.default.code;
     }
 
@@ -97,7 +98,7 @@ function CalendarScreen({ route, navigation }) {
 
   useFocusEffect(
     React.useCallback(() => {
-      console.log("ufe");
+      // console.log("useFocusEffect_sd", selectedDate);
       reloadData();
     }, [selectedDate, daylistshowing])
   );
@@ -117,11 +118,18 @@ function CalendarScreen({ route, navigation }) {
 
     return unsubscribe;
   }, [navigation, selectedDate, daylistshowing, sumentries]);
+
+  useEffect(() => {}, [newEntry, journalentries]);
+
   const today = new Date().toISOString().split("T")[0];
   return (
-    <Animated.View style={{ flex: 1, backgroundColor: "black" }}>
+    <Animated.View style={{ flex: 1 }}>
       <View>
         <Calendar
+          style={{ borderWidth: 1, borderColor: "gray" }}
+          theme={{
+            backgroundColor: "black",
+          }}
           markingType={"custom"}
           markedDates={journalentries}
           onDayPress={(day) => {
@@ -150,7 +158,7 @@ function CalendarScreen({ route, navigation }) {
           style={{ flex: 1 }}
           selecteddate={selectedDate}
           navigation={navigation}
-          entrysum={sumentries}
+          newEntry={newEntry}
         />
       )}
     </Animated.View>
@@ -162,7 +170,6 @@ export default CalendarScreen;
 const styles = StyleSheet.create({
   container: {
     flexDirection: "column",
-    backgroundColor: "black",
     flex: 1,
   },
 });
