@@ -12,14 +12,18 @@ import { useSelector, useDispatch } from "react-redux";
 import { Colours } from "../constants.js";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
-import { setEnvUi, setEnv } from "../app/journalentry";
-import { TextInput } from "react-native-gesture-handler";
+import { setEnvUi, setEnv, setShowEnv, setHideEnv } from "../app/journalentry";
+import { ScrollView, TextInput } from "react-native";
 
 function Environment(props) {
   const dispatch = useDispatch();
 
   const openanim = useRef(new Animated.Value(0)).current;
   const radianim = useRef(new Animated.Value(0)).current;
+  const categenv = useSelector((state) => state.journal.env);
+  const mood = useSelector((state) => state.journal.mood);
+  const showenv = useSelector((state) => state.journal.envshow);
+
   const [hideButtons, hidem] = useState(false);
 
   const [showCatInput, setShowCatInput] = useState(false);
@@ -31,12 +35,32 @@ function Environment(props) {
     "Work",
     "Park",
     "Restaurant",
+    "Health",
+    "News",
+    "Stories",
+    "Intense moments",
+    "Books/ articles",
+    "Movies/TV Shows",
+    "Internet",
+    "Quotes",
+    "Time wasted",
+    "Cooking",
+    "Dog",
+    "Neighbours",
+    "Ideas",
+    "Family",
+    "Bills",
+    "Stock Investor",
+    "Memory",
+    "Chess games",
+    "From Parents",
+    "Life Lesson",
   ]);
   const [newCat, setNewCat] = useState([""]);
 
-  useEffect(() => {
+  const showEnv = () => {
     Animated.timing(openanim, {
-      toValue: 150,
+      toValue: 200,
       duration: 150,
       useNativeDriver: false,
       easing: Easing.sin,
@@ -50,23 +74,16 @@ function Environment(props) {
       useNativeDriver: false,
       easing: Easing.sin,
     }).start();
-    getCategories();
-  }, []);
-  endAnim = () => {
-    dispatch(setEnvUi());
-    dispatch(setEnv(categ));
   };
 
-  toggleShow = (envclick) => {
-    console.log("toggleShow", envclick);
-    setThisCategory(envclick);
+  const hideEnv = () => {
+    hidem(false);
+
     Animated.timing(openanim, {
       toValue: 0,
       duration: 150,
       useNativeDriver: false,
-    }).start(({ finished }) => {
-      endAnim();
-    });
+    }).start(({ finished }) => {});
 
     Animated.timing(radianim, {
       toValue: 0,
@@ -76,14 +93,29 @@ function Environment(props) {
   };
 
   useEffect(() => {
-    // console.log(category);
+    if (showenv) {
+      showEnv();
+    } else {
+      hideEnv();
+    }
+  }, [showenv]);
+
+  useEffect(() => {
+    getCategories();
+  }, []);
+  endAnim = () => {
+    dispatch(setEnv(categ));
+  };
+
+  useEffect(() => {
     storeCategories(category);
   }, [category]);
+
+  useEffect(() => {}, [categ]);
 
   const getCategories = async () => {
     try {
       const jsonValue = await AsyncStorage.getItem("@categories");
-      console.log("jsonValue", jsonValue);
 
       if (jsonValue != null) {
         setCategories(JSON.parse(jsonValue));
@@ -95,7 +127,6 @@ function Environment(props) {
 
   const storeCategories = async (value) => {
     try {
-      console.log("storeCategories", value);
       const jsonValue = JSON.stringify(value);
       await AsyncStorage.setItem("@categories", jsonValue);
     } catch (e) {
@@ -114,9 +145,19 @@ function Environment(props) {
       <View
         style={{
           ...style,
+          backgroundColor: env == categenv ? Colours[mood].code : null,
         }}
       >
-        <TouchableWithoutFeedback onPress={() => toggleShow(env)}>
+        <TouchableWithoutFeedback
+          onPress={() => {
+            if (env == categenv) {
+              dispatch(setEnv(null));
+            } else {
+              dispatch(setEnv(env));
+              dispatch(setHideEnv());
+            }
+          }}
+        >
           <Text>{env}</Text>
         </TouchableWithoutFeedback>
       </View>
@@ -128,69 +169,110 @@ function Environment(props) {
       style={{
         ...styles.animated,
         ...props.style,
+
         height: openanim,
         borderRadius: radianim,
         padding: radianim,
+        marginBottom: showenv ? 10 : 0,
       }}
     >
       {hideButtons && (
-        <View style={{ flexWrap: "wrap", flexDirection: "row" }}>
-          {category.map((category, key) => {
-            return (
-              <EnvButtons
-                env={category}
-                style={styles.category}
-                key={key}
-              ></EnvButtons>
-            );
-          })}
-          {!showCatInput && (
+        <View>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              dispatch(setHideEnv());
+            }}
+          >
             <View
               style={{
-                ...styles.category,
-                backgroundColor: Colours.happy.code,
-              }}
-            >
-              <TouchableWithoutFeedback
-                onPress={() => {
-                  setShowCatInput(true);
-                }}
-              >
-                <View style={{ flexDirection: "row" }}>
-                  <Text>Add</Text>
-                  <MaterialCommunityIcons
-                    name="plus-circle-outline"
-                    size={16}
-                  />
-                </View>
-              </TouchableWithoutFeedback>
-            </View>
-          )}
-          {showCatInput && (
-            <View
-              style={{
-                ...styles.category,
-                backgroundColor: "lightgrey",
                 flexDirection: "row",
+                justifyContent: "flex-end",
+                marginTop: -9,
+                right: 0,
+                marginRight: -9,
+                position: "absolute",
+                zIndex: 10,
               }}
             >
-              <TextInput
-                placeholder={"New Category"}
-                returnKeyType="done"
-                onChangeText={(value) => {
-                  setNewCat(value);
-                }}
-                onSubmitEditing={(e) => {
-                  addCategory();
-                  setNewCat("");
-                }}
-                value={newCat}
+              <MaterialCommunityIcons
+                style={{ color: "#be94f5" }}
+                name="close-circle"
+                size={25}
               />
-              <TouchableWithoutFeedback>
-                <MaterialCommunityIcons name="plus-circle-outline" size={16} />
-              </TouchableWithoutFeedback>
             </View>
-          )}
+          </TouchableWithoutFeedback>
+          <ScrollView
+            keyboardDismissMode="none"
+            keyboardShouldPersistTaps="true"
+          >
+            <Text style={{ fontWeight: "bold" }}>Recent</Text>
+            <View style={{ flexWrap: "wrap", flexDirection: "row" }}>
+              <EnvButtons env="Temp" style={styles.category}></EnvButtons>
+            </View>
+            <Text style={{ fontWeight: "bold" }}>All</Text>
+
+            <View style={{ flexWrap: "wrap", flexDirection: "row" }}>
+              {category.map((category, key) => {
+                return (
+                  <EnvButtons
+                    env={category}
+                    style={styles.category}
+                    key={key}
+                  ></EnvButtons>
+                );
+              })}
+              {!showCatInput && (
+                <View
+                  style={{
+                    ...styles.category,
+                    backgroundColor: Colours.happy.code,
+                  }}
+                >
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      setShowCatInput(true);
+                    }}
+                  >
+                    <View style={{ flexDirection: "row" }}>
+                      <Text>Add</Text>
+                      <MaterialCommunityIcons
+                        name="plus-circle-outline"
+                        size={16}
+                      />
+                    </View>
+                  </TouchableWithoutFeedback>
+                </View>
+              )}
+              {showCatInput && (
+                <View
+                  style={{
+                    ...styles.category,
+                    backgroundColor: "lightgrey",
+                    flexDirection: "row",
+                  }}
+                >
+                  <TextInput
+                    placeholder={"New Category"}
+                    returnKeyType="done"
+                    onChangeText={(value) => {
+                      setNewCat(value);
+                    }}
+                    onSubmitEditing={(e) => {
+                      addCategory();
+                      setNewCat("");
+                    }}
+                    value={newCat}
+                  />
+                  <TouchableWithoutFeedback>
+                    <MaterialCommunityIcons
+                      name="plus-circle-outline"
+                      size={16}
+                    />
+                  </TouchableWithoutFeedback>
+                </View>
+              )}
+            </View>
+          </ScrollView>
         </View>
       )}
     </Animated.View>
@@ -201,9 +283,7 @@ export default Environment;
 
 const styles = StyleSheet.create({
   animated: {
-    borderRadius: 10,
-    padding: 10,
-    backgroundColor: "white",
+    backgroundColor: "rgba(255, 255, 255, 0.35)",
   },
   buttons: {
     padding: 10,
@@ -212,7 +292,8 @@ const styles = StyleSheet.create({
     backgroundColor: "green",
   },
   category: {
-    backgroundColor: "grey",
+    borderColor: "grey",
+    borderWidth: 1,
     padding: 5,
     borderRadius: 5,
     margin: 5,
