@@ -29,7 +29,7 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
         break;
       case 1:
         setAdditionalWidth(SCREEN_WIDTH + 110);
-        setLineFrequency(31);
+        setLineFrequency(5);
         getMonthlyData();
         break;
       case 2:
