@@ -8,7 +8,6 @@ import { Colours } from "../../constants";
 import moment from "moment";
 import * as scale from "d3-scale";
 import { TextSize } from "victory-native";
-
 // import { LineChart } from "react-native-gifted-charts";
 
 const db = new Database();
@@ -28,8 +27,8 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
         getWeeklyData();
         break;
       case 1:
-        setAdditionalWidth(SCREEN_WIDTH + 110);
-        setLineFrequency(5);
+        setAdditionalWidth(SCREEN_WIDTH + 150);
+        setLineFrequency(30);
         getMonthlyData();
         break;
       case 2:
@@ -106,6 +105,7 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
             moodList[dayIndex - 1].moodScale = parseInt(Colours[mood].intVal);
           }
           setLineData(moodList);
+          console.log({ moodList });
         })
         .catch((error) => {
           console.log(error);
@@ -157,7 +157,9 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
       >
         <YAxis
           style={{
+            backgroundColor: "blue",
             height: "100%",
+
             marginBottom: xAxisHeight + verticalContentInset.bottom,
           }}
           data={lineData}
@@ -201,7 +203,7 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
               // animate={true}
               // animationDuration={1500}
               data={lineData}
-              curve={shape.curveLinear}
+              curve={shape.curveStep}
               contentInset={{ chartInset }}
               svg={{
                 strokeWidth: 2.5,
@@ -216,6 +218,7 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
             </LineChart>
             <XAxis
               style={{
+                backgroundColor: "green",
                 paddingTop: 10,
                 height: xAxisHeight,
                 width: "100%",
