@@ -42,7 +42,7 @@ const StatisticsScreen = () => {
     currentDate.monthString + " " + currentDate.year
   );
 
-  const [selectedWeek, setWeekData] = useState(currentDate.month);
+  const [selectedWeek, setWeekData] = useState([]);
   const [selectedMonth, setMonthData] = useState([]);
   const [selectedYear, setYearData] = useState([]);
 
@@ -97,6 +97,7 @@ const StatisticsScreen = () => {
     sheetRef.current.snapTo(0);
     setTitle(dateFrequency);
     console.log(dateFrequency);
+
     const currentDateObj = {
       dateString: moment().format("YYYY-MM-DD"),
       day: parseInt(moment().format("DD")),
