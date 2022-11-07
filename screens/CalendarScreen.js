@@ -19,9 +19,14 @@ function CalendarScreen({ route, navigation }) {
   const [journalentries, setEntries] = useState({});
   const dispatch = useDispatch();
   const daylistshowing = useSelector((state) => state.calendar.daylistui);
-  const [selectedDate, setSelectedDate] = useState("");
+
   const [sumEntries, setEntrySum] = useState(0);
-  const { newEntry } = route.params;
+
+  const { newEntry, focusDate } = route.params;
+
+  const [selectedDate, setSelectedDate] = useState({
+    dateString: Moment(focusDate.dateString).format("YYYY-MM-DD"),
+  });
 
   const [currentMonth, setCurrentMonth] = useState({
     dateString: moment().format("YYYY-MM-DD"),
@@ -83,6 +88,7 @@ function CalendarScreen({ route, navigation }) {
 
   useFocusEffect(
     React.useCallback(() => {
+      // console.log("useFocusEffect_sd", selectedDate);
       reloadData();
     }, [selectedDate, daylistshowing])
   );
@@ -95,10 +101,17 @@ function CalendarScreen({ route, navigation }) {
     return unsubscribe;
   }, [navigation, selectedDate, daylistshowing, sumEntries]);
 
+  useEffect(() => {}, [newEntry, journalentries]);
+
+  const today = new Date().toISOString().split("T")[0];
   return (
-    <Animated.View style={[styles.container]}>
+    <Animated.View style={{ flex: 1 }}>
       <View>
         <Calendar
+          style={{ borderWidth: 1, borderColor: "gray" }}
+          theme={{
+            backgroundColor: "black",
+          }}
           markingType={"custom"}
           markedDates={journalentries}
           onMonthChange={(month) => {
@@ -141,7 +154,7 @@ export default CalendarScreen;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "black",
+    flexDirection: "column",
     flex: 1,
   },
 });

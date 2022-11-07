@@ -4,7 +4,7 @@ const journalentries = createSlice({
   name: "entries",
   initialState: {
     entries: {},
-    daylistui: false,
+    daylistui: true,
   },
   reducers: {
     setEntries: (state) => {
@@ -12,7 +12,6 @@ const journalentries = createSlice({
     },
 
     setDayListUI: (state, value) => {
-      console.log(value.payload);
       state.daylistui = value.payload;
     },
   },
