@@ -1,14 +1,12 @@
-import { LineChart, YAxis, XAxis } from "react-native-svg-charts";
+import { LineChart, YAxis, XAxis, Path } from "react-native-svg-charts";
 import * as shape from "d3-shape";
 import { Defs, LinearGradient, Stop, G, Line } from "react-native-svg";
 import { View, StyleSheet, Text, Dimensions, ScrollView } from "react-native";
 import React, { useEffect, useState } from "react";
 import Database from "../../db/database";
 import { Colours } from "../../constants";
-import moment from "moment";
-import * as scale from "d3-scale";
-import { TextSize } from "victory-native";
-// import { LineChart } from "react-native-gifted-charts";
+import moment, { max } from "moment";
+import { ClipPath, Rect } from "react-native-svg";
 
 const db = new Database();
 const SCREEN_WIDTH = Dimensions.get("window").width;
@@ -18,37 +16,33 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
   const [lineFrequency, setLineFrequency] = useState();
   const [additionalWidth, setAdditionalWidth] = useState(-110);
 
-  function getData() {
+  useEffect(() => {
     setLineData([]);
+
     switch (frequency) {
-      case 0:
+      case 0: // WEEKLY
         setAdditionalWidth(SCREEN_WIDTH - 110);
         setLineFrequency(7);
         getWeeklyData();
         break;
-      case 1:
+      case 1: // MONTHLY
         setAdditionalWidth(SCREEN_WIDTH + 150);
         setLineFrequency(30);
         getMonthlyData();
         break;
-      case 2:
+      case 2: // YEARLY
         setAdditionalWidth(SCREEN_WIDTH + 1500);
-        setLineFrequency(365);
+        setLineFrequency(50);
         getYearlyData();
         break;
     }
-  }
-
-  useEffect(() => {
-    getData();
   }, [frequency]);
-
-  useEffect(() => {}, [additionalWidth]);
 
   function getYearlyData() {
     try {
       var daysInYear = 365;
       var moodList = [];
+
       for (let i = 1; i <= daysInYear; i++) {
         var moodObj = {
           day: i,
@@ -64,8 +58,8 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
             var day = moment(resultSet.rows.item(i).savedate).dayOfYear();
             var mood = resultSet.rows.item(i).mood;
             moodList[day - 1].moodScale = parseInt(Colours[mood].intVal);
+            getMinMax(parseInt(Colours[mood].intVal));
           }
-
           setLineData(moodList);
         })
         .catch((error) => {
@@ -80,7 +74,6 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
     try {
       var daysInMonth = moment(month, "MM").daysInMonth();
       var moodList = [];
-
       for (let i = 1; i <= daysInMonth; i++) {
         var moodObj = {
           day: i,
@@ -103,9 +96,10 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
             );
             var mood = resultSet.rows.item(i).mood;
             moodList[dayIndex - 1].moodScale = parseInt(Colours[mood].intVal);
+
+            getMinMax(parseInt(Colours[mood].intVal));
           }
           setLineData(moodList);
-          console.log({ moodList });
         })
         .catch((error) => {
           console.log(error);
@@ -118,6 +112,7 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
   function getWeeklyData() {
     try {
       var moodList = [];
+
       for (let i = 1; i <= 7; i++) {
         var moodObj = {
           day: i,
@@ -134,7 +129,10 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
             var day = moment(resultSet.rows.item(i).savedate).isoWeekday();
             var mood = resultSet.rows.item(i).mood;
             moodList[day - 1].moodScale = parseInt(Colours[mood].intVal);
+
+            getMinMax(parseInt(Colours[mood].intVal));
           }
+
           setLineData(moodList);
         })
         .catch((error) => {
@@ -145,21 +143,117 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
     }
   }
 
+  const Clips = ({}) => (
+    <Defs key={"clips"}>
+      <ClipPath id={"sad"}>
+        <Rect y={310} width={"100%"} height={"100%"} />
+      </ClipPath>
+      <ClipPath id={"angry"}>
+        <Rect y={245} width={"100%"} height={"100%"} />
+      </ClipPath>
+      <ClipPath id={"afraid"}>
+        <Rect y={186} width={"100%"} height={"100%"} />
+      </ClipPath>
+      <ClipPath id={"anxious"}>
+        <Rect y={125} width={"100%"} height={"100%"} />
+      </ClipPath>
+      <ClipPath id={"default"}>
+        <Rect y={120} width={"100%"} height={"100%"} />
+      </ClipPath>
+      <ClipPath id={"surprised"}>
+        <Rect y={60} width={"100%"} height={"100%"} />
+      </ClipPath>
+      <ClipPath id={"happy"}>
+        <Rect y={0} width={"100%"} height={"100%"} />
+      </ClipPath>
+    </Defs>
+  );
+
+  // Line extras:
+  const BlueLine = ({ line }) => (
+    <Path
+      d={line}
+      stroke={Colours["sad"].code}
+      strokeWidth={3}
+      clipPath={"url(#sad)"}
+    />
+  );
+
+  // Line extras:
+  const RedLine = ({ line }) => (
+    <Path
+      d={line}
+      stroke={Colours["angry"].code}
+      strokeWidth={3}
+      clipPath={"url(#angry"}
+    />
+  );
+
+  // Line extras:
+  const PurpleLine = ({ line }) => (
+    <Path
+      d={line}
+      stroke={Colours["anxious"].code}
+      strokeWidth={3}
+      clipPath={"url(#anxious"}
+    />
+  );
+
+  // Line extras:
+  const YellowLine = ({ line }) => (
+    <Path
+      d={line}
+      stroke={Colours["surprised"].code}
+      strokeWidth={3}
+      clipPath={"url(#surprised"}
+    />
+  );
+
+  // Line extras:
+  const OrangeLine = ({ line }) => (
+    <Path
+      d={line}
+      stroke={Colours["afraid"].code}
+      strokeWidth={3}
+      clipPath={"url(#afraid"}
+    />
+  );
+
+  // Line extras:
+  const GreenLine = ({ line }) => (
+    <Path
+      d={line}
+      stroke={Colours["happy"].code}
+      strokeWidth={3}
+      clipPath={"url(#happy"}
+    />
+  );
+
+  // Line extras:
+  const DefaultLine = ({ line }) => (
+    <Path
+      d={line}
+      stroke={Colours["default"].code}
+      strokeWidth={2}
+      clipPath={"url(#default"}
+    />
+  );
+
   return (
     <View style={styles.lineColumn}>
       <View
         style={{
           flex: 1,
-          margin: 15,
+          marginTop: 15,
+          marginLeft: 8,
+          marginRight: 8,
           flexDirection: "row",
           height: "90%",
         }}
       >
         <YAxis
           style={{
-            backgroundColor: "blue",
             height: "100%",
-
             marginBottom: xAxisHeight + verticalContentInset.bottom,
           }}
           data={lineData}
@@ -199,36 +293,46 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
                 paddingTop: 5,
                 width: additionalWidth,
                 flex: 1,
+                marginLeft: 5,
+                marginRight: 10,
               }}
               // animate={true}
               // animationDuration={1500}
               data={lineData}
-              curve={shape.curveStep}
+              curve={shape.curveMonotoneX}
               contentInset={{ chartInset }}
               svg={{
-                strokeWidth: 2.5,
+                strokeWidth: 3,
                 stroke: "url(#gradient)",
+                clipPath: "url(#clip-path-1)",
               }}
-              yMax={2.0}
+              yMax={2}
               yMin={-4}
               yAccessor={({ item }) => item.moodScale}
             >
-              <Gradient />
+              <Clips />
+
+              <GreenLine />
+              <YellowLine />
+              <DefaultLine />
+              <PurpleLine />
+              <OrangeLine />
+              <RedLine />
+              <BlueLine />
+
+              {/* <Gradient /> */}
               <CustomGrid belowChart={true} />
             </LineChart>
             <XAxis
               style={{
-                backgroundColor: "green",
-                paddingTop: 10,
+                paddingTop: 20,
                 height: xAxisHeight,
                 width: "100%",
               }}
               numberOfTicks={lineFrequency}
               data={lineData}
-              formatLabel={(value, index) =>
-                testFunction(lineData[index].label)
-              }
-              contentInset={{ horizontalContentInset }}
+              formatLabel={(value, index) => lineData[index].label}
+              contentInset={{ left: HORIZONTAL_INSET, right: HORIZONTAL_INSET }}
               svg={{
                 fontSize: 10,
                 fill: "white",
@@ -242,28 +346,9 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
   );
 };
 
-function testFunction(index) {
-  // console.log(index);
-  return index;
-}
-
-const Gradient = () => (
-  <Defs key={"gradient"}>
-    <LinearGradient id={"gradient"} x1={"0"} y={"0%"} x2={"0%"} y2={"100%"}>
-      <Stop offset={"0%"} stopColor={Colours["happy"].code} />
-      <Stop offset={"14%"} stopColor={Colours["surprised"].code} />
-      <Stop offset={"29%"} stopColor={Colours["default"].code} />
-      <Stop offset={"43%"} stopColor={Colours["anxious"].code} />
-      <Stop offset={"57%"} stopColor={Colours["afraid"].code} />
-      <Stop offset={"71%"} stopColor={Colours["angry"].code} />
-      <Stop offset={"100%"} stopColor={Colours["sad"].code} />
-    </LinearGradient>
-  </Defs>
-);
-
 const chartInset = { bottom: 2, top: 1 };
 const verticalContentInset = { top: 0, bottom: 0 };
-const horizontalContentInset = { left: 2, right: 0 };
+const HORIZONTAL_INSET = 10;
 const xAxisHeight = 30;
 
 const CustomGrid = ({ x, y, data, ticks }) => (
