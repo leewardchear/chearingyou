@@ -58,7 +58,6 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
             var day = moment(resultSet.rows.item(i).savedate).dayOfYear();
             var mood = resultSet.rows.item(i).mood;
             moodList[day - 1].moodScale = parseInt(Colours[mood].intVal);
-            getMinMax(parseInt(Colours[mood].intVal));
           }
           setLineData(moodList);
         })
@@ -96,8 +95,6 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
             );
             var mood = resultSet.rows.item(i).mood;
             moodList[dayIndex - 1].moodScale = parseInt(Colours[mood].intVal);
-
-            getMinMax(parseInt(Colours[mood].intVal));
           }
           setLineData(moodList);
         })
@@ -129,8 +126,6 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
             var day = moment(resultSet.rows.item(i).savedate).isoWeekday();
             var mood = resultSet.rows.item(i).mood;
             moodList[day - 1].moodScale = parseInt(Colours[mood].intVal);
-
-            getMinMax(parseInt(Colours[mood].intVal));
           }
 
           setLineData(moodList);
