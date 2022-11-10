@@ -9,6 +9,8 @@ import { Colours } from "../constants.js";
 import DayList from "../components/DayList.js";
 import { setDayListUI } from "../app/calendar.js";
 import { useSelector, useDispatch } from "react-redux";
+import { hideProg, setProgState } from "../app/journalentry";
+
 import { current } from "@reduxjs/toolkit";
 
 import moment from "moment";
@@ -88,7 +90,9 @@ function CalendarScreen({ route, navigation }) {
 
   useFocusEffect(
     React.useCallback(() => {
-      // console.log("useFocusEffect_sd", selectedDate);
+      console.log("useFocusEffect_sd", selectedDate);
+      dispatch(setProgState(0));
+
       reloadData();
     }, [selectedDate, daylistshowing])
   );

@@ -10,6 +10,7 @@ export const journalentry = createSlice({
     envshow: false,
     env: "",
     entryId: null,
+    progshow: 0,
   },
   reducers: {
     setEntryValue: (state) => {
@@ -56,6 +57,18 @@ export const journalentry = createSlice({
       state.entryId = value.payload;
     },
 
+    showProg: (state, value) => {
+      state.progshow = 1;
+    },
+
+    hideProg: (state, value) => {
+      state.progshow = 0;
+    },
+
+    setProgState: (state, value) => {
+      state.progshow = value.payload;
+    },
+
     clearEntry: (state, value) => {
       console.log("CLEAR");
       state.entryvalue = "";
@@ -80,6 +93,9 @@ export const {
   setHideMoods,
   setEntryId,
   clearEntry,
+  showProg,
+  hideProg,
+  setProgState,
 } = journalentry.actions;
 
 // export const selectQuestions = state => state.entry

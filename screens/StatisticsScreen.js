@@ -169,7 +169,7 @@ const StatisticsScreen = () => {
   // });
 
   return (
-    <Animated.View style={{ flex: 1, backgroundColor: "black" }}>
+    <Animated.View style={{ flex: 1, backgroundColor: "transparent" }}>
       <SegmentedControlTab
         values={["Weekly", "Monthly", "Yearly"]}
         selectedIndex={selectedFrequency}

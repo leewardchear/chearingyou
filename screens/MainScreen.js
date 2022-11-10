@@ -22,6 +22,8 @@ import Moment from "moment";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MoodsButton from "../components/MoodsButton";
+import ProgressWheel from "../components/ProgressWheel";
+import { runOnJS } from "react-native-reanimated";
 import {
   setMoodUi,
   setEnvUi,
@@ -33,20 +35,23 @@ import {
   setMood,
   setEntryValue,
   clearEntry,
+  setProgState,
 } from "../app/journalentry";
 import { Colors } from "react-native-paper";
 import { Colours } from "../constants.js";
 import Environment from "../components/Environment";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import {
   GestureDetector,
   Gesture,
   Directions,
 } from "react-native-gesture-handler";
+// import ProgressWheel from "../components/ProgressWheel";
 
 const MainScreen = ({ route, navigation }) => {
   const entryvalue = useSelector((state) => state.journal.entryvalue);
   const [entryData, setEntryData] = useState(entryvalue);
+  const progState = useSelector((state) => state.journal.progshow);
 
   const [cleft, setLeft] = useState(0);
   const [ctop, setTop] = useState(0);
@@ -63,10 +68,12 @@ const MainScreen = ({ route, navigation }) => {
 
   const db = new Database();
   const { day, newEntry } = route.params;
-  // console.log("initday", { day, entryId });
+  const isFocused = useIsFocused();
 
+  // console.log("initday", { day, entryId });
   useFocusEffect(
     React.useCallback(() => {
+      console.log("prgsfe", progState);
       if (newEntry) {
         console.log(mood);
         dispatch(clearEntry());
@@ -76,6 +83,15 @@ const MainScreen = ({ route, navigation }) => {
     }, [newEntry])
   );
 
+  useEffect(() => {
+    console.log("prg", progState);
+    if (progState == 3) {
+      navigation.navigate("CalendarTab", {
+        newEntry: entryId,
+        focusDate: day,
+      });
+    }
+  }, [progState]);
   useEffect(() => {
     console.log("entryId", entryId);
     if (entryId != null) {
@@ -195,27 +211,6 @@ const MainScreen = ({ route, navigation }) => {
     }
   }, [mood, env, entryData]);
 
-  const getDraft = async () => {
-    try {
-      const jsonValue = await AsyncStorage.getItem("@lastentry");
-
-      if (jsonValue != null) {
-        setCategories(JSON.parse(jsonValue));
-      }
-    } catch (e) {
-      // error reading value
-    }
-  };
-
-  const storeDraft = async (value) => {
-    try {
-      const jsonValue = JSON.stringify(value);
-      await AsyncStorage.setItem("@lastentry", jsonValue);
-    } catch (e) {
-      // saving error
-    }
-  };
-
   mainToggleShow = () => {
     dispatch(setMoodUi());
   };
@@ -224,10 +219,15 @@ const MainScreen = ({ route, navigation }) => {
     dispatch(setEnvUi());
   };
 
+  uiDismiss = () => {
+    Keyboard.dismiss();
+  };
+
   const flingGesture = Gesture.Fling()
     .direction(Directions.DOWN)
     .onStart((e) => {
-      Keyboard.dismiss();
+      console.log("WTF");
+      runOnJS(uiDismiss)("can pass arguments too");
     });
 
   return (
@@ -302,10 +302,7 @@ const MainScreen = ({ route, navigation }) => {
               <Text
                 style={{
                   fontStyle: "italic",
-                  color:
-                    env == "" || env == null
-                      ? "lightgrey"
-                      : Colours.default.code,
+                  color: env == "" || env == null ? "lightgrey" : "black",
                 }}
               >
                 {env == "" || env == null ? "Select a category" : env}
@@ -362,19 +359,27 @@ const MainScreen = ({ route, navigation }) => {
               style={{ flexDirection: "row", justifyContent: "space-evenly" }}
             >
               <TouchableHighlight
+                underlayColor="#DDDDDD"
                 onPress={() => {
                   // navigation.navigate("Splash");
                   console.log("SAVE DAY", day);
-                  navigation.navigate("CalendarTab", {
-                    newEntry: entryId,
-                    focusDate: day,
-                  });
+
+                  dispatch(setProgState(1));
 
                   // setEntryData("");
                 }}
               >
                 <View style={{ ...styles.button, ...styles.saveButton }}>
-                  <Text style={{ fontSize: 17 }}>Save This</Text>
+                  {progState == 1 && <ProgressWheel />}
+                  {progState == 1 && (
+                    <Text style={{ fontSize: 17 }}>Saving Note...</Text>
+                  )}
+                  {progState == 0 && (
+                    <Text style={{ fontSize: 17 }}>Save This</Text>
+                  )}
+                  {progState == 2 && (
+                    <Text style={{ fontSize: 17 }}>Note Saved!</Text>
+                  )}
                 </View>
               </TouchableHighlight>
             </View>
