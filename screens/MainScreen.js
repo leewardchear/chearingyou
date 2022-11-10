@@ -169,8 +169,6 @@ const MainScreen = ({ route, navigation }) => {
       return;
     }
     if (entryId == null) {
-      console.log("newItem");
-
       db.newItem(entryData, mood, env, day.dateString)
         .then((resultSet) => {
           console.log("useEffect", resultSet.insertId);
@@ -364,7 +362,6 @@ const MainScreen = ({ route, navigation }) => {
               <TouchableHighlight
                 onPress={() => {
                   // navigation.navigate("Splash");
-                  console.log("SAVE DAY", day);
                   navigation.navigate("CalendarTab", {
                     newEntry: entryId,
                     focusDate: day,
