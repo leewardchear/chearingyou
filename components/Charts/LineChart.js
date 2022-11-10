@@ -1,12 +1,14 @@
 import { LineChart, YAxis, XAxis, Path } from "react-native-svg-charts";
 import * as shape from "d3-shape";
-import { Defs, LinearGradient, Stop, G, Line } from "react-native-svg";
+import { Defs, G, Line } from "react-native-svg";
 import { View, StyleSheet, Text, Dimensions, ScrollView } from "react-native";
 import React, { useEffect, useState } from "react";
 import Database from "../../db/database";
 import { Colours } from "../../constants";
 import moment, { max } from "moment";
 import { ClipPath, Rect } from "react-native-svg";
+import * as scale from "d3-scale";
+import { TextSize } from "victory-native";
 
 const db = new Database();
 const SCREEN_WIDTH = Dimensions.get("window").width;
@@ -27,12 +29,12 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
         break;
       case 1: // MONTHLY
         setAdditionalWidth(SCREEN_WIDTH + 150);
-        setLineFrequency(30);
+        setLineFrequency(31);
         getMonthlyData();
         break;
       case 2: // YEARLY
         setAdditionalWidth(SCREEN_WIDTH + 1500);
-        setLineFrequency(50);
+        setLineFrequency(365);
         getYearlyData();
         break;
     }
@@ -44,10 +46,19 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
       var moodList = [];
 
       for (let i = 1; i <= daysInYear; i++) {
+        var date = moment().dayOfYear(i).format("MMM-DD");
+        var day = moment(date).dayOfYear(i).format("DD");
+        var month = moment(date).dayOfYear(i).format("MMM");
+
+        var monthLabel = "";
+        if (day == "01") {
+          monthLabel = month;
+        }
+
         var moodObj = {
           day: i,
           moodScale: 0,
-          label: moment().dayOfYear(i).format("MMM"),
+          label: monthLabel,
         };
         moodList.push(moodObj);
       }
@@ -55,6 +66,7 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
       db.getYearlyData(year)
         .then((resultSet) => {
           for (let i = 0; i < resultSet.rows.length; i++) {
+            console.log(resultSet.rows.item(i).savedate);
             var day = moment(resultSet.rows.item(i).savedate).dayOfYear();
             var mood = resultSet.rows.item(i).mood;
             moodList[day - 1].moodScale = parseInt(Colours[mood].intVal);
@@ -291,8 +303,7 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
                 marginLeft: 5,
                 marginRight: 10,
               }}
-              // animate={true}
-              // animationDuration={1500}
+              xScale={scale.scaleTime}
               data={lineData}
               curve={shape.curveMonotoneX}
               contentInset={{ chartInset }}
@@ -304,9 +315,11 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
               yMax={2}
               yMin={-4}
               yAccessor={({ item }) => item.moodScale}
+              // xAccessor={({ item }) => item.day}
+              // animate={true}
+              // animationDuration={1500}
             >
               <Clips />
-
               <GreenLine />
               <YellowLine />
               <DefaultLine />
@@ -315,7 +328,6 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
               <RedLine />
               <BlueLine />
 
-              {/* <Gradient /> */}
               <CustomGrid belowChart={true} />
             </LineChart>
             <XAxis
@@ -324,6 +336,7 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
                 height: xAxisHeight,
                 width: "100%",
               }}
+              xAccessor={({ item }) => item.day}
               numberOfTicks={lineFrequency}
               data={lineData}
               formatLabel={(value, index) => lineData[index].label}
@@ -346,37 +359,40 @@ const verticalContentInset = { top: 0, bottom: 0 };
 const HORIZONTAL_INSET = 10;
 const xAxisHeight = 30;
 
-const CustomGrid = ({ x, y, data, ticks }) => (
-  <G>
-    {
-      // Horizontal grid
-      ticks.map((tick) => (
-        <Line
-          key={tick}
-          x1={"0%"}
-          x2={"100%"}
-          y1={y(tick)}
-          y2={y(tick)}
-          stroke={"grey"}
-        />
-      ))
-    }
+const CustomGrid = ({ x, y, data, ticks }) => {
+  ticks = [-4, -3, -2, -1, 0, 1, 2];
+  return (
+    <G>
+      {
+        // Horizontal grid
+        ticks.map((tick) => (
+          <Line
+            key={tick}
+            x1={"0%"}
+            x2={"100%"}
+            y1={y(tick)}
+            y2={y(tick)}
+            stroke={"grey"}
+          />
+        ))
+      }
 
-    {
-      // Vertical grid
-      data.map((_, index) => (
-        <Line
-          key={index}
-          y1={"0%"}
-          y2={"100%"}
-          x1={x(index)}
-          x2={x(index)}
-          stroke={"rgba(0,0,0,0.2)"}
-        />
-      ))
-    }
-  </G>
-);
+      {
+        // Vertical grid
+        data.map((_, index) => (
+          <Line
+            key={index}
+            y1={"0%"}
+            y2={"100%"}
+            x1={x(index)}
+            x2={x(index)}
+            stroke={"rgba(0,0,0,0.2)"}
+          />
+        ))
+      }
+    </G>
+  );
+};
 
 export default MyLineGraph;
 
