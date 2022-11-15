@@ -63,7 +63,7 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency }) => {
 
   useEffect(() => {
     getData();
-  }, [frequency]);
+  }, [frequency, weekStart, month, year]);
 
   function plotPie(resultSet) {
     var total = 0;
@@ -95,6 +95,7 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency }) => {
       moodList.find((m) => m.mood == mood).x++;
       moodList.find((m) => m.mood == mood).y++;
     }
+
     setTotal(total);
     setColorData(graphicColor);
     setLegendData(legendList);

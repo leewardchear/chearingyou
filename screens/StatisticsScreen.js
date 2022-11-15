@@ -36,7 +36,7 @@ const StatisticsScreen = () => {
     weekStart: moment().startOf("isoWeek").format("YYYY-MM-DD"),
     weekEnd: moment().endOf("isoWeek").format("YYYY-MM-DD"),
   });
-  const [dateFrequency, setDateFrequency] = useState([]);
+  const [datePicked, setDatePicked] = useState([]);
   const [selectedFrequency, setFrequency] = useState(1);
   const [stitle, setTitle] = useState(
     currentDate.monthString + " " + currentDate.year
@@ -45,6 +45,10 @@ const StatisticsScreen = () => {
   const [selectedWeek, setWeekData] = useState([]);
   const [selectedMonth, setMonthData] = useState([]);
   const [selectedYear, setYearData] = useState([]);
+
+  useEffect(() => {
+    loadDatesList();
+  }, []);
 
   useEffect(() => {
     switch (selectedFrequency) {
@@ -72,15 +76,15 @@ const StatisticsScreen = () => {
   function loadDatesList() {
     db.listAllDates()
       .then((resultSet) => {
-        var arr = [];
+        var allEntries = [];
 
         if (resultSet != null && resultSet.rows != null) {
           for (let i = 0; i < resultSet.rows.length; i++) {
             var dates = resultSet.rows.item(i).savedate;
-            arr.push(dates);
+            allEntries.push(dates);
           }
         }
-        setupMonthData(arr);
+        setupPickerData(allEntries);
       })
       .catch((error) => {
         console.log(error);
@@ -90,26 +94,43 @@ const StatisticsScreen = () => {
   // Handle Pressed Events ==========================
   const handleOnDatePressed = () => {
     sheetRef.current.snapTo(1);
-    loadDatesList();
+    switch (selectedFrequency) {
+      case 0:
+        setPickerData(selectedWeek);
+        break;
+      case 1:
+        setPickerData(selectedMonth);
+        break;
+      case 2:
+        setPickerData(selectedYear);
+        break;
+    }
   };
 
   const onChangeBtnPressed = () => {
     sheetRef.current.snapTo(0);
-    setTitle(dateFrequency);
-    console.log(dateFrequency);
+    setTitle(datePicked);
 
-    const currentDateObj = {
-      dateString: moment().format("YYYY-MM-DD"),
-      day: parseInt(moment().format("DD")),
-      month: parseInt(moment().format("MM")),
-      monthString: moment().format("MMMM"),
-      timestamp: parseInt(moment().toDate().getTime()),
-      year: parseInt(moment().format("YYYY")),
-      weekStart: moment().startOf("isoWeek").format("YYYY-MM-DD"),
-      weekEnd: moment().endOf("isoWeek").format("YYYY-MM-DD"),
-    };
+    var newPickedDate;
+    if (selectedFrequency == 0) {
+      const myArray = datePicked.split("-");
+      let word = myArray[0];
+      newPickedDate = moment(word, "MMM DD, YYYY");
+    } else {
+      newPickedDate = moment(datePicked, "MMM DD, YYYY");
+    }
 
-    setCurrentMonth(currentDateObj);
+    setCurrentMonth({
+      dateString: moment(newPickedDate).format("YYYY-MM-DD"),
+      day: parseInt(moment(newPickedDate).format("DD")),
+      month: parseInt(moment(newPickedDate).format("MM")),
+      monthString: moment(newPickedDate).format("MMMM"),
+      timestamp: parseInt(moment(newPickedDate).toDate().getTime()),
+      year: parseInt(moment(newPickedDate).format("YYYY")),
+      weekStart: moment(newPickedDate).startOf("isoWeek").format("YYYY-MM-DD"),
+      weekEnd: moment(newPickedDate).endOf("isoWeek").format("YYYY-MM-DD"),
+    });
+    console.log({ datePicked, newPickedDate });
   };
 
   const handleIndexPressed = (index) => {
@@ -120,10 +141,9 @@ const StatisticsScreen = () => {
   // BottomSheet Variables
   const sheetRef = React.useRef(null);
 
-  function setupMonthData(arr) {
-    var maxDate = moment(getMaxDate(arr));
-    var minDate = moment(getMinDate(arr));
-    console.log({ minDate, maxDate });
+  function setupPickerData(allEntries) {
+    var maxDate = moment(getMaxDate(allEntries));
+    var minDate = moment(getMinDate(allEntries));
     var monthArray = [];
     var yearArray = [];
     var weekArray = [];
@@ -138,6 +158,8 @@ const StatisticsScreen = () => {
           weekStart.endOf("isoWeek").format("MMM DD, YYYY"),
       ]);
       weekStart.add(1, "week");
+
+      console.log(weekStart);
     }
     setWeekData(weekArray);
 
@@ -152,12 +174,12 @@ const StatisticsScreen = () => {
     setMonthData(monthArray);
   }
 
-  const getMaxDate = (arr) => {
-    return moment.max(arr.map((x) => moment(x))).format("YYYY-MM-DD");
+  const getMaxDate = (allEntries) => {
+    return moment.max(allEntries.map((x) => moment(x))).format("YYYY-MM-DD");
   };
 
-  const getMinDate = (arr) => {
-    return moment.min(arr.map((x) => moment(x))).format("YYYY-MM-DD");
+  const getMinDate = (allEntries) => {
+    return moment.min(allEntries.map((x) => moment(x))).format("YYYY-MM-DD");
   };
 
   // BackHandler.addEventListener("hardwareBackPress", function () {
@@ -227,9 +249,10 @@ const StatisticsScreen = () => {
                 // selectedValue="March"
                 pickerData={pickerData}
                 onValueChange={(value) => {
-                  setDateFrequency(value);
+                  setDatePicked(value);
                 }}
                 selectLineSize={8}
+                selectedValue={selectedWeek}
               />
 
               <TouchableOpacity
