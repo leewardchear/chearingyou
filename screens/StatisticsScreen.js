@@ -68,8 +68,12 @@ const StatisticsScreen = () => {
   }, [selectedFrequency]);
 
   const getWeekly = () => {
-    var startDate = moment().startOf("isoWeek").format("MMM D");
-    var endDate = moment().endOf("isoWeek").format("MMM D, YYYY");
+    var startDate = moment(currentDate.weekStart)
+      .startOf("isoWeek")
+      .format("MMM D");
+    var endDate = moment(currentDate.weekEnd)
+      .endOf("isoWeek")
+      .format("MMM D, YYYY");
     return `${startDate} -  ${endDate}`;
   };
 
@@ -112,12 +116,19 @@ const StatisticsScreen = () => {
     setTitle(datePicked);
 
     var newPickedDate;
-    if (selectedFrequency == 0) {
-      const myArray = datePicked.split("-");
-      let word = myArray[0];
-      newPickedDate = moment(word, "MMM DD, YYYY");
-    } else {
-      newPickedDate = moment(datePicked, "MMM DD, YYYY");
+    switch (selectedFrequency) {
+      case 0:
+        const myArray = datePicked.split("-");
+        let word = myArray[0];
+        newPickedDate = moment(word, "MMM DD, YYYY");
+        break;
+      case 1:
+        newPickedDate = moment(datePicked, "MMM DD, YYYY");
+        break;
+      case 2:
+        newPickedDate = moment(datePicked).startOf("year");
+        console.log(newPickedDate);
+        break;
     }
 
     setCurrentMonth({
@@ -130,7 +141,7 @@ const StatisticsScreen = () => {
       weekStart: moment(newPickedDate).startOf("isoWeek").format("YYYY-MM-DD"),
       weekEnd: moment(newPickedDate).endOf("isoWeek").format("YYYY-MM-DD"),
     });
-    console.log({ datePicked, newPickedDate });
+    // console.log({ datePicked, currentDate, datePicked, newPickedDate });
   };
 
   const handleIndexPressed = (index) => {
@@ -158,8 +169,6 @@ const StatisticsScreen = () => {
           weekStart.endOf("isoWeek").format("MMM DD, YYYY"),
       ]);
       weekStart.add(1, "week");
-
-      console.log(weekStart);
     }
     setWeekData(weekArray);
 
