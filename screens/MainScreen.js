@@ -190,7 +190,6 @@ const MainScreen = ({ route, navigation }) => {
           console.log("useEffect", resultSet.insertId);
 
           dispatch(setEntryId(resultSet.insertId));
-          storeDraft(resultSet.insertId);
         })
         .catch((error) => {
           console.log(error);
@@ -201,7 +200,6 @@ const MainScreen = ({ route, navigation }) => {
       db.updateItem(entryId, entryData, mood, env)
         .then((resultSet) => {
           // dispatch(setEntryId(resultSet.insertId));
-          storeDraft(resultSet.insertId);
         })
         .catch((error) => {
           console.log(error);

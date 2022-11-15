@@ -17,7 +17,7 @@ function TabsScreen(props) {
   return (
     <LinearGradient
       start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 0 }}
+      end={{ x: 0.7, y: 0 }}
       colors={["#e6d7fd", "#e6d7fd", "#d3dfff"]}
       style={{ flex: 1, paddingBottom: 10 }}
     >
