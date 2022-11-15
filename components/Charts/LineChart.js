@@ -19,7 +19,6 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
   const [additionalWidth, setAdditionalWidth] = useState(-110);
 
   useEffect(() => {
-    console.log("Changed");
     setLineData([]);
 
     switch (frequency) {
@@ -39,7 +38,7 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
         getYearlyData();
         break;
     }
-  }, [frequency]);
+  }, [frequency, weekStart, month, year]);
 
   function getYearlyData() {
     try {
@@ -98,6 +97,8 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
 
       const getDate = (string) =>
         (([year, month, day]) => ({ year, month, day }))(string.split("-"));
+
+      console.log({ month, year });
 
       db.getMonthlyData(("0" + month).slice(-2), year)
         .then((resultSet) => {
