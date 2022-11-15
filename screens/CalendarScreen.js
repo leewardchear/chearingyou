@@ -1,5 +1,11 @@
 import React, { useCallback, useEffect } from "react";
-import { View, StyleSheet, Animated } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Animated,
+  Text,
+  TouchableHighlight,
+} from "react-native";
 import { Calendar } from "react-native-calendars";
 import { useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
@@ -7,28 +13,32 @@ import Moment from "moment";
 import Database from "../db/database";
 import { Colours } from "../constants.js";
 import DayList from "../components/DayList.js";
-import { setDayListUI } from "../app/calendar.js";
+import { setDayListUI, setSelectedDate } from "../app/calendar.js";
 import { useSelector, useDispatch } from "react-redux";
 import { hideProg, setProgState } from "../app/journalentry";
 
 import { current } from "@reduxjs/toolkit";
 
 import moment from "moment";
+import { LinearGradient } from "expo-linear-gradient";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const db = new Database();
 
 function CalendarScreen({ route, navigation }) {
   const [journalentries, setEntries] = useState({});
   const dispatch = useDispatch();
-  const daylistshowing = useSelector((state) => state.calendar.daylistui);
+  const selectedDate = useSelector((state) => state.calendar.selectedDate);
+
+  const [daylistshowing, setDayListShow] = useState(true);
 
   const [sumEntries, setEntrySum] = useState(0);
 
   const { newEntry, focusDate } = route.params;
 
-  const [selectedDate, setSelectedDate] = useState({
-    dateString: Moment(focusDate.dateString).format("YYYY-MM-DD"),
-  });
+  // const [selectedDate, setSelectedDate] = useState({
+  //   dateString: Moment(focusDate.dateString).format("YYYY-MM-DD"),
+  // });
 
   const [currentMonth, setCurrentMonth] = useState({
     dateString: moment().format("YYYY-MM-DD"),
@@ -90,7 +100,6 @@ function CalendarScreen({ route, navigation }) {
 
   useFocusEffect(
     React.useCallback(() => {
-      console.log("useFocusEffect_sd", selectedDate);
       dispatch(setProgState(0));
 
       reloadData();
@@ -98,43 +107,125 @@ function CalendarScreen({ route, navigation }) {
   );
 
   useEffect(() => {
-    reloadData();
+    // reloadData();
     const unsubscribe = navigation.addListener("tabPress", (e) => {
-      reloadData();
+      // reloadData();
     });
     return unsubscribe;
   }, [navigation, selectedDate, daylistshowing, sumEntries]);
 
   useEffect(() => {}, [newEntry, journalentries]);
 
+  const setDate = (date) => {
+    dispatch(setSelectedDate(date));
+  };
+
   const today = new Date().toISOString().split("T")[0];
   return (
     <Animated.View style={{ flex: 1 }}>
       <View>
         <Calendar
-          style={{ borderWidth: 1, borderColor: "gray" }}
+          style={{}}
           theme={{
             backgroundColor: "black",
+            calendarBackground: "transparent",
+            textSectionTitleColor: "#b6c1cd",
+            textSectionTitleDisabledColor: "#d9e1e8",
+            selectedDayBackgroundColor: "#00adf5",
+            selectedDayTextColor: "#ffffff",
+            todayTextColor: "#00adf5",
+            dayTextColor: "#2d4150",
+            textDisabledColor: "#d9e1e8",
+            dotColor: "#00adf5",
+            selectedDotColor: "#ffffff",
+            arrowColor: "orange",
+            disabledArrowColor: "#d9e1e8",
+            monthTextColor: "white",
+            indicatorColor: "blue",
+            textDayFontFamily: "arial",
+            textMonthFontFamily: "arial",
+            textDayHeaderFontFamily: "arial",
+            textDayFontWeight: "300",
+            textMonthFontWeight: "normal",
+            textDayHeaderFontWeight: "300",
+            textDayFontSize: 16,
+            textMonthFontSize: 20,
+            textDayHeaderFontSize: 14,
           }}
           markingType={"custom"}
           markedDates={journalentries}
           onMonthChange={(month) => {
             setCurrentMonth(month);
           }}
-          onDayPress={(day) => {
-            if (
-              typeof journalentries[day.dateString] !== "undefined" &&
-              typeof journalentries[day.dateString].moodColors !== "undefined"
-            ) {
-              dispatch(setDayListUI(true));
-              setSelectedDate(day);
-              setEntrySum(journalentries[day.dateString].moodColors.length);
-            } else {
-              navigation.navigate("HomeTab", { day: day });
-            }
+          dayComponent={({ date, state }) => {
+            return (
+              <View>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (
+                      typeof journalentries[date.dateString] !== "undefined" &&
+                      typeof journalentries[date.dateString].moodColors !==
+                        "undefined"
+                    ) {
+                      setDate(date);
+                    } else {
+                      setDate(date);
+                      // navigation.navigate("HomeTab", { day: day });
+                    }
+                  }}
+                >
+                  <LinearGradient
+                    style={{
+                      borderWidth:
+                        selectedDate.dateString == date.dateString ? 2 : 0,
+                      borderColor: "white",
+                      width: 35,
+                      height: 35,
+                      borderRadius: 10,
+                      alignContent: "center",
+                      justifyContent: "center",
+                    }}
+                    start={{ x: 0, y: 0.5 }} // change angle of the gradient transition
+                    end={{ x: 1, y: 1 }}
+                    colors={
+                      typeof journalentries[date.dateString] === "undefined"
+                        ? []
+                        : journalentries[date.dateString].moodColors
+                    }
+                  >
+                    <Text
+                      style={{
+                        textAlign: "center",
+                        color: state === "disabled" ? "gray" : "black",
+                      }}
+                    >
+                      {date.day}
+                    </Text>
+                  </LinearGradient>
+                  {Moment().format("YYYY-MM-DD") == date.dateString && (
+                    <View
+                      style={{
+                        flex: 1,
+                        position: "absolute",
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        left: 0,
+                        backgroundColor: "rgba(255,255,255,0.5)",
+                        borderWidth: 2,
+                        borderColor:
+                          selectedDate.dateString == date.dateString
+                            ? "white"
+                            : "black",
+                        borderRadius: 10,
+                        borderStyle: "dotted",
+                      }}
+                    ></View>
+                  )}
+                </TouchableOpacity>
+              </View>
+            );
           }}
-          // Handler which gets executed on day long press. Default = undefined
-          onDayLongPress={(day) => {}}
         />
       </View>
 
@@ -142,14 +233,12 @@ function CalendarScreen({ route, navigation }) {
         <MyPieChart month={currentMonth.month} year={currentMonth.year} />
       </ScrollView> */}
 
-      {daylistshowing && (
-        <DayList
-          style={{ flex: 1 }}
-          selecteddate={selectedDate}
-          navigation={navigation}
-          newEntry={newEntry}
-        />
-      )}
+      <DayList
+        style={{ flex: 1 }}
+        selecteddate={selectedDate}
+        navigation={navigation}
+        newEntry={newEntry}
+      />
     </Animated.View>
   );
 }
