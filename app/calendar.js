@@ -5,6 +5,7 @@ const journalentries = createSlice({
   initialState: {
     entries: {},
     daylistui: true,
+    selectedDate: {},
   },
   reducers: {
     setEntries: (state) => {
@@ -14,9 +15,14 @@ const journalentries = createSlice({
     setDayListUI: (state, value) => {
       state.daylistui = value.payload;
     },
+
+    setSelectedDate: (state, value) => {
+      state.selectedDate = value.payload;
+    },
   },
 });
 
-export const { setEntries, setDayListUI } = journalentries.actions;
+export const { setEntries, setDayListUI, setSelectedDate } =
+  journalentries.actions;
 
 export default journalentries.reducer;
