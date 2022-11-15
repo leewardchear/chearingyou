@@ -47,6 +47,10 @@ const StatisticsScreen = () => {
   const [selectedYear, setYearData] = useState([]);
 
   useEffect(() => {
+    loadDatesList();
+  }, []);
+
+  useEffect(() => {
     switch (selectedFrequency) {
       case 0:
         setTitle(getWeekly);
@@ -90,13 +94,22 @@ const StatisticsScreen = () => {
   // Handle Pressed Events ==========================
   const handleOnDatePressed = () => {
     sheetRef.current.snapTo(1);
-    loadDatesList();
+    switch (selectedFrequency) {
+      case 0:
+        setPickerData(selectedWeek);
+        break;
+      case 1:
+        setPickerData(selectedMonth);
+        break;
+      case 2:
+        setPickerData(selectedYear);
+        break;
+    }
   };
 
   const onChangeBtnPressed = () => {
     sheetRef.current.snapTo(0);
     setTitle(dateFrequency);
-    console.log(dateFrequency);
 
     const currentDateObj = {
       dateString: moment().format("YYYY-MM-DD"),
@@ -230,6 +243,7 @@ const StatisticsScreen = () => {
                   setDateFrequency(value);
                 }}
                 selectLineSize={8}
+                selectedValue={selectedWeek}
               />
 
               <TouchableOpacity

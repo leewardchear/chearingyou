@@ -19,6 +19,7 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
   const [additionalWidth, setAdditionalWidth] = useState(-110);
 
   useEffect(() => {
+    console.log("Changed");
     setLineData([]);
 
     switch (frequency) {
@@ -47,8 +48,8 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
 
       for (let i = 1; i <= daysInYear; i++) {
         var date = moment().dayOfYear(i).format("MMM-DD");
-        var day = moment(date).dayOfYear(i).format("DD");
-        var month = moment(date).dayOfYear(i).format("MMM");
+        var day = moment(date).format("DD");
+        var month = moment(date).format("MMM");
 
         var monthLabel = "";
         if (day == "01") {
