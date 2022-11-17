@@ -187,7 +187,14 @@ const DayList = ({ style, navigation, newEntry }) => {
             alignItems: "center",
           }}
         >
-          <TouchableHighlight>
+          <TouchableHighlight
+            onPress={() => {
+              navigation.navigate("HomeTab", {
+                day: selecteddate,
+                newEntry: true,
+              });
+            }}
+          >
             <View>
               <Text>There are no notes for today.</Text>
 

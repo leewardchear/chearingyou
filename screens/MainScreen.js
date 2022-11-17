@@ -64,7 +64,7 @@ const MainScreen = ({ route, navigation }) => {
   const env = useSelector((state) => state.journal.env);
   const entryId = useSelector((state) => state.journal.entryId);
 
-  const entryBottom = useRef(new Animated.Value(0)).current;
+  const entryBottom = useRef(new Animated.Value(10)).current;
 
   const db = new Database();
   const { day, newEntry } = route.params;
@@ -73,7 +73,6 @@ const MainScreen = ({ route, navigation }) => {
   // console.log("initday", { day, entryId });
   useFocusEffect(
     React.useCallback(() => {
-      console.log("prgsfe", progState);
       if (newEntry) {
         console.log(mood);
         dispatch(clearEntry());
@@ -84,7 +83,6 @@ const MainScreen = ({ route, navigation }) => {
   );
 
   useEffect(() => {
-    console.log("prg", progState);
     if (progState == 3) {
       navigation.navigate("CalendarTab", {
         newEntry: entryId,
@@ -93,7 +91,6 @@ const MainScreen = ({ route, navigation }) => {
     }
   }, [progState]);
   useEffect(() => {
-    console.log("entryId", entryId);
     if (entryId != null) {
       db.getItem(entryId)
         .then((resultSet) => {
@@ -113,39 +110,54 @@ const MainScreen = ({ route, navigation }) => {
     const keyboardWillShow = (event) => {
       Animated.timing(entryBottom, {
         duration: event.duration,
-        toValue: event.endCoordinates.height - 135,
+        toValue:
+          event.endCoordinates.height - (Platform.OS === "android" ? 240 : 135),
         useNativeDriver: false,
         easing: Easing.sin,
       }).start();
-      console.log("env", env);
-
       if (env == "") {
         dispatch(setShowEnv());
       }
+      console.log("hidemood");
       dispatch(setHideMoods());
     };
 
     const keyboardWillHide = (event) => {
       Animated.timing(entryBottom, {
         duration: event.duration,
-        toValue: 0,
+        toValue: 10,
         useNativeDriver: false,
         easing: Easing.sin,
       }).start();
     };
-    const keyboardWillShowSub = Keyboard.addListener(
-      "keyboardWillShow",
-      keyboardWillShow
-    );
-    const keyboardWillHideSub = Keyboard.addListener(
-      "keyboardWillHide",
-      keyboardWillHide
-    );
 
-    return () => {
-      keyboardWillShowSub.remove();
-      keyboardWillHideSub.remove();
-    };
+    if (Platform.OS === "android") {
+      const keyboardDidShowSub = Keyboard.addListener(
+        "keyboardDidShow",
+        keyboardWillShow
+      );
+      const keyboardDidHideSub = Keyboard.addListener(
+        "keyboardDidHide",
+        keyboardWillHide
+      );
+      return () => {
+        keyboardDidShowSub.remove();
+        keyboardDidHideSub.remove();
+      };
+    } else {
+      const keyboardWillShowSub = Keyboard.addListener(
+        "keyboardWillShow",
+        keyboardWillShow
+      );
+      const keyboardWillHideSub = Keyboard.addListener(
+        "keyboardWillHide",
+        keyboardWillHide
+      );
+      return () => {
+        keyboardWillShowSub.remove();
+        keyboardWillHideSub.remove();
+      };
+    }
   }, [env]);
 
   useEffect(() => {
@@ -156,12 +168,10 @@ const MainScreen = ({ route, navigation }) => {
     return unsubscribe;
   }, [navigation]);
 
-  // useEffect(() => {
-  //   console.log("mood change", mood);
-  // }, [mood]);
-
   useEffect(() => {}, [env]);
   useEffect(() => {
+    console.log("dismiss");
+
     if (showmood) {
       dispatch(setHideEnv());
       Keyboard.dismiss();
@@ -179,16 +189,12 @@ const MainScreen = ({ route, navigation }) => {
   }, [showenv]);
 
   useEffect(() => {
-    // console.log("useEffect", { entryData, mood, env, day, entryId });
-
     if (entryData === "" && mood === "default" && env === "") {
       return;
     }
     if (entryId == null) {
       db.newItem(entryData, mood, env, day.dateString)
         .then((resultSet) => {
-          console.log("useEffect", resultSet.insertId);
-
           dispatch(setEntryId(resultSet.insertId));
         })
         .catch((error) => {
@@ -222,7 +228,6 @@ const MainScreen = ({ route, navigation }) => {
   const flingGesture = Gesture.Fling()
     .direction(Directions.DOWN)
     .onStart((e) => {
-      console.log("WTF");
       runOnJS(uiDismiss)("can pass arguments too");
     });
 
@@ -230,8 +235,6 @@ const MainScreen = ({ route, navigation }) => {
     <GestureDetector gesture={flingGesture}>
       <Animated.View
         style={{
-          // borderWidth: 1,
-          // borderColor: "red",
           flex: 1,
           paddingBottom: entryBottom,
         }}
@@ -416,6 +419,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     color: "white",
     backgroundColor: "#be94f5",
+    paddingHorizontal: 30,
   },
 
   colorButton: {

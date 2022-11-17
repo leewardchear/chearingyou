@@ -141,7 +141,7 @@ const pistyles = StyleSheet.create({
     height: 225,
     flexDirection: "column",
     justifyContent: "space-around",
-    backgroundColor: "#33343d",
+    backgroundColor: "rgba(255,255,255,0.4)",
     borderRadius: 15,
     margin: 16,
   },

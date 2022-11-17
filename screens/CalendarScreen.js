@@ -189,7 +189,7 @@ function CalendarScreen({ route, navigation }) {
                     end={{ x: 1, y: 1 }}
                     colors={
                       typeof journalentries[date.dateString] === "undefined"
-                        ? []
+                        ? ["transparent", "transparent"]
                         : journalentries[date.dateString].moodColors
                     }
                   >
