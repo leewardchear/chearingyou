@@ -20,6 +20,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { setEntryId } from "../app/journalentry.js";
 import ProgressWheel from "./ProgressWheel";
 import Animated from "react-native-reanimated";
+import pSBC from "shade-blend-color";
 
 const DayList = ({ style, navigation, newEntry }) => {
   const itemAnim = useRef(new Animated.Value(0)).current;
@@ -118,16 +119,75 @@ const DayList = ({ style, navigation, newEntry }) => {
       >
         <View
           style={{
+            flexDirection: "row",
             borderRadius: 10,
-            padding: 10,
+            padding: 5,
+
             margin: 5,
-            backgroundColor: Colours[entry.mood].code,
+            marginHorizontal: 10,
+            maxHeight: 90,
+            backgroundColor: "rgba(255, 255, 255, 0.3)",
           }}
         >
-          <Text style={styles.title}>{entry.text}</Text>
-          <Text>{entry.mood}</Text>
-          <Text>{entry.env}</Text>
-          <Text style={styles.title}>{entry.savedate}</Text>
+          <View
+            style={{
+              flex: 0.2,
+
+              margin: 5,
+              minHeight: 60,
+              marginRight: 8,
+              borderRadius: 5,
+              backgroundColor: pSBC(0.5, Colours[entry.mood].code, "c"),
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text style={{ fontSize: 12, fontWeight: "400" }}>
+              {Colours[entry.mood].name}
+            </Text>
+            <View
+              style={{
+                borderRadius: 5,
+                padding: 2,
+              }}
+            >
+              {entry.env.length > 1 && (
+                <Text
+                  style={{
+                    fontSize: 9,
+                    fontStyle: "italic",
+                    textAlign: "center",
+                    fontWeight: "300",
+                  }}
+                >
+                  {entry.env}
+                </Text>
+              )}
+            </View>
+          </View>
+          <View
+            style={{
+              padding: 13,
+              paddingHorizontal: 8,
+              flex: 1,
+              borderLeftColor: pSBC(0.5, Colours[entry.mood].code, "c"),
+              borderLeftWidth: 2,
+            }}
+          >
+            {entry.text.length < 1 && (
+              <Text style={{ fontStyle: "italic", color: "grey" }}>
+                Note is empty
+              </Text>
+            )}
+            <Text
+              style={{ fontSize: 13, fontWeight: "400", color: "#1f1f1f" }}
+              numberOfLines={3}
+              ellipsizeMode="tail"
+            >
+              {entry.text}
+            </Text>
+          </View>
         </View>
       </TouchableOpacity>
     );
@@ -187,7 +247,14 @@ const DayList = ({ style, navigation, newEntry }) => {
             alignItems: "center",
           }}
         >
-          <TouchableHighlight>
+          <TouchableHighlight
+            onPress={() => {
+              navigation.navigate("HomeTab", {
+                day: selecteddate,
+                newEntry: true,
+              });
+            }}
+          >
             <View>
               <Text>There are no notes for today.</Text>
 
