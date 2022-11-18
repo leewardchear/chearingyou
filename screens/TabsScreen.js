@@ -125,24 +125,33 @@ function TabsScreen(props) {
                     },
                     elevation: 4,
                     shadowRadius: 4,
-                    shadowOpacity: 0.45,
-
-                    top: -10,
-                    backgroundColor: Colours.anxious.code,
-                    zIndex: 20,
-                    borderRadius: 80,
-                    height: 80,
-                    width: 80,
-                    justifyContent: "center",
-                    alignItems: "center",
+                    shadowOpacity: 0.3,
                   }}
                 >
-                  <MaterialCommunityIcons
-                    name="plus"
-                    style={{}}
-                    color={color}
-                    size={40}
-                  />
+                  <LinearGradient
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 0.7, y: 0.5 }}
+                    colors={["#e6d7fd", "#cdeff9", "#d3dfff"]}
+                    style={{
+                      top: -10,
+                      // backgroundColor: Colours.anxious.code,
+                      backgroundColor: "#be94f5",
+                      // backgroundColor: "#cdeff9",
+                      zIndex: 20,
+                      borderRadius: 80,
+                      height: 80,
+                      width: 80,
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <MaterialCommunityIcons
+                      name="plus"
+                      style={{}}
+                      color={color}
+                      size={40}
+                    />
+                  </LinearGradient>
                 </View>
               ),
             }}
