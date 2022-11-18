@@ -38,7 +38,7 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
         getYearlyData();
         break;
     }
-  }, [frequency, weekStart, month, year]);
+  }, [frequency]);
 
   function getYearlyData() {
     try {
@@ -47,8 +47,8 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
 
       for (let i = 1; i <= daysInYear; i++) {
         var date = moment().dayOfYear(i).format("MMM-DD");
-        var day = moment(date).format("DD");
-        var month = moment(date).format("MMM");
+        var day = moment(date).dayOfYear(i).format("DD");
+        var month = moment(date).dayOfYear(i).format("MMM");
 
         var monthLabel = "";
         if (day == "01") {

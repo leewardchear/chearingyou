@@ -5,6 +5,7 @@ import {
   TouchableWithoutFeedback,
   Easing,
   View,
+  Dimensions,
 } from "react-native";
 import {
   Text as SvgText,
@@ -30,7 +31,7 @@ import pSBC from "shade-blend-color";
 
 function MoodsButton(props) {
   const dispatch = useDispatch();
-
+  const windowWidth = Dimensions.get("window").width;
   const openanim = useRef(new Animated.Value(80)).current;
   const radianim = useRef(new Animated.Value(0)).current;
   const [hideButtons, hidem] = useState(true);
@@ -79,7 +80,7 @@ function MoodsButton(props) {
 
   const showMoods = () => {
     Animated.timing(openanim, {
-      toValue: 385,
+      toValue: windowWidth - 45,
       duration: 150,
       useNativeDriver: false,
       easing: Easing.sin,
@@ -176,8 +177,6 @@ function MoodsButton(props) {
           <AnimdSvg
             style={{
               alignContent: "center",
-
-              borderColor: "red",
               transform: [{ rotate: "0deg" }],
             }}
             width={openanim}
