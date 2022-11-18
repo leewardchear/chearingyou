@@ -308,6 +308,7 @@ const StatisticsScreen = () => {
         />
 
         <TouchableNativeFeedback
+          rippleRadius={90}
           onPress={handleOnDatePressed}
           background={TouchableNativeFeedback.Ripple("#EEE")}
         >
@@ -315,7 +316,7 @@ const StatisticsScreen = () => {
             style={{
               paddingLeft: 15,
               paddingRight: 15,
-              borderRadius: 10,
+              borderRadius: 15,
               justifyContent: "center",
               backgroundColor: "transparent",
             }}

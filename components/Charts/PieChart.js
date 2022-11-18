@@ -81,7 +81,7 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency }) => {
         };
 
         var legendObj = {
-          name: mood,
+          name: Colours[mood].name,
           symbol: { fill: Colours[mood].code, type: "square" },
           labels: { fill: Colours[mood].code },
         };
@@ -105,7 +105,7 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency }) => {
   return (
     <View
       style={{
-        height: 225,
+        height: 250,
         flexDirection: "column",
         justifyContent: "space-around",
         backgroundColor: "rgba(255,255,255,0.4)",
@@ -116,13 +116,14 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency }) => {
       <View
         style={{
           marginLeft: 30,
+          marginBottom: 30,
           height: 250,
           flexDirection: "row",
           justifyContent: "space-around",
         }}
       >
         <VictoryPie
-          height={250}
+          height={280}
           style={{
             data: {
               fillOpacity: 0.9,
@@ -136,14 +137,14 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency }) => {
             },
           }}
           innerRadius={25}
-          animate={{ duration: 2000 }}
+          animate={{ duration: 1000 }}
           colorScale={colorData}
           data={graphicData}
           // labelPosition={({ index }) => (index ? "centroid" : "startAngle")}
           // labelPlacement={({ index }) => (index ? "parallel" : "vertical")}
           labels={({ datum }) => `${Math.round((datum.y / totalCount) * 100)}%`}
           // radius={({ datum }) => 10 + datum.y * 1}
-          labelRadius={({ innerRadius }) => innerRadius + 17}
+          labelRadius={({ innerRadius }) => innerRadius + 35}
           padAngle={0.5}
         />
 
@@ -151,7 +152,7 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency }) => {
           x={140}
           y={40}
           orientation="vertical"
-          itemsPerRow={6}
+          itemsPerRow={7}
           rowGutter={2}
           data={legendData}
         />
