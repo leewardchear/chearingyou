@@ -1,9 +1,10 @@
 import { ScrollView } from "react-native-gesture-handler";
 import {
   View,
-  StyleSheet,
   Dimensions,
   Text,
+  Button,
+  TouchableNativeFeedback,
   BackHandler,
   SegmentedControlIOSComponent,
   TouchableOpacity,
@@ -19,6 +20,7 @@ import { Picker, DatePicker } from "react-native-wheel-pick";
 import Animated from "react-native-reanimated";
 import BottomSheet from "reanimated-bottom-sheet";
 import Database from "../db/database";
+import { IconButton, Portal, MD3Colors } from "react-native-paper";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const db = new Database();
@@ -53,19 +55,34 @@ const StatisticsScreen = () => {
   useEffect(() => {
     switch (selectedFrequency) {
       case 0:
-        setTitle(getWeekly);
-        setPickerData(selectedWeek);
+        setWeeklyStates();
         break;
       case 1:
-        setTitle(`${currentDate.monthString} ${currentDate.year}`);
-        setPickerData(selectedMonth);
+        setMonthlyStates();
         break;
       case 2:
-        setTitle(`${currentDate.year}`);
-        setPickerData(selectedYear);
+        setYearlyStates();
         break;
     }
   }, [selectedFrequency]);
+
+  const setWeeklyStates = () => {
+    setTitle(getWeekly);
+    setPickerData(selectedWeek);
+    setDatePicked(stitle);
+  };
+
+  const setMonthlyStates = () => {
+    setTitle(`${currentDate.monthString} ${currentDate.year}`);
+    setPickerData(selectedMonth);
+    setDatePicked(stitle);
+  };
+
+  const setYearlyStates = () => {
+    setTitle(`${currentDate.year}`);
+    setPickerData(selectedYear);
+    setDatePicked(stitle);
+  };
 
   const getWeekly = () => {
     var startDate = moment(currentDate.weekStart)
@@ -95,7 +112,59 @@ const StatisticsScreen = () => {
       });
   }
 
+  function getPrevious(selectedList, datePicked) {
+    var currentIndex = selectedList.indexOf(datePicked);
+
+    if (currentIndex > 0) {
+      currentIndex = currentIndex - 1;
+      setDatePicked(selectedList[currentIndex]);
+      setTitle(selectedList[currentIndex]);
+    }
+  }
+
+  function getNext(selectedList, datePicked) {
+    var currentIndex = selectedList.indexOf(datePicked);
+
+    if (currentIndex < selectedList.length - 1) {
+      currentIndex = currentIndex + 1;
+      setDatePicked(selectedList[currentIndex]);
+      setTitle(selectedList[currentIndex]);
+    }
+  }
+
   // Handle Pressed Events ==========================
+  const handleLeftPressed = () => {
+    switch (selectedFrequency) {
+      case 0:
+        getPrevious(selectedWeek, datePicked);
+        break;
+      case 1:
+        getPrevious(selectedMonth, datePicked);
+        break;
+      case 2:
+        getPrevious(selectedYear, datePicked);
+        break;
+    }
+  };
+
+  const handleRightPressed = () => {
+    switch (selectedFrequency) {
+      case 0:
+        getNext(selectedWeek, datePicked);
+        break;
+      case 1:
+        getNext(selectedMonth, datePicked);
+        break;
+      case 2:
+        getNext(selectedYear, datePicked);
+        break;
+    }
+  };
+
+  // useEffect(() => {
+  //   console.log("CHINA", datePicked);
+  // }, [datePicked]);
+
   const handleOnDatePressed = () => {
     sheetRef.current.snapTo(1);
     switch (selectedFrequency) {
@@ -144,6 +213,10 @@ const StatisticsScreen = () => {
     // console.log({ datePicked, currentDate, datePicked, newPickedDate });
   };
 
+  const onCloseBottomSheet = () => {
+    sheetRef.current.snapTo(0);
+  };
+
   const handleIndexPressed = (index) => {
     setFrequency(index);
   };
@@ -163,17 +236,17 @@ const StatisticsScreen = () => {
     let weekEnd = moment.utc(maxDate, "MMM-DD-YYYY");
 
     while (weekEnd.isAfter(weekStart)) {
-      weekArray.push([
-        weekStart.startOf("isoWeek").format("MMM DD, YYYY") +
+      weekArray.push(
+        weekStart.startOf("isoWeek").format("MMM DD ") +
           " - " +
-          weekStart.endOf("isoWeek").format("MMM DD, YYYY"),
-      ]);
+          weekStart.endOf("isoWeek").format("MMM DD, YYYY")
+      );
       weekStart.add(1, "week");
     }
     setWeekData(weekArray);
 
     while (maxDate > minDate || minDate.format("M") === maxDate.format("M")) {
-      monthArray.push(minDate.format("MMMM, YYYY"));
+      monthArray.push(minDate.format("MMMM YYYY"));
       if (!yearArray.includes(minDate.format("YYYY"))) {
         yearArray.push(minDate.format("YYYY"));
       }
@@ -204,18 +277,62 @@ const StatisticsScreen = () => {
       <SegmentedControlTab
         values={["Weekly", "Monthly", "Yearly"]}
         selectedIndex={selectedFrequency}
-        borderRadius={4}
+        borderRadius={10}
         onTabPress={handleIndexPressed}
-        tabsContainerStyle={styles.tabContainer}
-        // activeTabStyle={{ backgroundColor: "white", marginTop: 2 }}
-        // tabTextStyle={{ color: "#444444", fontWeight: "bold" }}
-        // activeTabTextStyle={{ color: "white" }}
+        tabsContainerStyle={{
+          height: 35,
+          backgroundColor: "transparent",
+          margin: 10,
+        }}
+        tabStyle={{
+          backgroundColor: "#bea2d1",
+          borderWidth: 1.5,
+          borderColor: "#6d4a85",
+        }}
+        activeTabStyle={{ backgroundColor: "#75508b" }}
+        tabTextStyle={{ color: "white" }}
       />
 
-      <View>
-        <Text style={styles.title} onPress={handleOnDatePressed}>
-          {stitle}
-        </Text>
+      <View
+        style={{
+          backgroundColor: "transparent",
+          flexDirection: "row",
+          justifyContent: "center",
+        }}
+      >
+        <IconButton
+          icon="chevron-left"
+          color={"#75508b"}
+          size={25}
+          onPress={handleLeftPressed}
+        />
+
+        <TouchableNativeFeedback
+          onPress={handleOnDatePressed}
+          background={TouchableNativeFeedback.Ripple("#EEE")}
+        >
+          <View
+            style={{
+              paddingLeft: 15,
+              paddingRight: 15,
+              borderRadius: 10,
+              justifyContent: "center",
+              backgroundColor: "transparent",
+            }}
+          >
+            <Text
+              style={{ fontSize: 22, color: "#75508b", textAlign: "center" }}
+            >
+              {stitle}
+            </Text>
+          </View>
+        </TouchableNativeFeedback>
+        <IconButton
+          icon="chevron-right"
+          color={"#75508b"}
+          size={25}
+          onPress={handleRightPressed}
+        />
       </View>
 
       <ScrollView>
@@ -234,100 +351,102 @@ const StatisticsScreen = () => {
           frequency={selectedFrequency}
         />
       </ScrollView>
-
-      <BottomSheet
-        ref={sheetRef}
-        snapPoints={[0, (SCREEN_HEIGHT + 300) / 3]}
-        borderRadius={10}
-        enabledGestureInteraction={true}
-        initialSnap={0}
-        renderContent={
-          (renderSheetContent = () => (
-            <View
-              style={{
-                backgroundColor: "white",
-                paddingLeft: 20,
-                paddingRight: 20,
-                height: "100%",
-              }}
-            >
-              <View style={[styles.line]}></View>
-              <Picker
-                style={[styles.picker]}
-                // selectBackgroundColor="#8080801A"
-                // selectedValue="March"
-                pickerData={pickerData}
-                onValueChange={(value) => {
-                  setDatePicked(value);
+      <Portal>
+        <BottomSheet
+          ref={sheetRef}
+          snapPoints={[0, SCREEN_HEIGHT / 2]}
+          borderRadius={20}
+          enabledGestureInteraction={true}
+          initialSnap={0}
+          renderContent={
+            (renderSheetContent = () => (
+              <View
+                style={{
+                  backgroundColor: "white",
+                  height: "100%",
                 }}
-                selectLineSize={8}
-                selectedValue={selectedWeek}
-              />
-
-              <TouchableOpacity
-                style={styles.changeBtn}
-                onPress={onChangeBtnPressed}
               >
-                <Text style={styles.btnText}>CHANGE</Text>
-              </TouchableOpacity>
-            </View>
-          ))
-        }
-      />
+                <View
+                  style={{
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                >
+                  <View
+                    style={{
+                      width: "100%",
+                      paddingLeft: 20,
+                      backgroundColor: "#75508b",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: "white",
+                        paddingTop: 15,
+                      }}
+                    >
+                      Select a date
+                    </Text>
+
+                    <IconButton
+                      icon="chevron-down"
+                      color={"white"}
+                      size={25}
+                      onPress={onCloseBottomSheet}
+                    />
+                  </View>
+
+                  <Picker
+                    style={{
+                      backgroundColor: "white",
+                      width: "100%",
+                      height: "70%",
+                    }}
+                    // selectBackgroundColor="#8080801A"
+                    // selectedValue="March"
+                    pickerData={pickerData}
+                    onValueChange={(value) => {
+                      setDatePicked(value);
+                      console.log({ pickerData, value });
+
+                      console.log("THIS INDEX: ", pickerData.indexOf(value));
+                    }}
+                    selectLineSize={5}
+                    // selectedValue={selectedWeek}
+                  />
+
+                  <TouchableOpacity
+                    style={{
+                      alignItems: "center",
+                      backgroundColor: "#75508b",
+                      padding: 10,
+                      margin: 15,
+                      width: "75%",
+                      borderRadius: 5,
+                    }}
+                    flex={1}
+                    onPress={onChangeBtnPressed}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 18,
+                        fontStyle: "normal",
+                        color: "white",
+                      }}
+                    >
+                      Change
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))
+          }
+        />
+      </Portal>
     </Animated.View>
   );
 };
 
 export default StatisticsScreen;
-
-const styles = StyleSheet.create({
-  tabContainer: {
-    height: 35,
-    backgroundColor: "black",
-    margin: 10,
-  },
-
-  title: {
-    color: "white",
-    margin: 10,
-    marginLeft: 20,
-    fontSize: 22,
-  },
-
-  bottomSheetContainer: {
-    position: "absolute",
-    borderRadius: 25,
-    width: "100%",
-    height: SCREEN_HEIGHT,
-    top: SCREEN_HEIGHT,
-    backgroundColor: "#272727",
-    flex: 1,
-  },
-
-  picker: {
-    backgroundColor: "white",
-    width: "100%",
-    height: "75%",
-  },
-
-  line: {
-    width: 75,
-    height: 4,
-    backgroundColor: "grey",
-    alignSelf: "center",
-    marginVertical: 15,
-    borderRadius: 2,
-  },
-
-  changeBtn: {
-    alignItems: "center",
-    backgroundColor: "#DDDDDD",
-    padding: 10,
-    borderRadius: 10,
-  },
-
-  btnText: {
-    fontSize: 18,
-    fontStyle: "normal",
-  },
-});

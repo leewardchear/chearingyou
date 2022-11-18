@@ -98,8 +98,6 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
       const getDate = (string) =>
         (([year, month, day]) => ({ year, month, day }))(string.split("-"));
 
-      console.log({ month, year });
-
       db.getMonthlyData(("0" + month).slice(-2), year)
         .then((resultSet) => {
           for (let i = 1; i < resultSet.rows.length; i++) {
@@ -110,6 +108,7 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
             var mood = resultSet.rows.item(i).mood;
             moodList[dayIndex - 1].moodScale = parseInt(Colours[mood].intVal);
           }
+
           setLineData(moodList);
         })
         .catch((error) => {
@@ -249,7 +248,16 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
   );
 
   return (
-    <View style={styles.lineColumn}>
+    <View
+      style={{
+        height: 450,
+        flexDirection: "row",
+        justifyContent: "space-around",
+        backgroundColor: "rgba(255,255,255,0.4)",
+        borderRadius: 15,
+        margin: 15,
+      }}
+    >
       <View
         style={{
           flex: 1,
@@ -268,8 +276,9 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
           data={lineData}
           contentInset={{ verticalContentInset }}
           svg={{
-            fill: "white",
-            fontSize: 10,
+            fill: "#604c6d",
+            fontSize: 11,
+            fontWeight: "bold",
           }}
           max={2.1}
           min={-4.5}
@@ -307,7 +316,7 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
               }}
               xScale={scale.scaleTime}
               data={lineData}
-              curve={shape.curveMonotoneX}
+              curve={shape.curveLinear}
               contentInset={{ chartInset }}
               svg={{
                 strokeWidth: 3,
@@ -344,8 +353,9 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
               formatLabel={(value, index) => lineData[index].label}
               contentInset={{ left: HORIZONTAL_INSET, right: HORIZONTAL_INSET }}
               svg={{
+                fontWeight: "bold",
                 fontSize: 10,
-                fill: "white",
+                fill: "#604c6d",
                 originY: 20,
               }}
             />
@@ -374,7 +384,7 @@ const CustomGrid = ({ x, y, data, ticks }) => {
             x2={"100%"}
             y1={y(tick)}
             y2={y(tick)}
-            stroke={"grey"}
+            stroke={"rgba(109, 74, 120, 0.1)"}
           />
         ))
       }
@@ -388,7 +398,7 @@ const CustomGrid = ({ x, y, data, ticks }) => {
             y2={"100%"}
             x1={x(index)}
             x2={x(index)}
-            stroke={"rgba(0,0,0,0.2)"}
+            stroke={"rgba(109, 74, 120, 0.1)"}
           />
         ))
       }
@@ -397,14 +407,3 @@ const CustomGrid = ({ x, y, data, ticks }) => {
 };
 
 export default MyLineGraph;
-
-const styles = StyleSheet.create({
-  lineColumn: {
-    height: 450,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    backgroundColor: "#33343d",
-    borderRadius: 15,
-    margin: 16,
-  },
-});
