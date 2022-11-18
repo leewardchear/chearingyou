@@ -20,7 +20,7 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
 
   useEffect(() => {
     setLineData([]);
-
+    console.log("IN CHANGED");
     switch (frequency) {
       case 0: // WEEKLY
         setAdditionalWidth(SCREEN_WIDTH - 110);
@@ -41,7 +41,7 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
         setXAxisInset(8);
         break;
     }
-  }, [frequency]);
+  }, [frequency, weekStart, month, year]);
 
   function getYearlyData() {
     try {

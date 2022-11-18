@@ -70,8 +70,12 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency }) => {
 
     for (let i = 0; i < resultSet.rows.length; i++) {
       var mood = resultSet.rows.item(i).mood;
-
       const found = moodList.some((m) => m.mood === mood);
+
+      if (mood == Colours.default.val) {
+        continue;
+      }
+
       if (!found) {
         var moodObj = {
           x: 0,

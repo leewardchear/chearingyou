@@ -21,6 +21,7 @@ import Animated from "react-native-reanimated";
 import BottomSheet from "reanimated-bottom-sheet";
 import Database from "../db/database";
 import { IconButton, Portal, MD3Colors } from "react-native-paper";
+import { useFocusEffect } from "@react-navigation/native";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const db = new Database();
@@ -43,6 +44,8 @@ const StatisticsScreen = () => {
   const [stitle, setTitle] = useState(
     currentDate.monthString + " " + currentDate.year
   );
+
+  const [isOpen, setBottomSheetOpen] = useState(false);
 
   const [selectedWeek, setWeekData] = useState([]);
   const [selectedMonth, setMonthData] = useState([]);
@@ -120,6 +123,7 @@ const StatisticsScreen = () => {
       setDatePicked(selectedList[currentIndex]);
       setTitle(selectedList[currentIndex]);
     }
+    onChangeBtnPressed();
   }
 
   function getNext(selectedList, datePicked) {
@@ -130,6 +134,7 @@ const StatisticsScreen = () => {
       setDatePicked(selectedList[currentIndex]);
       setTitle(selectedList[currentIndex]);
     }
+    onChangeBtnPressed();
   }
 
   // Handle Pressed Events ==========================
@@ -167,6 +172,8 @@ const StatisticsScreen = () => {
 
   const handleOnDatePressed = () => {
     sheetRef.current.snapTo(1);
+    setBottomSheetOpen(true);
+
     switch (selectedFrequency) {
       case 0:
         setPickerData(selectedWeek);
@@ -182,6 +189,8 @@ const StatisticsScreen = () => {
 
   const onChangeBtnPressed = () => {
     sheetRef.current.snapTo(0);
+    setBottomSheetOpen(false);
+
     setTitle(datePicked);
 
     var newPickedDate;
@@ -196,7 +205,6 @@ const StatisticsScreen = () => {
         break;
       case 2:
         newPickedDate = moment(datePicked).startOf("year");
-        console.log(newPickedDate);
         break;
     }
 
@@ -210,11 +218,11 @@ const StatisticsScreen = () => {
       weekStart: moment(newPickedDate).startOf("isoWeek").format("YYYY-MM-DD"),
       weekEnd: moment(newPickedDate).endOf("isoWeek").format("YYYY-MM-DD"),
     });
-    // console.log({ datePicked, currentDate, datePicked, newPickedDate });
   };
 
   const onCloseBottomSheet = () => {
     sheetRef.current.snapTo(0);
+    setBottomSheetOpen(false);
   };
 
   const handleIndexPressed = (index) => {
@@ -264,13 +272,25 @@ const StatisticsScreen = () => {
     return moment.min(allEntries.map((x) => moment(x))).format("YYYY-MM-DD");
   };
 
-  // BackHandler.addEventListener("hardwareBackPress", function () {
-  //   if (isOpen) {
-  //     console.log(isOpen);
-  //   } else {
-  //     console.log(isOpen);
-  //   }
-  // });
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        if (isOpen) {
+          onCloseBottomSheet();
+          return true;
+        } else {
+          return false;
+        }
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress
+      );
+
+      return () => subscription.remove();
+    }, [isOpen])
+  );
 
   return (
     <Animated.View style={{ flex: 1, backgroundColor: "transparent" }}>
@@ -295,7 +315,7 @@ const StatisticsScreen = () => {
 
       <View
         style={{
-          backgroundColor: "transparent",
+          alignItems: "center",
           flexDirection: "row",
           justifyContent: "center",
         }}
@@ -308,21 +328,21 @@ const StatisticsScreen = () => {
         />
 
         <TouchableNativeFeedback
-          rippleRadius={90}
           onPress={handleOnDatePressed}
-          background={TouchableNativeFeedback.Ripple("#EEE")}
+          background={TouchableNativeFeedback.Ripple("#75508b")}
         >
           <View
             style={{
+              height: 40,
               paddingLeft: 15,
               paddingRight: 15,
-              borderRadius: 15,
+              borderRadius: 10,
               justifyContent: "center",
-              backgroundColor: "transparent",
+              backgroundColor: "rgba(255,255,255,0.4)",
             }}
           >
             <Text
-              style={{ fontSize: 22, color: "#75508b", textAlign: "center" }}
+              style={{ fontSize: 20, color: "#75508b", textAlign: "center" }}
             >
               {stitle}
             </Text>
@@ -405,8 +425,6 @@ const StatisticsScreen = () => {
                       width: "100%",
                       height: "70%",
                     }}
-                    // selectBackgroundColor="#8080801A"
-                    // selectedValue="March"
                     pickerData={pickerData}
                     onValueChange={(value) => {
                       setDatePicked(value);
@@ -415,7 +433,6 @@ const StatisticsScreen = () => {
                       console.log("THIS INDEX: ", pickerData.indexOf(value));
                     }}
                     selectLineSize={5}
-                    // selectedValue={selectedWeek}
                   />
 
                   <TouchableOpacity
