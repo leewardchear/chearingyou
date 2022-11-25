@@ -110,13 +110,30 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency }) => {
     <View
       style={{
         height: 250,
-        flexDirection: "column",
         justifyContent: "space-around",
         backgroundColor: "rgba(255,255,255,0.4)",
         borderRadius: 15,
         margin: 15,
       }}
     >
+      {/* <View
+        style={{
+          height: "10%",
+          backgroundColor: "white",
+          borderRadius: 10,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Text
+          style={{
+            textAlign: "center",
+            textAlignVertical: "center",
+          }}
+        >
+          No Data
+        </Text>
+      </View> */}
       <View
         style={{
           marginLeft: 30,
