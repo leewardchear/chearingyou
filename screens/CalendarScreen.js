@@ -36,10 +36,6 @@ function CalendarScreen({ route, navigation }) {
 
   const { newEntry, focusDate } = route.params;
 
-  // const [selectedDate, setSelectedDate] = useState({
-  //   dateString: Moment(focusDate.dateString).format("YYYY-MM-DD"),
-  // });
-
   const [currentMonth, setCurrentMonth] = useState({
     dateString: moment().format("YYYY-MM-DD"),
     day: parseInt(moment().format("DD")),
@@ -125,7 +121,7 @@ function CalendarScreen({ route, navigation }) {
     <Animated.View style={{ flex: 1 }}>
       <View>
         <Calendar
-          style={{}}
+          style={{ backgroundColor: "transparent" }}
           theme={{
             backgroundColor: "black",
             calendarBackground: "transparent",
@@ -228,11 +224,6 @@ function CalendarScreen({ route, navigation }) {
           }}
         />
       </View>
-
-      {/* <ScrollView>
-        <MyPieChart month={currentMonth.month} year={currentMonth.year} />
-      </ScrollView> */}
-
       <DayList
         style={{ flex: 1 }}
         selecteddate={selectedDate}

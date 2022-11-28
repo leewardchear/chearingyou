@@ -1,9 +1,10 @@
 import { ScrollView } from "react-native-gesture-handler";
 import {
   View,
-  StyleSheet,
   Dimensions,
   Text,
+  Button,
+  TouchableNativeFeedback,
   BackHandler,
   SegmentedControlIOSComponent,
   TouchableOpacity,
@@ -19,58 +20,84 @@ import { Picker, DatePicker } from "react-native-wheel-pick";
 import Animated from "react-native-reanimated";
 import BottomSheet from "reanimated-bottom-sheet";
 import Database from "../db/database";
+import { IconButton, Portal, MD3Colors } from "react-native-paper";
+import { useFocusEffect } from "@react-navigation/native";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const db = new Database();
+const dayFormat = "DD";
+const monthFormat = "MM";
+const yearFormat = "YYYY";
+const dateFormat = "YYYY-MM-DD";
 
 const StatisticsScreen = () => {
   const [pickerData, setPickerData] = useState([]);
 
   const [currentDate, setCurrentMonth] = useState({
-    dateString: moment().format("YYYY-MM-DD"),
-    day: parseInt(moment().format("DD")),
-    month: parseInt(moment().format("MM")),
+    dateString: moment().format(dateFormat),
+    day: parseInt(moment().format(dayFormat)),
+    month: parseInt(moment().format(monthFormat)),
     monthString: moment().format("MMMM"),
     timestamp: parseInt(moment().toDate().getTime()),
-    year: parseInt(moment().format("YYYY")),
-    weekStart: moment().startOf("isoWeek").format("YYYY-MM-DD"),
-    weekEnd: moment().endOf("isoWeek").format("YYYY-MM-DD"),
+    year: parseInt(moment().format(yearFormat)),
+    weekStart: moment().startOf("isoWeek").format(dateFormat),
+    weekEnd: moment().endOf("isoWeek").format(dateFormat),
   });
-  const [datePicked, setDatePicked] = useState([]);
   const [selectedFrequency, setFrequency] = useState(1);
   const [stitle, setTitle] = useState(
     currentDate.monthString + " " + currentDate.year
   );
 
-  const [selectedWeek, setWeekData] = useState([]);
-  const [selectedMonth, setMonthData] = useState([]);
-  const [selectedYear, setYearData] = useState([]);
+  const [datePicked, setDatePicked] = useState([]);
+  const [isOpen, setBottomSheetOpen] = useState(false);
+
+  const [listWeeks, setWeekData] = useState([]);
+  const [listMonths, setMonthData] = useState([]);
+  const [listYears, setYearData] = useState([]);
+  const [minDate, setMinDate] = useState("01/01/2010");
+  const [maxDate, setMaxDate] = useState("01/01/2024");
 
   useEffect(() => {
     loadDatesList();
   }, []);
 
   useEffect(() => {
+    setMinDate("01/01/2000");
+  }, [stitle, minDate, maxDate]);
+
+  useEffect(() => {
     switch (selectedFrequency) {
       case 0:
-        setTitle(getWeekly);
-        setPickerData(selectedWeek);
+        setWeeklyStates();
         break;
       case 1:
-        setTitle(`${currentDate.monthString} ${currentDate.year}`);
-        setPickerData(selectedMonth);
+        setMonthlyStates();
         break;
       case 2:
-        setTitle(`${currentDate.year}`);
-        setPickerData(selectedYear);
+        setYearlyStates();
         break;
     }
   }, [selectedFrequency]);
 
-  const getWeekly = () => {
-    var startDate = moment().startOf("isoWeek").format("MMM D");
-    var endDate = moment().endOf("isoWeek").format("MMM D, YYYY");
-    return `${startDate} -  ${endDate}`;
+  const setWeeklyStates = () => {
+    setTitle(getWeekly(currentDate.weekStart, currentDate.weekEnd));
+    setPickerData(listWeeks);
+  };
+
+  const setMonthlyStates = () => {
+    setTitle(`${currentDate.monthString} ${currentDate.year}`);
+    setPickerData(listMonths);
+  };
+
+  const setYearlyStates = () => {
+    setTitle(`${currentDate.year}`);
+    setPickerData(listYears);
+  };
+
+  const getWeekly = (start, end) => {
+    var startDate = moment(start).startOf("isoWeek").format("MMM DD");
+    var endDate = moment(end).endOf("isoWeek").format("MMM DD, YYYY");
+    return `${startDate} - ${endDate}`;
   };
 
   function loadDatesList() {
@@ -91,46 +118,104 @@ const StatisticsScreen = () => {
       });
   }
 
+  function getPrevious(selectedList) {
+    var currentIndex = selectedList.indexOf(stitle);
+    if (currentIndex > 0) {
+      currentIndex = currentIndex - 1;
+      setTitle(selectedList[currentIndex]);
+      changeCurrentDate(selectedList[currentIndex]);
+    }
+  }
+
+  function getNext(selectedList) {
+    var currentIndex = selectedList.indexOf(stitle);
+    if (currentIndex < selectedList.length - 1) {
+      currentIndex = currentIndex + 1;
+      setTitle(selectedList[currentIndex]);
+      changeCurrentDate(selectedList[currentIndex]);
+    }
+  }
+
   // Handle Pressed Events ==========================
-  const handleOnDatePressed = () => {
-    sheetRef.current.snapTo(1);
+
+  const handleLeftPressed = () => {
     switch (selectedFrequency) {
       case 0:
-        setPickerData(selectedWeek);
+        getPrevious(listWeeks);
         break;
       case 1:
-        setPickerData(selectedMonth);
+        getPrevious(listMonths);
         break;
       case 2:
-        setPickerData(selectedYear);
+        getPrevious(listYears);
+        break;
+    }
+  };
+
+  const handleRightPressed = () => {
+    switch (selectedFrequency) {
+      case 0:
+        getNext(listWeeks);
+        break;
+      case 1:
+        getNext(listMonths);
+        break;
+      case 2:
+        getNext(listYears);
+        break;
+    }
+  };
+
+  const handleOnDatePressed = () => {
+    sheetRef.current.snapTo(1);
+    setBottomSheetOpen(true);
+
+    switch (selectedFrequency) {
+      case 0:
+        setPickerData(listWeeks);
+        break;
+      case 1:
+        setPickerData(listMonths);
+        break;
+      case 2:
+        setPickerData(listYears);
         break;
     }
   };
 
   const onChangeBtnPressed = () => {
     sheetRef.current.snapTo(0);
-    setTitle(datePicked);
+    setBottomSheetOpen(false);
+    changeCurrentDate(datePicked);
+  };
 
-    var newPickedDate;
-    if (selectedFrequency == 0) {
-      const myArray = datePicked.split("-");
-      let word = myArray[0];
-      newPickedDate = moment(word, "MMM DD, YYYY");
-    } else {
-      newPickedDate = moment(datePicked, "MMM DD, YYYY");
+  const changeCurrentDate = (date) => {
+    switch (selectedFrequency) {
+      case 0:
+      case 1:
+        date = moment(new Date(date)).format("MMM DD, YYYY");
+        break;
+      case 2:
+        date = moment(new Date(date)).startOf("year");
+        break;
     }
+    console.log("THIS IS DATE", date);
 
     setCurrentMonth({
-      dateString: moment(newPickedDate).format("YYYY-MM-DD"),
-      day: parseInt(moment(newPickedDate).format("DD")),
-      month: parseInt(moment(newPickedDate).format("MM")),
-      monthString: moment(newPickedDate).format("MMMM"),
-      timestamp: parseInt(moment(newPickedDate).toDate().getTime()),
-      year: parseInt(moment(newPickedDate).format("YYYY")),
-      weekStart: moment(newPickedDate).startOf("isoWeek").format("YYYY-MM-DD"),
-      weekEnd: moment(newPickedDate).endOf("isoWeek").format("YYYY-MM-DD"),
+      dateString: moment(date).format(dateFormat),
+      day: parseInt(moment(date).format(dayFormat)),
+      month: parseInt(moment(date).format(monthFormat)),
+      monthString: moment(date).format("MMMM"),
+      timestamp: parseInt(moment(date).toDate().getTime()),
+      year: parseInt(moment(date).format(yearFormat)),
+      weekStart: moment(date).startOf("isoWeek").format(dateFormat),
+      weekEnd: moment(date).endOf("isoWeek").format(dateFormat),
     });
-    console.log({ datePicked, newPickedDate });
+  };
+
+  const onCloseBottomSheet = () => {
+    sheetRef.current.snapTo(0);
+    setBottomSheetOpen(false);
   };
 
   const handleIndexPressed = (index) => {
@@ -148,25 +233,27 @@ const StatisticsScreen = () => {
     var yearArray = [];
     var weekArray = [];
 
-    let weekStart = moment.utc(minDate, "MMM-DD-YYYY");
-    let weekEnd = moment.utc(maxDate, "MMM-DD-YYYY");
+    let weekStart = moment(minDate, "MMM-DD-YYYY").startOf("week");
+    // add two so end date lands on the next week's tuesday which will then be included into the list
+    let weekEnd = moment(maxDate, "MMM-DD-YYYY").endOf("week").add(2, "days");
+
+    setMinDate(moment(minDate).format(moment.HTML5_FMT.DATE));
+    setMaxDate(moment(maxDate).format(moment.HTML5_FMT.DATE));
 
     while (weekEnd.isAfter(weekStart)) {
-      weekArray.push([
-        weekStart.startOf("isoWeek").format("MMM DD, YYYY") +
+      weekArray.push(
+        weekStart.startOf("isoWeek").format("MMM DD") +
           " - " +
-          weekStart.endOf("isoWeek").format("MMM DD, YYYY"),
-      ]);
+          weekStart.endOf("isoWeek").format("MMM DD, YYYY")
+      );
       weekStart.add(1, "week");
-
-      console.log(weekStart);
     }
     setWeekData(weekArray);
 
     while (maxDate > minDate || minDate.format("M") === maxDate.format("M")) {
-      monthArray.push(minDate.format("MMMM, YYYY"));
-      if (!yearArray.includes(minDate.format("YYYY"))) {
-        yearArray.push(minDate.format("YYYY"));
+      monthArray.push(minDate.format("MMMM YYYY"));
+      if (!yearArray.includes(minDate.format(yearFormat))) {
+        yearArray.push(minDate.format(yearFormat));
       }
       minDate.add(1, "month");
     }
@@ -175,38 +262,96 @@ const StatisticsScreen = () => {
   }
 
   const getMaxDate = (allEntries) => {
-    return moment.max(allEntries.map((x) => moment(x))).format("YYYY-MM-DD");
+    return moment.max(allEntries.map((x) => moment(x))).format(moment.DATE);
   };
 
   const getMinDate = (allEntries) => {
-    return moment.min(allEntries.map((x) => moment(x))).format("YYYY-MM-DD");
+    return moment.min(allEntries.map((x) => moment(x))).format(moment.DATE);
   };
 
-  // BackHandler.addEventListener("hardwareBackPress", function () {
-  //   if (isOpen) {
-  //     console.log(isOpen);
-  //   } else {
-  //     console.log(isOpen);
-  //   }
-  // });
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        if (isOpen) {
+          onCloseBottomSheet();
+          return true;
+        } else {
+          return false;
+        }
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress
+      );
+
+      return () => subscription.remove();
+    }, [isOpen])
+  );
 
   return (
     <Animated.View style={{ flex: 1, backgroundColor: "transparent" }}>
       <SegmentedControlTab
         values={["Weekly", "Monthly", "Yearly"]}
         selectedIndex={selectedFrequency}
-        borderRadius={4}
+        borderRadius={5}
         onTabPress={handleIndexPressed}
-        tabsContainerStyle={styles.tabContainer}
-        // activeTabStyle={{ backgroundColor: "white", marginTop: 2 }}
-        // tabTextStyle={{ color: "#444444", fontWeight: "bold" }}
-        // activeTabTextStyle={{ color: "white" }}
+        tabsContainerStyle={{
+          height: 35,
+          backgroundColor: "transparent",
+          margin: 10,
+        }}
+        tabStyle={{
+          backgroundColor: "#bea2d1",
+          borderWidth: 1.5,
+          borderColor: "#6d4a85",
+        }}
+        activeTabStyle={{ backgroundColor: "#75508b" }}
+        tabTextStyle={{ color: "white" }}
       />
 
-      <View>
-        <Text style={styles.title} onPress={handleOnDatePressed}>
-          {stitle}
-        </Text>
+      <View
+        style={{
+          alignItems: "center",
+          flexDirection: "row",
+          justifyContent: "center",
+        }}
+      >
+        <IconButton
+          icon="chevron-left"
+          color={"#75508b"}
+          size={25}
+          onPress={handleLeftPressed}
+        />
+
+        <TouchableNativeFeedback
+          onPress={handleOnDatePressed}
+          background={TouchableNativeFeedback.Ripple("#75508b")}
+        >
+          <View
+            style={{
+              height: 40,
+              width: "70%",
+              paddingLeft: 15,
+              paddingRight: 15,
+              borderRadius: 10,
+              justifyContent: "center",
+              backgroundColor: "rgba(255,255,255,0.4)",
+            }}
+          >
+            <Text
+              style={{ fontSize: 20, color: "#75508b", textAlign: "center" }}
+            >
+              {stitle}
+            </Text>
+          </View>
+        </TouchableNativeFeedback>
+        <IconButton
+          icon="chevron-right"
+          color={"#75508b"}
+          size={25}
+          onPress={handleRightPressed}
+        />
       </View>
 
       <ScrollView>
@@ -225,100 +370,97 @@ const StatisticsScreen = () => {
           frequency={selectedFrequency}
         />
       </ScrollView>
-
-      <BottomSheet
-        ref={sheetRef}
-        snapPoints={[0, (SCREEN_HEIGHT + 300) / 3]}
-        borderRadius={10}
-        enabledGestureInteraction={true}
-        initialSnap={0}
-        renderContent={
-          (renderSheetContent = () => (
-            <View
-              style={{
-                backgroundColor: "white",
-                paddingLeft: 20,
-                paddingRight: 20,
-                height: "100%",
-              }}
-            >
-              <View style={[styles.line]}></View>
-              <Picker
-                style={[styles.picker]}
-                // selectBackgroundColor="#8080801A"
-                // selectedValue="March"
-                pickerData={pickerData}
-                onValueChange={(value) => {
-                  setDatePicked(value);
+      <Portal>
+        <BottomSheet
+          ref={sheetRef}
+          snapPoints={[0, SCREEN_HEIGHT / 2]}
+          borderRadius={20}
+          enabledGestureInteraction={true}
+          initialSnap={0}
+          renderContent={
+            (renderSheetContent = () => (
+              <View
+                style={{
+                  backgroundColor: "white",
+                  height: "100%",
                 }}
-                selectLineSize={8}
-                selectedValue={selectedWeek}
-              />
-
-              <TouchableOpacity
-                style={styles.changeBtn}
-                onPress={onChangeBtnPressed}
               >
-                <Text style={styles.btnText}>CHANGE</Text>
-              </TouchableOpacity>
-            </View>
-          ))
-        }
-      />
+                <View
+                  style={{
+                    backgroundColor: "white",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                >
+                  <View
+                    style={{
+                      width: "100%",
+                      paddingLeft: 20,
+                      backgroundColor: "#75508b",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: "white",
+                        paddingTop: 15,
+                      }}
+                    >
+                      Select a date
+                    </Text>
+
+                    <IconButton
+                      icon="chevron-down"
+                      color={"white"}
+                      size={25}
+                      onPress={onCloseBottomSheet}
+                    />
+                  </View>
+
+                  <DatePicker
+                    style={{
+                      backgroundColor: "white",
+                      width: "100%",
+                      height: 300,
+                    }}
+                    minimumDate={new Date(minDate)}
+                    maximumDate={new Date(maxDate)}
+                    selectLineSize={5}
+                    onDateChange={(date) => {
+                      setDatePicked(date);
+                      console.log(date);
+                    }}
+                  />
+
+                  <TouchableOpacity
+                    style={{
+                      alignItems: "center",
+                      backgroundColor: "#75508b",
+                      padding: 10,
+                      width: "100%",
+                    }}
+                    flex={1}
+                    onPress={onChangeBtnPressed}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 18,
+                        fontStyle: "normal",
+                        color: "white",
+                      }}
+                    >
+                      Change
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))
+          }
+        />
+      </Portal>
     </Animated.View>
   );
 };
 
 export default StatisticsScreen;
-
-const styles = StyleSheet.create({
-  tabContainer: {
-    height: 35,
-    backgroundColor: "black",
-    margin: 10,
-  },
-
-  title: {
-    color: "white",
-    margin: 10,
-    marginLeft: 20,
-    fontSize: 22,
-  },
-
-  bottomSheetContainer: {
-    position: "absolute",
-    borderRadius: 25,
-    width: "100%",
-    height: SCREEN_HEIGHT,
-    top: SCREEN_HEIGHT,
-    backgroundColor: "#272727",
-    flex: 1,
-  },
-
-  picker: {
-    backgroundColor: "white",
-    width: "100%",
-    height: "75%",
-  },
-
-  line: {
-    width: 75,
-    height: 4,
-    backgroundColor: "grey",
-    alignSelf: "center",
-    marginVertical: 15,
-    borderRadius: 2,
-  },
-
-  changeBtn: {
-    alignItems: "center",
-    backgroundColor: "#DDDDDD",
-    padding: 10,
-    borderRadius: 10,
-  },
-
-  btnText: {
-    fontSize: 18,
-    fontStyle: "normal",
-  },
-});
