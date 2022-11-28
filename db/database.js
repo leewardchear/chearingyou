@@ -10,7 +10,7 @@ export default class Database {
         createFromLocation: 2,
       })
         .then((DB) => {
-          db = DB;
+          let db = DB;
           db.transaction((tx) => {
             tx.executeSql(
               "CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY AUTOINCREMENT, text TEXT, savedate TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, mood STRING, meta STRING, env STRING)"
@@ -27,10 +27,10 @@ export default class Database {
   };
 
   newItem = (gibberish, mood, env, date) => {
-    console.log(date);
+    console.log("newItem", gibberish, mood, env, date);
     return new Promise((resolve, reject) => {
       qry = "INSERT INTO items (text, mood, env) values (?, ?, ?)";
-      vals = [gibberish, mood];
+      vals = [gibberish, mood, env];
       if (typeof date != "undefined") {
         qry =
           "INSERT INTO items (text, mood, env, savedate) values (?, ?, ?, ?)";
@@ -45,6 +45,7 @@ export default class Database {
               vals,
               (txObj, resultSet) => {
                 resolve(resultSet);
+                // console.log(resultSet);
               },
               (txObj, error) => {
                 console.log("Error", error);
@@ -60,6 +61,9 @@ export default class Database {
   getMonthlyData = (month, year) => {
     return new Promise((resolve, reject) => {
       str = year + "-" + month;
+
+      console.log({ month, year });
+
       this.initDatabase()
         .then((db) => {
           db.transaction((tx) => {
@@ -70,6 +74,32 @@ export default class Database {
                 resolve(resultSet);
               },
               (txObj, error) => {
+                reject(error);
+              }
+            );
+          });
+        })
+        .catch((error) => console.error(error));
+    });
+  };
+  updateItem = (entryId, gibberish, mood, env) => {
+    // console.log("updateItem", gibberish, mood, env);
+    return new Promise((resolve, reject) => {
+      qry = "UPDATE items SET text = ?, mood = ?, env = ? WHERE id = ?";
+      vals = [gibberish, mood, env, entryId];
+
+      this.initDatabase()
+        .then((db) => {
+          db.transaction((tx) => {
+            tx.executeSql(
+              qry,
+              vals,
+              (txObj, resultSet) => {
+                resolve(resultSet);
+                // console.log(resultSet);
+              },
+              (txObj, error) => {
+                console.log("Error", error);
                 reject(error);
               }
             );
@@ -121,6 +151,50 @@ export default class Database {
     });
   };
 
+  listAllDates = () => {
+    return new Promise((resolve, reject) => {
+      this.initDatabase()
+        .then((db) => {
+          db.transaction((tx) => {
+            tx.executeSql(
+              "SELECT savedate FROM items",
+              [],
+              (txObj, resultSet) => {
+                resolve(resultSet);
+              },
+              (txObj, error) => {
+                console.log("Error", error);
+                reject(error);
+              }
+            );
+          });
+        })
+        .catch((error) => console.error(error));
+    });
+  };
+
+  getItem = (entryId) => {
+    return new Promise((resolve, reject) => {
+      this.initDatabase()
+        .then((db) => {
+          db.transaction((tx) => {
+            tx.executeSql(
+              "SELECT * FROM items WHERE id = ?",
+              [entryId],
+              (txObj, resultSet) => {
+                resolve(resultSet);
+              },
+              (txObj, error) => {
+                console.log("Error", error);
+                reject(error);
+              }
+            );
+          });
+        })
+        .catch((error) => console.error(error));
+    });
+  };
+
   listItems = () => {
     return new Promise((resolve, reject) => {
       this.initDatabase()
@@ -146,10 +220,10 @@ export default class Database {
   listDate = (savedate) => {
     return new Promise((resolve, reject) => {
       this.initDatabase()
-        .then((db) => {
-          db.transaction((tx) => {
+        .then((asd) => {
+          asd.transaction((tx) => {
             tx.executeSql(
-              "SELECT * FROM items WHERE date(savedate) = ?",
+              "SELECT id, text, savedate, mood, env FROM items WHERE date(savedate) = ? order by id DESC",
               [savedate],
               (txObj, resultSet) => {
                 resolve(resultSet);
@@ -184,7 +258,6 @@ export default class Database {
             );
           });
         })
-
         .catch((error) => console.error(error));
     });
   };

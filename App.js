@@ -6,7 +6,6 @@ import { Provider } from "react-redux";
 import { store } from "./store/store.js";
 
 import Database from "./db/database";
-
 import SplashScreen from "./screens/SplashScreen";
 import TabsScreen from "./screens/TabsScreen";
 

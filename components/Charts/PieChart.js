@@ -63,7 +63,7 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency }) => {
 
   useEffect(() => {
     getData();
-  }, [frequency]);
+  }, [frequency, weekStart, month, year]);
 
   function plotPie(resultSet) {
     var total = 0;
@@ -81,7 +81,7 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency }) => {
         };
 
         var legendObj = {
-          name: mood,
+          name: Colours[mood].name,
           symbol: { fill: Colours[mood].code, type: "square" },
           labels: { fill: Colours[mood].code },
         };
@@ -95,6 +95,7 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency }) => {
       moodList.find((m) => m.mood == mood).x++;
       moodList.find((m) => m.mood == mood).y++;
     }
+
     setTotal(total);
     setColorData(graphicColor);
     setLegendData(legendList);
@@ -102,30 +103,57 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency }) => {
   }
 
   return (
-    <View style={pistyles.pieColumn}>
-      <View style={pistyles.pieRow}>
+    <View
+      style={{
+        height: 250,
+        flexDirection: "column",
+        justifyContent: "space-around",
+        backgroundColor: "rgba(255,255,255,0.4)",
+        borderRadius: 15,
+        margin: 15,
+      }}
+    >
+      <View
+        style={{
+          marginLeft: 30,
+          marginBottom: 30,
+          height: 250,
+          flexDirection: "row",
+          justifyContent: "space-around",
+        }}
+      >
         <VictoryPie
-          height={250}
-          style={pistyles.myPieChart}
-          innerRadius={35}
-          animate={{ duration: 2000 }}
+          height={280}
+          style={{
+            data: {
+              fillOpacity: 0.9,
+              stroke: "white",
+              strokeWidth: 4,
+            },
+            labels: {
+              fontSize: 12,
+              fill: "#50265e",
+              fontWeight: "bold",
+            },
+          }}
+          innerRadius={25}
+          animate={{ duration: 1000 }}
           colorScale={colorData}
           data={graphicData}
           // labelPosition={({ index }) => (index ? "centroid" : "startAngle")}
           // labelPlacement={({ index }) => (index ? "parallel" : "vertical")}
           labels={({ datum }) => `${Math.round((datum.y / totalCount) * 100)}%`}
           // radius={({ datum }) => 10 + datum.y * 1}
-          labelRadius={({ innerRadius }) => innerRadius + 13}
-          padAngle={2}
+          labelRadius={({ innerRadius }) => innerRadius + 35}
+          padAngle={0.5}
         />
 
         <VictoryLegend
-          x={170}
-          y={45}
+          x={140}
+          y={40}
           orientation="vertical"
-          itemsPerRow={6}
+          itemsPerRow={7}
           rowGutter={2}
-          style={{ title: { fontSize: 20 } }}
           data={legendData}
         />
       </View>
@@ -134,33 +162,3 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency }) => {
 };
 
 export default MyPieChart;
-
-const pistyles = StyleSheet.create({
-  pieColumn: {
-    height: 225,
-    flexDirection: "column",
-    justifyContent: "space-around",
-    backgroundColor: "#33343d",
-    borderRadius: 15,
-    margin: 16,
-  },
-
-  pieRow: {
-    height: 250,
-    flexDirection: "row",
-    justifyContent: "space-around",
-  },
-
-  myPieChart: {
-    data: {
-      fillOpacity: 0.9,
-      stroke: "black",
-      strokeWidth: 1,
-    },
-    labels: {
-      fontSize: 12,
-      fill: "white",
-      fontWeight: "bold",
-    },
-  },
-});

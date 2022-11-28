@@ -10,13 +10,5 @@ export const Colours = {
   },
   anxious: { name: "Anxious", val: "anxious", code: "#75508b", intVal: -1 },
   sad: { name: "Sad", val: "sad", code: "#7cc9ec", intVal: -4 },
-  default: { name: "default", val: "default", code: "white", intVal: 0 },
-};
-
-export const Env = {
-  home: { name: "Home", val: "home", code: "#61a875" },
-  work: { name: "Work", val: "work", code: "#f1837d" },
-  park: { name: "Park", val: "park", code: "#e8a273" },
-  restaurant: { name: "Restaurant", val: "restaurant", code: "#f0cb70" },
-  default: { name: "default", val: "default", code: "#292929" },
+  default: { name: "Neutral", val: "default", code: "#f1f1f1", intVal: 0 },
 };
