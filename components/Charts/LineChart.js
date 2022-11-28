@@ -20,7 +20,7 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
 
   useEffect(() => {
     setLineData([]);
-
+    console.log({ month, year, weekStart, weekEnd, frequency });
     switch (frequency) {
       case 0: // WEEKLY
         setAdditionalWidth(SCREEN_WIDTH - 110);
@@ -41,7 +41,7 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
         setXAxisInset(8);
         break;
     }
-  }, [frequency]);
+  }, [frequency, weekStart, month, year]);
 
   function getYearlyData() {
     try {
@@ -69,7 +69,6 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
       db.getYearlyData(year)
         .then((resultSet) => {
           for (let i = 0; i < resultSet.rows.length; i++) {
-            console.log(resultSet.rows.item(i).savedate);
             var day = moment(resultSet.rows.item(i).savedate).dayOfYear();
             var mood = resultSet.rows.item(i).mood;
             moodList[day - 1].moodScale = parseInt(Colours[mood].intVal);
@@ -111,7 +110,6 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
             var mood = resultSet.rows.item(i).mood;
             moodList[dayIndex - 1].moodScale = parseInt(Colours[mood].intVal);
           }
-
           setLineData(moodList);
         })
         .catch((error) => {
@@ -277,6 +275,7 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
             marginBottom: xAxisHeight,
           }}
           data={lineData}
+          // data={[lineData]}
           contentInset={{ top: 2 }}
           svg={{
             fill: "#604c6d",
@@ -331,6 +330,8 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
               yMin={-4}
               yAccessor={({ item }) => item.moodScale}
             >
+              <CustomGrid belowChart={true} />
+
               <Clips />
               <GreenLine />
               <YellowLine />
@@ -339,8 +340,6 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
               <OrangeLine />
               <RedLine />
               <BlueLine />
-
-              <CustomGrid belowChart={true} />
             </LineChart>
             <XAxis
               style={{
@@ -348,7 +347,6 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
                 height: xAxisHeight,
                 width: "100%",
               }}
-              xAccessor={({ item }) => item.day}
               numberOfTicks={lineFrequency}
               data={lineData}
               formatLabel={(value, index) => lineData[index].label}
@@ -368,7 +366,6 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
 };
 
 const chartInset = { bottom: 0, top: 0 };
-const verticalContentInset = { top: 0, bottom: 0 };
 const xAxisHeight = 40;
 
 const CustomGrid = ({ x, y, data, ticks }) => {
