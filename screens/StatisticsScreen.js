@@ -3,24 +3,22 @@ import {
   View,
   Dimensions,
   Text,
-  Button,
   TouchableNativeFeedback,
   BackHandler,
-  SegmentedControlIOSComponent,
   TouchableOpacity,
 } from "react-native";
 import MyPieChart from "../components/Charts/PieChart";
 import MyLineGraph from "../components/Charts/LineChart";
-import React, { useEffect, useMemo, useRef, useCallback } from "react";
+import React, { useEffect } from "react";
 
 import { useState } from "react";
 import moment from "moment";
 import SegmentedControlTab from "react-native-segmented-control-tab";
-import { Picker, DatePicker } from "react-native-wheel-pick";
+import { DatePicker } from "react-native-wheel-pick";
 import Animated from "react-native-reanimated";
 import BottomSheet from "reanimated-bottom-sheet";
 import Database from "../db/database";
-import { IconButton, Portal, MD3Colors } from "react-native-paper";
+import { IconButton, Portal } from "react-native-paper";
 import { useFocusEffect } from "@react-navigation/native";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
@@ -31,8 +29,6 @@ const yearFormat = "YYYY";
 const dateFormat = "YYYY-MM-DD";
 
 const StatisticsScreen = () => {
-  const [pickerData, setPickerData] = useState([]);
-
   const [currentDate, setCurrentMonth] = useState({
     dateString: moment().format(dateFormat),
     day: parseInt(moment().format(dayFormat)),
@@ -48,13 +44,13 @@ const StatisticsScreen = () => {
     currentDate.monthString + " " + currentDate.year
   );
 
-  const [datePicked, setDatePicked] = useState([]);
+  const [datePicked, setDatePicked] = useState();
   const [isOpen, setBottomSheetOpen] = useState(false);
 
   const [listWeeks, setWeekData] = useState([]);
   const [listMonths, setMonthData] = useState([]);
   const [listYears, setYearData] = useState([]);
-  const [minDate, setMinDate] = useState("01/01/2010");
+  const [minDate, setMinDate] = useState("01/01/2021");
   const [maxDate, setMaxDate] = useState("01/01/2024");
 
   useEffect(() => {
@@ -62,8 +58,8 @@ const StatisticsScreen = () => {
   }, []);
 
   useEffect(() => {
-    setMinDate("01/01/2000");
-  }, [stitle, minDate, maxDate]);
+
+  }, [minDate, maxDate, stitle]);
 
   useEffect(() => {
     switch (selectedFrequency) {
@@ -81,17 +77,14 @@ const StatisticsScreen = () => {
 
   const setWeeklyStates = () => {
     setTitle(getWeekly(currentDate.weekStart, currentDate.weekEnd));
-    setPickerData(listWeeks);
   };
 
   const setMonthlyStates = () => {
     setTitle(`${currentDate.monthString} ${currentDate.year}`);
-    setPickerData(listMonths);
   };
 
   const setYearlyStates = () => {
     setTitle(`${currentDate.year}`);
-    setPickerData(listYears);
   };
 
   const getWeekly = (start, end) => {
@@ -169,18 +162,6 @@ const StatisticsScreen = () => {
   const handleOnDatePressed = () => {
     sheetRef.current.snapTo(1);
     setBottomSheetOpen(true);
-
-    switch (selectedFrequency) {
-      case 0:
-        setPickerData(listWeeks);
-        break;
-      case 1:
-        setPickerData(listMonths);
-        break;
-      case 2:
-        setPickerData(listYears);
-        break;
-    }
   };
 
   const onChangeBtnPressed = () => {
@@ -190,17 +171,20 @@ const StatisticsScreen = () => {
   };
 
   const changeCurrentDate = (date) => {
+    console.log("BEFORE: ", date)
+
     switch (selectedFrequency) {
       case 0:
+        const myArray = date.split("-");
+        date = moment(myArray[1], 'MMM-DD-YYYY')
+        break;
       case 1:
-        date = moment(new Date(date)).format("MMM DD, YYYY");
+        date = moment(date, 'MMM-YYYY')
         break;
       case 2:
-        date = moment(new Date(date)).startOf("year");
+        date = moment(date).startOf("year");
         break;
     }
-    console.log("THIS IS DATE", date);
-
     setCurrentMonth({
       dateString: moment(date).format(dateFormat),
       day: parseInt(moment(date).format(dayFormat)),
@@ -211,7 +195,10 @@ const StatisticsScreen = () => {
       weekStart: moment(date).startOf("isoWeek").format(dateFormat),
       weekEnd: moment(date).endOf("isoWeek").format(dateFormat),
     });
+
+
   };
+
 
   const onCloseBottomSheet = () => {
     sheetRef.current.snapTo(0);
@@ -227,24 +214,24 @@ const StatisticsScreen = () => {
   const sheetRef = React.useRef(null);
 
   function setupPickerData(allEntries) {
-    var maxDate = moment(getMaxDate(allEntries));
-    var minDate = moment(getMinDate(allEntries));
+    var maxDate = moment(getMaxDate(allEntries)).endOf('year');
+    var minDate = moment(getMinDate(allEntries)).startOf('year');
     var monthArray = [];
     var yearArray = [];
     var weekArray = [];
 
-    let weekStart = moment(minDate, "MMM-DD-YYYY").startOf("week");
+    let weekStart = moment(minDate, "MMM-DD-YYYY").startOf("year");
     // add two so end date lands on the next week's tuesday which will then be included into the list
-    let weekEnd = moment(maxDate, "MMM-DD-YYYY").endOf("week").add(2, "days");
+    let weekEnd = moment(maxDate, "MMM-DD-YYYY").endOf("year");
 
-    setMinDate(moment(minDate).format(moment.HTML5_FMT.DATE));
-    setMaxDate(moment(maxDate).format(moment.HTML5_FMT.DATE));
+    setMinDate(moment(minDate).startOf('year').format("MM/DD/YYYY"));
+    setMaxDate(moment(maxDate).endOf('year').format("MM/DD/YYYY"));
 
     while (weekEnd.isAfter(weekStart)) {
       weekArray.push(
         weekStart.startOf("isoWeek").format("MMM DD") +
-          " - " +
-          weekStart.endOf("isoWeek").format("MMM DD, YYYY")
+        " - " +
+        weekStart.endOf("isoWeek").format("MMM DD, YYYY")
       );
       weekStart.add(1, "week");
     }
@@ -259,6 +246,7 @@ const StatisticsScreen = () => {
     }
     setYearData(yearArray);
     setMonthData(monthArray);
+    console.log(listMonths)
   }
 
   const getMaxDate = (allEntries) => {
@@ -288,6 +276,26 @@ const StatisticsScreen = () => {
       return () => subscription.remove();
     }, [isOpen])
   );
+
+  const DatePick = () => {
+    return (
+      <DatePicker
+        style={{
+          backgroundColor: "white",
+          width: "100%",
+          height: 300,
+        }}
+        minimumDate={new Date(minDate)}
+        maximumDate={new Date(maxDate)}
+        selectLineSize={5}
+        date={datePicked}
+        onDateChange={date => {
+          setDatePicked(date)
+        }}
+      />
+    );
+  }
+
 
   return (
     <Animated.View style={{ flex: 1, backgroundColor: "transparent" }}>
@@ -418,21 +426,7 @@ const StatisticsScreen = () => {
                     />
                   </View>
 
-                  <DatePicker
-                    style={{
-                      backgroundColor: "white",
-                      width: "100%",
-                      height: 300,
-                    }}
-                    minimumDate={new Date(minDate)}
-                    maximumDate={new Date(maxDate)}
-                    selectLineSize={5}
-                    onDateChange={(date) => {
-                      setDatePicked(date);
-                      console.log(date);
-                    }}
-                  />
-
+                  <DatePick />
                   <TouchableOpacity
                     style={{
                       alignItems: "center",

@@ -110,7 +110,7 @@ function CalendarScreen({ route, navigation }) {
     return unsubscribe;
   }, [navigation, selectedDate, daylistshowing, sumEntries]);
 
-  useEffect(() => {}, [newEntry, journalentries]);
+  useEffect(() => { }, [newEntry, journalentries]);
 
   const setDate = (date) => {
     dispatch(setSelectedDate(date));
@@ -161,7 +161,7 @@ function CalendarScreen({ route, navigation }) {
                     if (
                       typeof journalentries[date.dateString] !== "undefined" &&
                       typeof journalentries[date.dateString].moodColors !==
-                        "undefined"
+                      "undefined"
                     ) {
                       setDate(date);
                     } else {

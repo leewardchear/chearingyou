@@ -20,7 +20,9 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
 
   useEffect(() => {
     setLineData([]);
-    console.log({ month, year, weekStart, weekEnd, frequency });
+
+    console.log("LINE: ", { month, year, weekStart, weekEnd, frequency })
+
     switch (frequency) {
       case 0: // WEEKLY
         setAdditionalWidth(SCREEN_WIDTH - 110);
@@ -152,7 +154,7 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
     }
   }
 
-  const Clips = ({}) => (
+  const Clips = ({ }) => (
     <Defs key={"clips"}>
       <ClipPath id={"sad"}>
         <Rect y={175} width={"100%"} height={"100%"} />
