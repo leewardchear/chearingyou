@@ -13,6 +13,8 @@ import Moment from "moment";
 import Database from "../db/database";
 import { Colours } from "../constants.js";
 import DayList from "../components/DayList.js";
+import EntryView from "../components/EntryView";
+
 import { setDayListUI, setSelectedDate } from "../app/calendar.js";
 import { useSelector, useDispatch } from "react-redux";
 import { hideProg, setProgState } from "../app/journalentry";
@@ -29,6 +31,7 @@ function CalendarScreen({ route, navigation }) {
   const [journalentries, setEntries] = useState({});
   const dispatch = useDispatch();
   const selectedDate = useSelector((state) => state.calendar.selectedDate);
+  const calEntry = useSelector((state) => state.calendar.calEntry);
 
   const [daylistshowing, setDayListShow] = useState(true);
 
@@ -110,7 +113,7 @@ function CalendarScreen({ route, navigation }) {
     return unsubscribe;
   }, [navigation, selectedDate, daylistshowing, sumEntries]);
 
-  useEffect(() => {}, [newEntry, journalentries]);
+  useEffect(() => { }, [newEntry, journalentries]);
 
   const setDate = (date) => {
     dispatch(setSelectedDate(date));
@@ -161,7 +164,7 @@ function CalendarScreen({ route, navigation }) {
                     if (
                       typeof journalentries[date.dateString] !== "undefined" &&
                       typeof journalentries[date.dateString].moodColors !==
-                        "undefined"
+                      "undefined"
                     ) {
                       setDate(date);
                     } else {

@@ -14,6 +14,8 @@ import ReactNativeSegmentedControlTab from "react-native-segmented-control-tab";
 import { Colours } from "../constants";
 import { Platform } from "react-native";
 import { useEffect, useState } from "react";
+import EntryView from "../components/EntryView";
+import { useSelector } from "react-redux";
 
 const Tab = createBottomTabNavigator();
 // const Tab = createMaterialBottomTabNavigator();
@@ -21,7 +23,13 @@ const Tab = createBottomTabNavigator();
 function TabsScreen(props) {
   const [bottomNav, setBottomNav] = useState(0);
   const [marginTop, setMarginTop] = useState(10);
+  const calEntry = useSelector((state) => state.calendar.calEntry);
 
+  const entryUi = useSelector((state) => state.calendar.entryUi);
+
+  useEffect(() => {
+    // console.log("entryUi", entryUi);
+  }, [entryUi]);
   useEffect(() => {
     const keyboardWillShow = (event) => {
       if (Platform.OS === "android") {
@@ -179,6 +187,9 @@ function TabsScreen(props) {
           </Tab.Navigator>
         </Portal.Host>
       </SafeAreaView>
+      {entryUi && (
+        <EntryView pointerEvents="none" navigation={props.navigation} />
+      )}
     </LinearGradient>
   );
 }

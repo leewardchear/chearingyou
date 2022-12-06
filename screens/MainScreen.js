@@ -36,6 +36,7 @@ import {
   setEntryValue,
   clearEntry,
   setProgState,
+  setEnv,
 } from "../app/journalentry";
 import { Colors } from "react-native-paper";
 import { Colours } from "../constants.js";
@@ -49,6 +50,8 @@ import {
 // import ProgressWheel from "../components/ProgressWheel";
 
 const MainScreen = ({ route, navigation }) => {
+  const calEntry = useSelector((state) => state.calendar.calEntry);
+
   const entryvalue = useSelector((state) => state.journal.entryvalue);
   const [entryData, setEntryData] = useState(entryvalue);
   const progState = useSelector((state) => state.journal.progshow);
@@ -83,6 +86,12 @@ const MainScreen = ({ route, navigation }) => {
   );
 
   useEffect(() => {
+    setEntryData(calEntry.text);
+    dispatch(setMood(calEntry.mood));
+    dispatch(setEnv(calEntry.env));
+  }, [calEntry]);
+
+  useEffect(() => {
     if (progState == 3) {
       navigation.navigate("CalendarTab", {
         newEntry: entryId,
@@ -90,19 +99,6 @@ const MainScreen = ({ route, navigation }) => {
       });
     }
   }, [progState]);
-  useEffect(() => {
-    if (entryId != null) {
-      db.getItem(entryId)
-        .then((resultSet) => {
-          // console.log(resultSet.rows.item(0));
-          setEntryData(resultSet.rows.item(0).text);
-          dispatch(setMood(resultSet.rows.item(0).mood));
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
-  }, [entryId]);
 
   formattedDate = Moment(day.dateString).format("LL");
 
@@ -192,6 +188,7 @@ const MainScreen = ({ route, navigation }) => {
     if (entryData === "" && mood === "default" && env === "") {
       return;
     }
+
     if (entryId == null) {
       db.newItem(entryData, mood, env, day.dateString)
         .then((resultSet) => {

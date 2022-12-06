@@ -1,5 +1,5 @@
 import { render } from "react-dom";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   FlatList,
   View,
@@ -14,13 +14,14 @@ import { WeekCalendar } from "react-native-calendars";
 import Moment from "moment";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { setDayListUI } from "../app/calendar.js";
+import { setCalEntry, setDayListUI, setEntryUi } from "../app/calendar.js";
 import { useSelector, useDispatch } from "react-redux";
 import { useFocusEffect } from "@react-navigation/native";
-import { setEntryId } from "../app/journalentry.js";
 import ProgressWheel from "./ProgressWheel";
+
 import Animated from "react-native-reanimated";
 import pSBC from "shade-blend-color";
+import { ClipPath } from "react-native-svg";
 
 const DayList = ({ style, navigation, newEntry }) => {
   const itemAnim = useRef(new Animated.Value(0)).current;
@@ -106,15 +107,48 @@ const DayList = ({ style, navigation, newEntry }) => {
   );
 
   const Item = ({ entry }) => {
+    const [height, setHeight] = useState(null);
+    const [width, setWidth] = useState(null);
+    const buttonRef = useRef(null);
+    var entryEnv = entry.env == null ? "" : entry.env;
+    var entryMood = entry.mood == null ? Colours.default.val : entry.mood;
+
+    var entryText = entry.text == null ? "" : entry.text;
+
     return (
       <TouchableOpacity
-        onPress={() => {
-          navigation.navigate("HomeTab", {
-            day: selecteddate,
-            newEntry: false,
-            // entryId: entry.id,
+        ref={buttonRef}
+        // onLayout={(event) => console.log(event.nativeEvent.layout)}
+        onPress={(event) => {
+          var fromwindow = {};
+          buttonRef.current?.measure((x, y, width, height, pageX, pageY) => {
+            fromwindow = {
+              x: x,
+              y: y,
+              width: width,
+              height: height,
+              pageX: pageX,
+              pageY: pageY,
+            };
+            var calEntry = {
+              id: entry.id,
+              mood: entryMood,
+              env: entryEnv,
+              savedate: entry.savedate,
+              text: entryText,
+              fromwindow: fromwindow,
+            };
+            dispatch(setCalEntry(calEntry));
+
+            dispatch(setEntryUi(true));
           });
-          dispatch(setEntryId(entry.id));
+          // width: event.nativeEvent.layout.width,
+          // height: event.nativeEvent.layout.height
+          // // navigation.navigate("HomeTab", {
+          //   day: selecteddate,
+          //   newEntry: false,
+          //   // entryId: entry.id,
+          // });
         }}
       >
         <View
@@ -122,7 +156,6 @@ const DayList = ({ style, navigation, newEntry }) => {
             flexDirection: "row",
             borderRadius: 10,
             padding: 5,
-
             margin: 5,
             marginHorizontal: 10,
             maxHeight: 90,
@@ -137,14 +170,14 @@ const DayList = ({ style, navigation, newEntry }) => {
               minHeight: 60,
               marginRight: 8,
               borderRadius: 5,
-              backgroundColor: pSBC(0.5, Colours[entry.mood].code, "c"),
+              backgroundColor: pSBC(0.5, Colours[entryMood].code, "c"),
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
             }}
           >
             <Text style={{ fontSize: 12, fontWeight: "400" }}>
-              {Colours[entry.mood].name}
+              {Colours[entryMood].code}
             </Text>
             <View
               style={{
@@ -152,7 +185,7 @@ const DayList = ({ style, navigation, newEntry }) => {
                 padding: 2,
               }}
             >
-              {entry.env.length > 1 && (
+              {entryEnv > 1 && (
                 <Text
                   style={{
                     fontSize: 9,
@@ -171,11 +204,11 @@ const DayList = ({ style, navigation, newEntry }) => {
               padding: 13,
               paddingHorizontal: 8,
               flex: 1,
-              borderLeftColor: pSBC(0.5, Colours[entry.mood].code, "c"),
+              borderLeftColor: pSBC(0.5, Colours[entryMood].code, "c"),
               borderLeftWidth: 2,
             }}
           >
-            {entry.text.length < 1 && (
+            {entry.text !== null && entryText < 1 && (
               <Text style={{ fontStyle: "italic", color: "grey" }}>
                 Note is empty
               </Text>

@@ -1,13 +1,9 @@
 {
   "expo": {
-    "name": "chearingyou",
     "slug": "chearingyou",
-    "version": "1.0.0",
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "name": "chearingyou",
     "sdkVersion": "46.0.0",
-    "entryPoint": ".vscode/exponentIndex.js"
+    "entryPoint": ".vscode\\exponentIndex.js"
   },
   "name": "chearingyou"
 }

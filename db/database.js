@@ -61,9 +61,6 @@ export default class Database {
   getMonthlyData = (month, year) => {
     return new Promise((resolve, reject) => {
       str = year + "-" + month;
-
-      console.log({ month, year });
-
       this.initDatabase()
         .then((db) => {
           db.transaction((tx) => {
@@ -217,6 +214,28 @@ export default class Database {
     });
   };
 
+  deleteItem = (entryId) => {
+    return new Promise((resolve, reject) => {
+      this.initDatabase()
+        .then((db) => {
+          db.transaction((tx) => {
+            tx.executeSql(
+              "DELETE FROM items WHERE id = ?",
+              [entryId],
+              (txObj, resultSet) => {
+                resolve(resultSet);
+              },
+              (txObj, error) => {
+                console.log("Error", error);
+                reject(error);
+              }
+            );
+          });
+        })
+        .catch((error) => console.error(error));
+    });
+  };
+
   listDate = (savedate) => {
     return new Promise((resolve, reject) => {
       this.initDatabase()
@@ -249,7 +268,6 @@ export default class Database {
               [],
               (txObj, resultSet) => {
                 resolve(txObj);
-                console.log(resultSet);
               },
               (txObj, error) => {
                 console.log("Error", error);

@@ -10,5 +10,6 @@ export const Colours = {
   },
   anxious: { name: "Anxious", val: "anxious", code: "#75508b", intVal: -1 },
   sad: { name: "Sad", val: "sad", code: "#7cc9ec", intVal: -4 },
-  default: { name: "Neutral", val: "default", code: "#f1f1f1", intVal: 0 },
+  // default: { name: "Neutral", val: "default", code: "#f1f1f1", intVal: 0 },
+  default: { name: "Neutral", val: "default", code: "#c1c1c1", intVal: 0 },
 };

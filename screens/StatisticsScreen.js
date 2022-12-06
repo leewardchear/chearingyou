@@ -3,54 +3,63 @@ import {
   View,
   Dimensions,
   Text,
-  Button,
   TouchableNativeFeedback,
   BackHandler,
-  SegmentedControlIOSComponent,
   TouchableOpacity,
 } from "react-native";
 import MyPieChart from "../components/Charts/PieChart";
 import MyLineGraph from "../components/Charts/LineChart";
-import React, { useEffect, useMemo, useRef, useCallback } from "react";
+import React, { useEffect } from "react";
 
 import { useState } from "react";
 import moment from "moment";
 import SegmentedControlTab from "react-native-segmented-control-tab";
-import { Picker, DatePicker } from "react-native-wheel-pick";
+import { DatePicker } from "react-native-wheel-pick";
 import Animated from "react-native-reanimated";
 import BottomSheet from "reanimated-bottom-sheet";
 import Database from "../db/database";
-import { IconButton, Portal, MD3Colors } from "react-native-paper";
+import { IconButton, Portal } from "react-native-paper";
+import { useFocusEffect } from "@react-navigation/native";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const db = new Database();
+const dayFormat = "DD";
+const monthFormat = "MM";
+const yearFormat = "YYYY";
+const dateFormat = "YYYY-MM-DD";
 
 const StatisticsScreen = () => {
-  const [pickerData, setPickerData] = useState([]);
-
   const [currentDate, setCurrentMonth] = useState({
-    dateString: moment().format("YYYY-MM-DD"),
-    day: parseInt(moment().format("DD")),
-    month: parseInt(moment().format("MM")),
+    dateString: moment().format(dateFormat),
+    day: parseInt(moment().format(dayFormat)),
+    month: parseInt(moment().format(monthFormat)),
     monthString: moment().format("MMMM"),
     timestamp: parseInt(moment().toDate().getTime()),
-    year: parseInt(moment().format("YYYY")),
-    weekStart: moment().startOf("isoWeek").format("YYYY-MM-DD"),
-    weekEnd: moment().endOf("isoWeek").format("YYYY-MM-DD"),
+    year: parseInt(moment().format(yearFormat)),
+    weekStart: moment().startOf("isoWeek").format(dateFormat),
+    weekEnd: moment().endOf("isoWeek").format(dateFormat),
   });
-  const [datePicked, setDatePicked] = useState([]);
   const [selectedFrequency, setFrequency] = useState(1);
   const [stitle, setTitle] = useState(
     currentDate.monthString + " " + currentDate.year
   );
 
-  const [selectedWeek, setWeekData] = useState([]);
-  const [selectedMonth, setMonthData] = useState([]);
-  const [selectedYear, setYearData] = useState([]);
+  const [datePicked, setDatePicked] = useState();
+  const [isOpen, setBottomSheetOpen] = useState(false);
+
+  const [listWeeks, setWeekData] = useState([]);
+  const [listMonths, setMonthData] = useState([]);
+  const [listYears, setYearData] = useState([]);
+  const [minDate, setMinDate] = useState("01/01/2021");
+  const [maxDate, setMaxDate] = useState("01/01/2024");
 
   useEffect(() => {
     loadDatesList();
   }, []);
+
+  useEffect(() => {
+
+  }, [minDate, maxDate, stitle]);
 
   useEffect(() => {
     switch (selectedFrequency) {
@@ -67,31 +76,21 @@ const StatisticsScreen = () => {
   }, [selectedFrequency]);
 
   const setWeeklyStates = () => {
-    setTitle(getWeekly);
-    setPickerData(selectedWeek);
-    setDatePicked(stitle);
+    setTitle(getWeekly(currentDate.weekStart, currentDate.weekEnd));
   };
 
   const setMonthlyStates = () => {
     setTitle(`${currentDate.monthString} ${currentDate.year}`);
-    setPickerData(selectedMonth);
-    setDatePicked(stitle);
   };
 
   const setYearlyStates = () => {
     setTitle(`${currentDate.year}`);
-    setPickerData(selectedYear);
-    setDatePicked(stitle);
   };
 
-  const getWeekly = () => {
-    var startDate = moment(currentDate.weekStart)
-      .startOf("isoWeek")
-      .format("MMM D");
-    var endDate = moment(currentDate.weekEnd)
-      .endOf("isoWeek")
-      .format("MMM D, YYYY");
-    return `${startDate} -  ${endDate}`;
+  const getWeekly = (start, end) => {
+    var startDate = moment(start).startOf("isoWeek").format("MMM DD");
+    var endDate = moment(end).endOf("isoWeek").format("MMM DD, YYYY");
+    return `${startDate} - ${endDate}`;
   };
 
   function loadDatesList() {
@@ -112,37 +111,36 @@ const StatisticsScreen = () => {
       });
   }
 
-  function getPrevious(selectedList, datePicked) {
-    var currentIndex = selectedList.indexOf(datePicked);
-
+  function getPrevious(selectedList) {
+    var currentIndex = selectedList.indexOf(stitle);
     if (currentIndex > 0) {
       currentIndex = currentIndex - 1;
-      setDatePicked(selectedList[currentIndex]);
       setTitle(selectedList[currentIndex]);
+      changeCurrentDate(selectedList[currentIndex]);
     }
   }
 
-  function getNext(selectedList, datePicked) {
-    var currentIndex = selectedList.indexOf(datePicked);
-
+  function getNext(selectedList) {
+    var currentIndex = selectedList.indexOf(stitle);
     if (currentIndex < selectedList.length - 1) {
       currentIndex = currentIndex + 1;
-      setDatePicked(selectedList[currentIndex]);
       setTitle(selectedList[currentIndex]);
+      changeCurrentDate(selectedList[currentIndex]);
     }
   }
 
   // Handle Pressed Events ==========================
+
   const handleLeftPressed = () => {
     switch (selectedFrequency) {
       case 0:
-        getPrevious(selectedWeek, datePicked);
+        getPrevious(listWeeks);
         break;
       case 1:
-        getPrevious(selectedMonth, datePicked);
+        getPrevious(listMonths);
         break;
       case 2:
-        getPrevious(selectedYear, datePicked);
+        getPrevious(listYears);
         break;
     }
   };
@@ -150,71 +148,61 @@ const StatisticsScreen = () => {
   const handleRightPressed = () => {
     switch (selectedFrequency) {
       case 0:
-        getNext(selectedWeek, datePicked);
+        getNext(listWeeks);
         break;
       case 1:
-        getNext(selectedMonth, datePicked);
+        getNext(listMonths);
         break;
       case 2:
-        getNext(selectedYear, datePicked);
+        getNext(listYears);
         break;
     }
   };
 
-  // useEffect(() => {
-  //   console.log("CHINA", datePicked);
-  // }, [datePicked]);
-
   const handleOnDatePressed = () => {
     sheetRef.current.snapTo(1);
-    switch (selectedFrequency) {
-      case 0:
-        setPickerData(selectedWeek);
-        break;
-      case 1:
-        setPickerData(selectedMonth);
-        break;
-      case 2:
-        setPickerData(selectedYear);
-        break;
-    }
+    setBottomSheetOpen(true);
   };
 
   const onChangeBtnPressed = () => {
     sheetRef.current.snapTo(0);
-    setTitle(datePicked);
+    setBottomSheetOpen(false);
+    changeCurrentDate(datePicked);
+  };
 
-    var newPickedDate;
+  const changeCurrentDate = (date) => {
+    console.log("BEFORE: ", date)
+
     switch (selectedFrequency) {
       case 0:
-        const myArray = datePicked.split("-");
-        let word = myArray[0];
-        newPickedDate = moment(word, "MMM DD, YYYY");
+        const myArray = date.split("-");
+        date = moment(myArray[1], 'MMM-DD-YYYY')
         break;
       case 1:
-        newPickedDate = moment(datePicked, "MMM DD, YYYY");
+        date = moment(date, 'MMM-YYYY')
         break;
       case 2:
-        newPickedDate = moment(datePicked).startOf("year");
-        console.log(newPickedDate);
+        date = moment(date).startOf("year");
         break;
     }
-
     setCurrentMonth({
-      dateString: moment(newPickedDate).format("YYYY-MM-DD"),
-      day: parseInt(moment(newPickedDate).format("DD")),
-      month: parseInt(moment(newPickedDate).format("MM")),
-      monthString: moment(newPickedDate).format("MMMM"),
-      timestamp: parseInt(moment(newPickedDate).toDate().getTime()),
-      year: parseInt(moment(newPickedDate).format("YYYY")),
-      weekStart: moment(newPickedDate).startOf("isoWeek").format("YYYY-MM-DD"),
-      weekEnd: moment(newPickedDate).endOf("isoWeek").format("YYYY-MM-DD"),
+      dateString: moment(date).format(dateFormat),
+      day: parseInt(moment(date).format(dayFormat)),
+      month: parseInt(moment(date).format(monthFormat)),
+      monthString: moment(date).format("MMMM"),
+      timestamp: parseInt(moment(date).toDate().getTime()),
+      year: parseInt(moment(date).format(yearFormat)),
+      weekStart: moment(date).startOf("isoWeek").format(dateFormat),
+      weekEnd: moment(date).endOf("isoWeek").format(dateFormat),
     });
-    // console.log({ datePicked, currentDate, datePicked, newPickedDate });
+
+
   };
+
 
   const onCloseBottomSheet = () => {
     sheetRef.current.snapTo(0);
+    setBottomSheetOpen(false);
   };
 
   const handleIndexPressed = (index) => {
@@ -226,20 +214,24 @@ const StatisticsScreen = () => {
   const sheetRef = React.useRef(null);
 
   function setupPickerData(allEntries) {
-    var maxDate = moment(getMaxDate(allEntries));
-    var minDate = moment(getMinDate(allEntries));
+    var maxDate = moment(getMaxDate(allEntries)).endOf('year');
+    var minDate = moment(getMinDate(allEntries)).startOf('year');
     var monthArray = [];
     var yearArray = [];
     var weekArray = [];
 
-    let weekStart = moment.utc(minDate, "MMM-DD-YYYY");
-    let weekEnd = moment.utc(maxDate, "MMM-DD-YYYY");
+    let weekStart = moment(minDate, "MMM-DD-YYYY").startOf("year");
+    // add two so end date lands on the next week's tuesday which will then be included into the list
+    let weekEnd = moment(maxDate, "MMM-DD-YYYY").endOf("year");
+
+    setMinDate(moment(minDate).startOf('year').format("MM/DD/YYYY"));
+    setMaxDate(moment(maxDate).endOf('year').format("MM/DD/YYYY"));
 
     while (weekEnd.isAfter(weekStart)) {
       weekArray.push(
-        weekStart.startOf("isoWeek").format("MMM DD ") +
-          " - " +
-          weekStart.endOf("isoWeek").format("MMM DD, YYYY")
+        weekStart.startOf("isoWeek").format("MMM DD") +
+        " - " +
+        weekStart.endOf("isoWeek").format("MMM DD, YYYY")
       );
       weekStart.add(1, "week");
     }
@@ -247,37 +239,70 @@ const StatisticsScreen = () => {
 
     while (maxDate > minDate || minDate.format("M") === maxDate.format("M")) {
       monthArray.push(minDate.format("MMMM YYYY"));
-      if (!yearArray.includes(minDate.format("YYYY"))) {
-        yearArray.push(minDate.format("YYYY"));
+      if (!yearArray.includes(minDate.format(yearFormat))) {
+        yearArray.push(minDate.format(yearFormat));
       }
       minDate.add(1, "month");
     }
     setYearData(yearArray);
     setMonthData(monthArray);
+    console.log(listMonths)
   }
 
   const getMaxDate = (allEntries) => {
-    return moment.max(allEntries.map((x) => moment(x))).format("YYYY-MM-DD");
+    return moment.max(allEntries.map((x) => moment(x))).format(moment.DATE);
   };
 
   const getMinDate = (allEntries) => {
-    return moment.min(allEntries.map((x) => moment(x))).format("YYYY-MM-DD");
+    return moment.min(allEntries.map((x) => moment(x))).format(moment.DATE);
   };
 
-  // BackHandler.addEventListener("hardwareBackPress", function () {
-  //   if (isOpen) {
-  //     console.log(isOpen);
-  //   } else {
-  //     console.log(isOpen);
-  //   }
-  // });
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        if (isOpen) {
+          onCloseBottomSheet();
+          return true;
+        } else {
+          return false;
+        }
+      };
+
+      const subscription = BackHandler.addEventListener(
+        "hardwareBackPress",
+        onBackPress
+      );
+
+      return () => subscription.remove();
+    }, [isOpen])
+  );
+
+  const DatePick = () => {
+    return (
+      <DatePicker
+        style={{
+          backgroundColor: "white",
+          width: "100%",
+          height: 300,
+        }}
+        minimumDate={new Date(minDate)}
+        maximumDate={new Date(maxDate)}
+        selectLineSize={5}
+        date={datePicked}
+        onDateChange={date => {
+          setDatePicked(date)
+        }}
+      />
+    );
+  }
+
 
   return (
     <Animated.View style={{ flex: 1, backgroundColor: "transparent" }}>
       <SegmentedControlTab
         values={["Weekly", "Monthly", "Yearly"]}
         selectedIndex={selectedFrequency}
-        borderRadius={10}
+        borderRadius={5}
         onTabPress={handleIndexPressed}
         tabsContainerStyle={{
           height: 35,
@@ -295,7 +320,7 @@ const StatisticsScreen = () => {
 
       <View
         style={{
-          backgroundColor: "transparent",
+          alignItems: "center",
           flexDirection: "row",
           justifyContent: "center",
         }}
@@ -308,21 +333,22 @@ const StatisticsScreen = () => {
         />
 
         <TouchableNativeFeedback
-          rippleRadius={90}
           onPress={handleOnDatePressed}
-          background={TouchableNativeFeedback.Ripple("#EEE")}
+          background={TouchableNativeFeedback.Ripple("#75508b")}
         >
           <View
             style={{
+              height: 40,
+              width: "70%",
               paddingLeft: 15,
               paddingRight: 15,
-              borderRadius: 15,
+              borderRadius: 10,
               justifyContent: "center",
-              backgroundColor: "transparent",
+              backgroundColor: "rgba(255,255,255,0.4)",
             }}
           >
             <Text
-              style={{ fontSize: 22, color: "#75508b", textAlign: "center" }}
+              style={{ fontSize: 20, color: "#75508b", textAlign: "center" }}
             >
               {stitle}
             </Text>
@@ -369,6 +395,7 @@ const StatisticsScreen = () => {
               >
                 <View
                   style={{
+                    backgroundColor: "white",
                     flexDirection: "column",
                     alignItems: "center",
                   }}
@@ -399,33 +426,13 @@ const StatisticsScreen = () => {
                     />
                   </View>
 
-                  <Picker
-                    style={{
-                      backgroundColor: "white",
-                      width: "100%",
-                      height: "70%",
-                    }}
-                    // selectBackgroundColor="#8080801A"
-                    // selectedValue="March"
-                    pickerData={pickerData}
-                    onValueChange={(value) => {
-                      setDatePicked(value);
-                      console.log({ pickerData, value });
-
-                      console.log("THIS INDEX: ", pickerData.indexOf(value));
-                    }}
-                    selectLineSize={5}
-                    // selectedValue={selectedWeek}
-                  />
-
+                  <DatePick />
                   <TouchableOpacity
                     style={{
                       alignItems: "center",
                       backgroundColor: "#75508b",
                       padding: 10,
-                      margin: 15,
-                      width: "75%",
-                      borderRadius: 5,
+                      width: "100%",
                     }}
                     flex={1}
                     onPress={onChangeBtnPressed}
