@@ -1,14 +1,13 @@
 import { LineChart, YAxis, XAxis, Path } from "react-native-svg-charts";
 import * as shape from "d3-shape";
 import { Defs, G, Line } from "react-native-svg";
-import { View, StyleSheet, Text, Dimensions, ScrollView } from "react-native";
+import { View, Dimensions, ScrollView } from "react-native";
 import React, { useEffect, useState } from "react";
 import Database from "../../db/database";
 import { Colours } from "../../constants";
 import moment, { max } from "moment";
 import { ClipPath, Rect } from "react-native-svg";
 import * as scale from "d3-scale";
-import { TextSize } from "victory-native";
 
 const db = new Database();
 const SCREEN_WIDTH = Dimensions.get("window").width;
@@ -17,28 +16,34 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
   const [lineData, setLineData] = useState([]);
   const [lineFrequency, setLineFrequency] = useState();
   const [additionalWidth, setAdditionalWidth] = useState(-110);
+  const [xAxisInset, setXAxisInset] = useState(5);
 
   useEffect(() => {
     setLineData([]);
+
+    console.log("LINE: ", { month, year, weekStart, weekEnd, frequency })
 
     switch (frequency) {
       case 0: // WEEKLY
         setAdditionalWidth(SCREEN_WIDTH - 110);
         setLineFrequency(7);
         getWeeklyData();
+        setXAxisInset(10);
         break;
       case 1: // MONTHLY
-        setAdditionalWidth(SCREEN_WIDTH + 150);
+        setAdditionalWidth(SCREEN_WIDTH + 200);
         setLineFrequency(31);
         getMonthlyData();
+        setXAxisInset(6);
         break;
       case 2: // YEARLY
         setAdditionalWidth(SCREEN_WIDTH + 1500);
         setLineFrequency(365);
         getYearlyData();
+        setXAxisInset(8);
         break;
     }
-  }, [frequency]);
+  }, [frequency, weekStart, month, year]);
 
   function getYearlyData() {
     try {
@@ -66,7 +71,6 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
       db.getYearlyData(year)
         .then((resultSet) => {
           for (let i = 0; i < resultSet.rows.length; i++) {
-            console.log(resultSet.rows.item(i).savedate);
             var day = moment(resultSet.rows.item(i).savedate).dayOfYear();
             var mood = resultSet.rows.item(i).mood;
             moodList[day - 1].moodScale = parseInt(Colours[mood].intVal);
@@ -150,25 +154,25 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
     }
   }
 
-  const Clips = ({}) => (
+  const Clips = ({ }) => (
     <Defs key={"clips"}>
       <ClipPath id={"sad"}>
-        <Rect y={310} width={"100%"} height={"100%"} />
+        <Rect y={175} width={"100%"} height={"100%"} />
       </ClipPath>
       <ClipPath id={"angry"}>
-        <Rect y={245} width={"100%"} height={"100%"} />
+        <Rect y={140} width={"100%"} height={"100%"} />
       </ClipPath>
       <ClipPath id={"afraid"}>
-        <Rect y={186} width={"100%"} height={"100%"} />
+        <Rect y={102} width={"100%"} height={"100%"} />
       </ClipPath>
       <ClipPath id={"anxious"}>
-        <Rect y={125} width={"100%"} height={"100%"} />
+        <Rect y={70} width={"100%"} height={"100%"} />
       </ClipPath>
       <ClipPath id={"default"}>
-        <Rect y={120} width={"100%"} height={"100%"} />
+        <Rect y={67} width={"100%"} height={"100%"} />
       </ClipPath>
       <ClipPath id={"surprised"}>
-        <Rect y={60} width={"100%"} height={"100%"} />
+        <Rect y={35} width={"100%"} height={"100%"} />
       </ClipPath>
       <ClipPath id={"happy"}>
         <Rect y={0} width={"100%"} height={"100%"} />
@@ -247,27 +251,38 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
   );
 
   return (
-    <View style={styles.lineColumn}>
+    <View
+      style={{
+        height: 250,
+        flexDirection: "row",
+        justifyContent: "space-around",
+        backgroundColor: "rgba(255,255,255,0.4)",
+        borderRadius: 15,
+        margin: 15,
+      }}
+    >
       <View
         style={{
           flex: 1,
-          marginTop: 15,
+          marginTop: 8,
           marginLeft: 8,
-          marginRight: 8,
+          marginRight: 2,
           flexDirection: "row",
-          height: "90%",
+          height: "100%",
         }}
       >
         <YAxis
           style={{
-            height: "100%",
-            marginBottom: xAxisHeight + verticalContentInset.bottom,
+            height: "90%",
+            marginBottom: xAxisHeight,
           }}
           data={lineData}
-          contentInset={{ verticalContentInset }}
+          // data={[lineData]}
+          contentInset={{ top: 2 }}
           svg={{
-            fill: "white",
-            fontSize: 10,
+            fill: "#604c6d",
+            fontSize: 11,
+            fontWeight: "bold",
           }}
           max={2.1}
           min={-4.5}
@@ -297,7 +312,8 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
           <View style={{ marginLeft: 5 }}>
             <LineChart
               style={{
-                paddingTop: 5,
+                paddingTop: 2,
+                paddingBottom: 2,
                 width: additionalWidth,
                 flex: 1,
                 marginLeft: 5,
@@ -305,7 +321,7 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
               }}
               xScale={scale.scaleTime}
               data={lineData}
-              curve={shape.curveMonotoneX}
+              curve={shape.curveLinear}
               contentInset={{ chartInset }}
               svg={{
                 strokeWidth: 3,
@@ -315,10 +331,9 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
               yMax={2}
               yMin={-4}
               yAccessor={({ item }) => item.moodScale}
-              // xAccessor={({ item }) => item.day}
-              // animate={true}
-              // animationDuration={1500}
             >
+              <CustomGrid belowChart={true} />
+
               <Clips />
               <GreenLine />
               <YellowLine />
@@ -327,23 +342,21 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
               <OrangeLine />
               <RedLine />
               <BlueLine />
-
-              <CustomGrid belowChart={true} />
             </LineChart>
             <XAxis
               style={{
-                paddingTop: 20,
+                paddingTop: 5,
                 height: xAxisHeight,
                 width: "100%",
               }}
-              xAccessor={({ item }) => item.day}
               numberOfTicks={lineFrequency}
               data={lineData}
               formatLabel={(value, index) => lineData[index].label}
-              contentInset={{ left: HORIZONTAL_INSET, right: HORIZONTAL_INSET }}
+              contentInset={{ left: xAxisInset, right: xAxisInset }}
               svg={{
+                fontWeight: "bold",
                 fontSize: 10,
-                fill: "white",
+                fill: "#604c6d",
                 originY: 20,
               }}
             />
@@ -354,10 +367,8 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
   );
 };
 
-const chartInset = { bottom: 2, top: 1 };
-const verticalContentInset = { top: 0, bottom: 0 };
-const HORIZONTAL_INSET = 10;
-const xAxisHeight = 30;
+const chartInset = { bottom: 0, top: 0 };
+const xAxisHeight = 40;
 
 const CustomGrid = ({ x, y, data, ticks }) => {
   ticks = [-4, -3, -2, -1, 0, 1, 2];
@@ -372,7 +383,7 @@ const CustomGrid = ({ x, y, data, ticks }) => {
             x2={"100%"}
             y1={y(tick)}
             y2={y(tick)}
-            stroke={"grey"}
+            stroke={"rgba(109, 74, 120, 0.1)"}
           />
         ))
       }
@@ -386,7 +397,7 @@ const CustomGrid = ({ x, y, data, ticks }) => {
             y2={"100%"}
             x1={x(index)}
             x2={x(index)}
-            stroke={"rgba(0,0,0,0.2)"}
+            stroke={"rgba(109, 74, 120, 0.1)"}
           />
         ))
       }
@@ -395,14 +406,3 @@ const CustomGrid = ({ x, y, data, ticks }) => {
 };
 
 export default MyLineGraph;
-
-const styles = StyleSheet.create({
-  lineColumn: {
-    height: 450,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    backgroundColor: "#33343d",
-    borderRadius: 15,
-    margin: 16,
-  },
-});
