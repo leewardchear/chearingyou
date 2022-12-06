@@ -5,7 +5,7 @@ import {
   Text,
   TouchableNativeFeedback,
   BackHandler,
-  TouchableOpacity,
+  TouchableOpacity, StatusBar
 } from "react-native";
 import MyPieChart from "../components/Charts/PieChart";
 import MyLineGraph from "../components/Charts/LineChart";
@@ -21,7 +21,10 @@ import Database from "../db/database";
 import { IconButton, Portal } from "react-native-paper";
 import { useFocusEffect } from "@react-navigation/native";
 
-const { height: SCREEN_HEIGHT } = Dimensions.get("window");
+const windowHeight = Dimensions.get('window').height;
+const screenHeight = Dimensions.get('screen').height;
+const navbarHeight = screenHeight - windowHeight - StatusBar.currentHeight;
+
 const db = new Database();
 const dayFormat = "DD";
 const monthFormat = "MM";
@@ -29,6 +32,8 @@ const yearFormat = "YYYY";
 const dateFormat = "YYYY-MM-DD";
 
 const StatisticsScreen = () => {
+  console.log(navbarHeight)
+
   const [currentDate, setCurrentMonth] = useState({
     dateString: moment().format(dateFormat),
     day: parseInt(moment().format(dayFormat)),
@@ -195,8 +200,6 @@ const StatisticsScreen = () => {
       weekStart: moment(date).startOf("isoWeek").format(dateFormat),
       weekEnd: moment(date).endOf("isoWeek").format(dateFormat),
     });
-
-
   };
 
 
@@ -283,13 +286,14 @@ const StatisticsScreen = () => {
         style={{
           backgroundColor: "white",
           width: "100%",
-          height: 300,
+          height: navbarHeight == 0 ? 300 : 288,
         }}
         minimumDate={new Date(minDate)}
         maximumDate={new Date(maxDate)}
         selectLineSize={5}
         date={datePicked}
         onDateChange={date => {
+          console.log(date)
           setDatePicked(date)
         }}
       />
@@ -381,7 +385,7 @@ const StatisticsScreen = () => {
       <Portal>
         <BottomSheet
           ref={sheetRef}
-          snapPoints={[0, SCREEN_HEIGHT / 2]}
+          snapPoints={[0, windowHeight / 2]}
           borderRadius={20}
           enabledGestureInteraction={true}
           initialSnap={0}
@@ -434,7 +438,6 @@ const StatisticsScreen = () => {
                       padding: 10,
                       width: "100%",
                     }}
-                    flex={1}
                     onPress={onChangeBtnPressed}
                   >
                     <Text
