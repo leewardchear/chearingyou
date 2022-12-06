@@ -214,6 +214,28 @@ export default class Database {
     });
   };
 
+  deleteItem = (entryId) => {
+    return new Promise((resolve, reject) => {
+      this.initDatabase()
+        .then((db) => {
+          db.transaction((tx) => {
+            tx.executeSql(
+              "DELETE FROM items WHERE id = ?",
+              [entryId],
+              (txObj, resultSet) => {
+                resolve(resultSet);
+              },
+              (txObj, error) => {
+                console.log("Error", error);
+                reject(error);
+              }
+            );
+          });
+        })
+        .catch((error) => console.error(error));
+    });
+  };
+
   listDate = (savedate) => {
     return new Promise((resolve, reject) => {
       this.initDatabase()
