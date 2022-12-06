@@ -13,6 +13,8 @@ import ReactNativeSegmentedControlTab from "react-native-segmented-control-tab";
 import { Colours } from "../constants";
 import { Platform } from "react-native";
 import { useEffect, useState } from "react";
+import EntryView from "../components/EntryView";
+import { useSelector } from "react-redux";
 
 const Tab = createBottomTabNavigator();
 // const Tab = createMaterialBottomTabNavigator();
@@ -20,7 +22,13 @@ const Tab = createBottomTabNavigator();
 function TabsScreen(props) {
   const [bottomNav, setBottomNav] = useState(0);
   const [marginTop, setMarginTop] = useState(10);
+  const calEntry = useSelector((state) => state.calendar.calEntry);
 
+  const entryUi = useSelector((state) => state.calendar.entryUi);
+
+  useEffect(() => {
+    // console.log("entryUi", entryUi);
+  }, [entryUi]);
   useEffect(() => {
     const keyboardWillShow = (event) => {
       if (Platform.OS === "android") {
@@ -131,7 +139,7 @@ function TabsScreen(props) {
                   <LinearGradient
                     start={{ x: 0, y: 0 }}
                     end={{ x: 0.7, y: 0.5 }}
-                    colors={["#e6d7fd", "#cdeff9", "#d3dfff"]}
+                    colors={["#e6d7fd", "#e6d7fd", "#d3dfff"]}
                     style={{
                       top: -10,
                       // backgroundColor: Colours.anxious.code,
@@ -175,6 +183,9 @@ function TabsScreen(props) {
           />
         </Tab.Navigator>
       </SafeAreaView>
+      {entryUi && (
+        <EntryView pointerEvents="none" navigation={props.navigation} />
+      )}
     </LinearGradient>
   );
 }
