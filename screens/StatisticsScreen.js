@@ -30,9 +30,9 @@ const dayFormat = "DD";
 const monthFormat = "MM";
 const yearFormat = "YYYY";
 const dateFormat = "YYYY-MM-DD";
+const monthYearFormat = "MMMM YYYY"
 
 const StatisticsScreen = () => {
-  console.log(navbarHeight)
 
   const [currentDate, setCurrentMonth] = useState({
     dateString: moment().format(dateFormat),
@@ -137,6 +137,9 @@ const StatisticsScreen = () => {
   // Handle Pressed Events ==========================
 
   const handleLeftPressed = () => {
+    sheetRef.current.snapTo(0);
+    setBottomSheetOpen(false);
+
     switch (selectedFrequency) {
       case 0:
         getPrevious(listWeeks);
@@ -151,6 +154,9 @@ const StatisticsScreen = () => {
   };
 
   const handleRightPressed = () => {
+    sheetRef.current.snapTo(0);
+    setBottomSheetOpen(false);
+
     switch (selectedFrequency) {
       case 0:
         getNext(listWeeks);
@@ -172,11 +178,23 @@ const StatisticsScreen = () => {
   const onChangeBtnPressed = () => {
     sheetRef.current.snapTo(0);
     setBottomSheetOpen(false);
-    changeCurrentDate(datePicked);
+
+    switch (selectedFrequency) {
+      case 0:
+        setTitle(formatWeekTitle(datePicked))
+        break;
+      case 1:
+        setTitle(moment(datePicked).format(monthYearFormat))
+        break;
+      case 2:
+        setTitle(moment(datePicked).startOf("year").format(yearFormat))
+        break;
+    }
+
+    setupDate(datePicked)
   };
 
   const changeCurrentDate = (date) => {
-    console.log("BEFORE: ", date)
 
     switch (selectedFrequency) {
       case 0:
@@ -190,18 +208,21 @@ const StatisticsScreen = () => {
         date = moment(date).startOf("year");
         break;
     }
-    setCurrentMonth({
-      dateString: moment(date).format(dateFormat),
-      day: parseInt(moment(date).format(dayFormat)),
-      month: parseInt(moment(date).format(monthFormat)),
-      monthString: moment(date).format("MMMM"),
-      timestamp: parseInt(moment(date).toDate().getTime()),
-      year: parseInt(moment(date).format(yearFormat)),
-      weekStart: moment(date).startOf("isoWeek").format(dateFormat),
-      weekEnd: moment(date).endOf("isoWeek").format(dateFormat),
-    });
+    setupDate(date)
   };
 
+  function setupDate(setDate) {
+    setCurrentMonth({
+      dateString: moment(setDate).format(dateFormat),
+      day: parseInt(moment(setDate).format(dayFormat)),
+      month: parseInt(moment(setDate).format(monthFormat)),
+      monthString: moment(setDate).format("MMMM"),
+      timestamp: parseInt(moment(setDate).toDate().getTime()),
+      year: parseInt(moment(setDate).format(yearFormat)),
+      weekStart: moment(setDate).startOf("isoWeek").format(dateFormat),
+      weekEnd: moment(setDate).endOf("isoWeek").format(dateFormat),
+    });
+  }
 
   const onCloseBottomSheet = () => {
     sheetRef.current.snapTo(0);
@@ -231,17 +252,13 @@ const StatisticsScreen = () => {
     setMaxDate(moment(maxDate).endOf('year').format("MM/DD/YYYY"));
 
     while (weekEnd.isAfter(weekStart)) {
-      weekArray.push(
-        weekStart.startOf("isoWeek").format("MMM DD") +
-        " - " +
-        weekStart.endOf("isoWeek").format("MMM DD, YYYY")
-      );
+      weekArray.push(formatWeekTitle(weekStart));
       weekStart.add(1, "week");
     }
     setWeekData(weekArray);
 
     while (maxDate > minDate || minDate.format("M") === maxDate.format("M")) {
-      monthArray.push(minDate.format("MMMM YYYY"));
+      monthArray.push(minDate.format(monthYearFormat));
       if (!yearArray.includes(minDate.format(yearFormat))) {
         yearArray.push(minDate.format(yearFormat));
       }
@@ -259,6 +276,10 @@ const StatisticsScreen = () => {
   const getMinDate = (allEntries) => {
     return moment.min(allEntries.map((x) => moment(x))).format(moment.DATE);
   };
+
+  function formatWeekTitle(date) {
+    return moment(date).startOf("isoWeek").format("MMM DD") + " - " + moment(date).endOf("isoWeek").format("MMM DD, YYYY")
+  }
 
   useFocusEffect(
     React.useCallback(() => {

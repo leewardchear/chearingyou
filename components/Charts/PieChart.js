@@ -16,6 +16,8 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency }) => {
   const [graphicData, setGraphicData] = useState([]);
   const [colorData, setColorData] = useState([]);
   const [totalCount, setTotal] = useState(0);
+  const [hasData, setHasData] = useState(false);
+
 
   function getData() {
     switch (frequency) {
@@ -75,7 +77,6 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency }) => {
       if (mood == Colours.default.val) {
         continue;
       }
-
       if (!found) {
         var moodObj = {
           x: 0,
@@ -83,6 +84,7 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency }) => {
           mood: mood,
           color: Colours[mood].code,
         };
+
 
         var legendObj = {
           name: Colours[mood].name,
@@ -98,6 +100,12 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency }) => {
 
       moodList.find((m) => m.mood == mood).x++;
       moodList.find((m) => m.mood == mood).y++;
+    }
+
+    if (moodList.length == 0) {
+      setHasData(false)
+    } else {
+      setHasData(true)
     }
 
     setTotal(total);
@@ -116,25 +124,22 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency }) => {
         margin: 15,
       }}
     >
-      {/* <View
-        style={{
-          height: "10%",
-          backgroundColor: "white",
-          borderRadius: 10,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Text
-          style={{
-            textAlign: "center",
-            textAlignVertical: "center",
-          }}
-        >
-          No Data
-        </Text>
-      </View> */}
-      <View
+      {!hasData && <Text style={{
+        backgroundColor: "rgba(102, 84, 137,0.3)",
+        height: "10%",
+        paddingLeft: 10,
+        paddingRight: 10,
+        borderRadius: 8,
+        color: '#604c6d',
+        flexDirection: "row",
+        justifyContent: "center",
+        alignSelf: "center",
+        textAlign: "center",
+        textAlignVertical: "center",
+
+      }}>No Data Available</Text>}
+
+      {hasData && <View
         style={{
           marginLeft: 30,
           marginBottom: 30,
@@ -177,7 +182,7 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency }) => {
           rowGutter={2}
           data={legendData}
         />
-      </View>
+      </View>}
     </View>
   );
 };
