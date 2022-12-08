@@ -57,14 +57,14 @@ const StatisticsScreen = () => {
   const [listYears, setYearData] = useState([]);
   const [minDate, setMinDate] = useState("01/01/2021");
   const [maxDate, setMaxDate] = useState("01/01/2024");
+  const [allResults, setAllResults] = useState([]);
 
   useEffect(() => {
     loadDatesList();
   }, []);
 
   useEffect(() => {
-
-  }, [minDate, maxDate, stitle]);
+  }, [minDate, maxDate, stitle, allResults]);
 
   useEffect(() => {
     switch (selectedFrequency) {
@@ -109,7 +109,9 @@ const StatisticsScreen = () => {
             allEntries.push(dates);
           }
         }
-        setupPickerData(allEntries);
+
+        setAllResults(allEntries)
+        setupData(allEntries);
       })
       .catch((error) => {
         console.log(error);
@@ -237,7 +239,7 @@ const StatisticsScreen = () => {
   // BottomSheet Variables
   const sheetRef = React.useRef(null);
 
-  function setupPickerData(allEntries) {
+  function setupData(allEntries) {
     var maxDate = moment(getMaxDate(allEntries)).endOf('year');
     var minDate = moment(getMinDate(allEntries)).startOf('year');
     var monthArray = [];
@@ -266,7 +268,6 @@ const StatisticsScreen = () => {
     }
     setYearData(yearArray);
     setMonthData(monthArray);
-    console.log(listMonths)
   }
 
   const getMaxDate = (allEntries) => {
@@ -300,6 +301,7 @@ const StatisticsScreen = () => {
       return () => subscription.remove();
     }, [isOpen])
   );
+
 
   const DatePick = () => {
     return (
@@ -385,6 +387,7 @@ const StatisticsScreen = () => {
           size={25}
           onPress={handleRightPressed}
         />
+
       </View>
 
       <ScrollView>
@@ -394,6 +397,7 @@ const StatisticsScreen = () => {
           weekStart={currentDate.weekStart}
           weekEnd={currentDate.weekEnd}
           frequency={selectedFrequency}
+          allResults={allResults}
         />
         <MyPieChart
           month={currentDate.month}
@@ -401,6 +405,7 @@ const StatisticsScreen = () => {
           weekStart={currentDate.weekStart}
           weekEnd={currentDate.weekEnd}
           frequency={selectedFrequency}
+          allResults={allResults}
         />
       </ScrollView>
       <Portal>

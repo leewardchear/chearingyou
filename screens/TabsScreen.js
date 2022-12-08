@@ -10,7 +10,6 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { Portal } from "react-native-paper";
-import ReactNativeSegmentedControlTab from "react-native-segmented-control-tab";
 import { Colours } from "../constants";
 import { Platform } from "react-native";
 import { useEffect, useState } from "react";
@@ -60,7 +59,7 @@ function TabsScreen(props) {
       keyboardWillHideSub.remove();
     };
   }, []);
-  useEffect(() => {}, [bottomNav]);
+  useEffect(() => { }, [bottomNav]);
 
   return (
     <LinearGradient

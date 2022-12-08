@@ -12,7 +12,7 @@ import * as scale from "d3-scale";
 const db = new Database();
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
-const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
+const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency, allResults }) => {
   const [lineData, setLineData] = useState([]);
   const [lineFrequency, setLineFrequency] = useState();
   const [additionalWidth, setAdditionalWidth] = useState(-110);
@@ -20,6 +20,7 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
 
   useEffect(() => {
     setLineData([]);
+    console.log("LINE LOAD")
     switch (frequency) {
       case 0: // WEEKLY
         setAdditionalWidth(SCREEN_WIDTH - 110);
@@ -40,7 +41,7 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
         setXAxisInset(8);
         break;
     }
-  }, [frequency, weekStart, month, year]);
+  }, [frequency, weekStart, month, year, allResults]);
 
   function getYearlyData() {
     try {
