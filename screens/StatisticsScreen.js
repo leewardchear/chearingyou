@@ -20,7 +20,7 @@ import Animated from "react-native-reanimated";
 import BottomSheet from "reanimated-bottom-sheet";
 import Database from "../db/database";
 import { IconButton, Portal } from "react-native-paper";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 
 const windowHeight = Dimensions.get("window").height;
 const screenHeight = Dimensions.get("screen").height;
@@ -34,6 +34,7 @@ const dateFormat = "YYYY-MM-DD";
 const monthYearFormat = "MMMM YYYY";
 
 const StatisticsScreen = () => {
+  const isFocused = useIsFocused();
   const [currentDate, setCurrentMonth] = useState({
     dateString: moment().format(dateFormat),
     day: parseInt(moment().format(dayFormat)),
@@ -55,17 +56,18 @@ const StatisticsScreen = () => {
   const [listWeeks, setWeekData] = useState([]);
   const [listMonths, setMonthData] = useState([]);
   const [listYears, setYearData] = useState([]);
-  // const [minDate, setMinDate] = useState("2021-01-01 01/01/2021");
-  // const [maxDate, setMaxDate] = useState("01/01/2024");
-
-  const [minDate, setMinDate] = useState("2021-01-01");
-  const [maxDate, setMaxDate] = useState("2024-01-01");
+  const [minDate, setMinDate] = useState("01/01/2021");
+  const [maxDate, setMaxDate] = useState("01/01/2024");
+  const [allResults, setAllResults] = useState([]);
 
   useEffect(() => {
-    loadDatesList();
-  }, []);
+    if (isFocused) {
+      loadDatesList();
+    }
+  }, [isFocused]);
 
-  useEffect(() => {}, [minDate, maxDate, stitle]);
+  useEffect(() => {
+  }, [minDate, maxDate, stitle, allResults]);
 
   useEffect(() => {
     switch (selectedFrequency) {
@@ -110,7 +112,9 @@ const StatisticsScreen = () => {
             allEntries.push(dates);
           }
         }
-        setupPickerData(allEntries);
+
+        setAllResults(allEntries)
+        setupData(allEntries);
       })
       .catch((error) => {
         console.log(error);
@@ -237,9 +241,9 @@ const StatisticsScreen = () => {
   // BottomSheet Variables
   const sheetRef = React.useRef(null);
 
-  function setupPickerData(allEntries) {
-    var maxDate = moment(getMaxDate(allEntries)).endOf("year");
-    var minDate = moment(getMinDate(allEntries)).startOf("year");
+  function setupData(allEntries) {
+    var maxDate = moment(getMaxDate(allEntries)).endOf('year');
+    var minDate = moment(getMinDate(allEntries)).startOf('year');
     var monthArray = [];
     var yearArray = [];
     var weekArray = [];
@@ -268,7 +272,6 @@ const StatisticsScreen = () => {
     }
     setYearData(yearArray);
     setMonthData(monthArray);
-    console.log(listMonths);
   }
 
   const getMaxDate = (allEntries) => {
@@ -306,6 +309,7 @@ const StatisticsScreen = () => {
       return () => subscription.remove();
     }, [isOpen])
   );
+
 
   const DatePick = () => {
     return (
@@ -390,6 +394,7 @@ const StatisticsScreen = () => {
           size={25}
           onPress={handleRightPressed}
         />
+
       </View>
 
       <ScrollView>
@@ -399,6 +404,7 @@ const StatisticsScreen = () => {
           weekStart={currentDate.weekStart}
           weekEnd={currentDate.weekEnd}
           frequency={selectedFrequency}
+          allResults={allResults}
         />
         <MyPieChart
           month={currentDate.month}
@@ -406,6 +412,7 @@ const StatisticsScreen = () => {
           weekStart={currentDate.weekStart}
           weekEnd={currentDate.weekEnd}
           frequency={selectedFrequency}
+          allResults={allResults}
         />
       </ScrollView>
       <Portal>

@@ -7,7 +7,7 @@ import { Colours } from "../../constants";
 
 const db = new Database();
 
-const MyPieChart = ({ month, year, weekStart, weekEnd, frequency }) => {
+const MyPieChart = ({ month, year, weekStart, weekEnd, frequency, allResults }) => {
   var moodList = [];
   var legendList = [];
   var graphicColor = [];
@@ -17,7 +17,6 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency }) => {
   const [colorData, setColorData] = useState([]);
   const [totalCount, setTotal] = useState(0);
   const [hasData, setHasData] = useState(false);
-
 
   function getData() {
     switch (frequency) {
@@ -64,6 +63,7 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency }) => {
   }
 
   useEffect(() => {
+    console.log("PIE LOAD")
     getData();
   }, [frequency, weekStart, month, year]);
 
