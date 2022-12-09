@@ -20,9 +20,6 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
 
   useEffect(() => {
     setLineData([]);
-
-    console.log("LINE: ", { month, year, weekStart, weekEnd, frequency })
-
     switch (frequency) {
       case 0: // WEEKLY
         setAdditionalWidth(SCREEN_WIDTH - 110);
@@ -104,7 +101,9 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency }) => {
 
       db.getMonthlyData(("0" + month).slice(-2), year)
         .then((resultSet) => {
-          for (let i = 1; i < resultSet.rows.length; i++) {
+
+          for (let i = 0; i < resultSet.rows.length; i++) {
+            console.log(resultSet.rows.item(i))
             var dayIndex = parseInt(
               getDate(resultSet.rows.item(i).savedate).day,
               10
