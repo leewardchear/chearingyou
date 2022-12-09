@@ -70,9 +70,7 @@ export const journalentry = createSlice({
     },
 
     clearEntry: (state, value) => {
-      console.log("CLEAR");
       state.entryvalue = "";
-      // state.day = "";
       state.mood = "default";
       state.env = "";
       state.entryId = null;

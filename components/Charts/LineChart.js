@@ -20,7 +20,6 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency, allResults })
 
   useEffect(() => {
     setLineData([]);
-    console.log("LINE LOAD")
     switch (frequency) {
       case 0: // WEEKLY
         setAdditionalWidth(SCREEN_WIDTH - 110);

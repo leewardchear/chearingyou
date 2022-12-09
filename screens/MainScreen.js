@@ -77,7 +77,6 @@ const MainScreen = ({ route, navigation }) => {
   useFocusEffect(
     React.useCallback(() => {
       if (newEntry) {
-        console.log(mood);
         dispatch(clearEntry());
         setEntryData(entryvalue);
         setMood(Colours.default.val);
@@ -86,9 +85,14 @@ const MainScreen = ({ route, navigation }) => {
   );
 
   useEffect(() => {
-    setEntryData(calEntry.text);
-    dispatch(setMood(calEntry.mood));
-    dispatch(setEnv(calEntry.env));
+    console.log("useEffect", { calEntry });
+    if (JSON.stringify(calEntry) !== JSON.stringify({})) {
+      console.log("akosj", { calEntry });
+
+      setEntryData(calEntry.text);
+      dispatch(setMood(calEntry.mood));
+      dispatch(setEnv(calEntry.env));
+    }
   }, [calEntry]);
 
   useEffect(() => {
@@ -185,6 +189,8 @@ const MainScreen = ({ route, navigation }) => {
   }, [showenv]);
 
   useEffect(() => {
+    console.log("useEffect", { entryId, entryvalue, entryData, mood, env });
+
     if (entryData === "" && mood === "default" && env === "") {
       return;
     }
@@ -199,7 +205,6 @@ const MainScreen = ({ route, navigation }) => {
         });
     } else {
       console.log("updateItem", entryId);
-
       db.updateItem(entryId, entryData, mood, env)
         .then((resultSet) => {
           // dispatch(setEntryId(resultSet.insertId));
@@ -246,7 +251,7 @@ const MainScreen = ({ route, navigation }) => {
         >
           <TouchableHighlight
             onPress={() => {
-              db.deleteAll();
+              db.deleteDb();
             }}
           >
             <View>

@@ -65,7 +65,7 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency, allResults }) 
   useEffect(() => {
     console.log("PIE LOAD")
     getData();
-  }, [frequency, weekStart, month, year, allResults]);
+  }, [frequency, weekStart, month, year]);
 
   function plotPie(resultSet) {
     var total = 0;

@@ -17,6 +17,7 @@ import { BlurView } from "@react-native-community/blur";
 import { Colours } from "../constants.js";
 import Moment from "moment";
 import { setEntryId } from "../app/journalentry.js";
+import Database from "../db/database";
 
 const EntryView = ({ pointerEvents, navigation }) => {
   const blurAnim = useRef(new Animated.Value(0)).current;
@@ -134,7 +135,6 @@ const EntryView = ({ pointerEvents, navigation }) => {
           {
             text: "Cancel",
             onPress: () => {
-              deleteEntry();
               toggleMore();
             },
             style: "cancel",
@@ -143,6 +143,9 @@ const EntryView = ({ pointerEvents, navigation }) => {
             text: "OK",
             onPress: () => {
               toggleMore();
+              deleteEntry();
+
+              dispatch(setEntryUi(false));
             },
           },
         ]

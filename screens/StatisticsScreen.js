@@ -5,7 +5,8 @@ import {
   Text,
   TouchableNativeFeedback,
   BackHandler,
-  TouchableOpacity, StatusBar
+  TouchableOpacity,
+  StatusBar,
 } from "react-native";
 import MyPieChart from "../components/Charts/PieChart";
 import MyLineGraph from "../components/Charts/LineChart";
@@ -19,10 +20,10 @@ import Animated from "react-native-reanimated";
 import BottomSheet from "reanimated-bottom-sheet";
 import Database from "../db/database";
 import { IconButton, Portal } from "react-native-paper";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 
-const windowHeight = Dimensions.get('window').height;
-const screenHeight = Dimensions.get('screen').height;
+const windowHeight = Dimensions.get("window").height;
+const screenHeight = Dimensions.get("screen").height;
 const navbarHeight = screenHeight - windowHeight - StatusBar.currentHeight;
 
 const db = new Database();
@@ -30,10 +31,10 @@ const dayFormat = "DD";
 const monthFormat = "MM";
 const yearFormat = "YYYY";
 const dateFormat = "YYYY-MM-DD";
-const monthYearFormat = "MMMM YYYY"
+const monthYearFormat = "MMMM YYYY";
 
 const StatisticsScreen = () => {
-
+  const isFocused = useIsFocused();
   const [currentDate, setCurrentMonth] = useState({
     dateString: moment().format(dateFormat),
     day: parseInt(moment().format(dayFormat)),
@@ -60,8 +61,10 @@ const StatisticsScreen = () => {
   const [allResults, setAllResults] = useState([]);
 
   useEffect(() => {
-    loadDatesList();
-  }, []);
+    if (isFocused) {
+      loadDatesList();
+    }
+  }, [isFocused]);
 
   useEffect(() => {
   }, [minDate, maxDate, stitle, allResults]);
@@ -183,34 +186,33 @@ const StatisticsScreen = () => {
 
     switch (selectedFrequency) {
       case 0:
-        setTitle(formatWeekTitle(datePicked))
+        setTitle(formatWeekTitle(datePicked));
         break;
       case 1:
-        setTitle(moment(datePicked).format(monthYearFormat))
+        setTitle(moment(datePicked).format(monthYearFormat));
         break;
       case 2:
-        setTitle(moment(datePicked).startOf("year").format(yearFormat))
+        setTitle(moment(datePicked).startOf("year").format(yearFormat));
         break;
     }
 
-    setupDate(datePicked)
+    setupDate(datePicked);
   };
 
   const changeCurrentDate = (date) => {
-
     switch (selectedFrequency) {
       case 0:
         const myArray = date.split("-");
-        date = moment(myArray[1], 'MMM-DD-YYYY')
+        date = moment(myArray[1], "MMM-DD-YYYY");
         break;
       case 1:
-        date = moment(date, 'MMM-YYYY')
+        date = moment(date, "MMM-YYYY");
         break;
       case 2:
         date = moment(date).startOf("year");
         break;
     }
-    setupDate(date)
+    setupDate(date);
   };
 
   function setupDate(setDate) {
@@ -250,8 +252,10 @@ const StatisticsScreen = () => {
     // add two so end date lands on the next week's tuesday which will then be included into the list
     let weekEnd = moment(maxDate, "MMM-DD-YYYY").endOf("year");
 
-    setMinDate(moment(minDate).startOf('year').format("MM/DD/YYYY"));
-    setMaxDate(moment(maxDate).endOf('year').format("MM/DD/YYYY"));
+    // setMinDate(moment(minDate).startOf("year").format("MM/DD/YYYY"));
+    // setMaxDate(moment(maxDate).endOf("year").format("MM/DD/YYYY"));
+    setMinDate(moment(minDate).startOf("year").format("YYYY-MM-DDTHH:mm:ss"));
+    setMaxDate(moment(maxDate).endOf("year").format("YYYY-MM-DDTHH:mm:ss"));
 
     while (weekEnd.isAfter(weekStart)) {
       weekArray.push(formatWeekTitle(weekStart));
@@ -279,7 +283,11 @@ const StatisticsScreen = () => {
   };
 
   function formatWeekTitle(date) {
-    return moment(date).startOf("isoWeek").format("MMM DD") + " - " + moment(date).endOf("isoWeek").format("MMM DD, YYYY")
+    return (
+      moment(date).startOf("isoWeek").format("MMM DD") +
+      " - " +
+      moment(date).endOf("isoWeek").format("MMM DD, YYYY")
+    );
   }
 
   useFocusEffect(
@@ -315,14 +323,13 @@ const StatisticsScreen = () => {
         maximumDate={new Date(maxDate)}
         selectLineSize={5}
         date={datePicked}
-        onDateChange={date => {
-          console.log(date)
-          setDatePicked(date)
+        onDateChange={(date) => {
+          console.log(date);
+          setDatePicked(date);
         }}
       />
     );
-  }
-
+  };
 
   return (
     <Animated.View style={{ flex: 1, backgroundColor: "transparent" }}>
