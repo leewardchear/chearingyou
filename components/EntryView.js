@@ -298,7 +298,7 @@ const EntryView = ({ pointerEvents, navigation }) => {
         // backgroundColor: "black",
       }}
     >
-      <AnimBlur
+      <BlurView
         style={{
           flex: 1,
           maxHeight: "100%",
@@ -307,7 +307,7 @@ const EntryView = ({ pointerEvents, navigation }) => {
           padding: 10,
         }}
         blurType="light"
-        blurAmount={blurAnim}
+        blurRadius={5}
       >
         <Animated.View style={{ top: insets.top }}>
           <View
@@ -410,7 +410,7 @@ const EntryView = ({ pointerEvents, navigation }) => {
             </TouchableOpacity>
           </View>
         </Animated.View>
-      </AnimBlur>
+      </BlurView>
     </Animated.View>
   );
 };
