@@ -301,4 +301,17 @@ export default class Database {
         .catch((error) => console.error(error));
     });
   };
+
+  deleteDb = () => {
+    return new Promise((resolve, reject) => {
+      SQLite.deleteDatabase("my.db")
+        .then(() => {
+          console.log("Database DELETED");
+          this.updateProgress("Database DELETED");
+        })
+        .catch((error) => {
+          this.errorCB(error);
+        });
+    });
+  };
 }

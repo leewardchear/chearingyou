@@ -50,16 +50,17 @@ const StatisticsScreen = () => {
   const [listWeeks, setWeekData] = useState([]);
   const [listMonths, setMonthData] = useState([]);
   const [listYears, setYearData] = useState([]);
-  const [minDate, setMinDate] = useState("01/01/2021");
-  const [maxDate, setMaxDate] = useState("01/01/2024");
+  // const [minDate, setMinDate] = useState("2021-01-01 01/01/2021");
+  // const [maxDate, setMaxDate] = useState("01/01/2024");
+
+  const [minDate, setMinDate] = useState("2021-01-01");
+  const [maxDate, setMaxDate] = useState("2024-01-01");
 
   useEffect(() => {
     loadDatesList();
   }, []);
 
-  useEffect(() => {
-
-  }, [minDate, maxDate, stitle]);
+  useEffect(() => {}, [minDate, maxDate, stitle]);
 
   useEffect(() => {
     switch (selectedFrequency) {
@@ -171,15 +172,15 @@ const StatisticsScreen = () => {
   };
 
   const changeCurrentDate = (date) => {
-    console.log("BEFORE: ", date)
+    console.log("BEFORE: ", date);
 
     switch (selectedFrequency) {
       case 0:
         const myArray = date.split("-");
-        date = moment(myArray[1], 'MMM-DD-YYYY')
+        date = moment(myArray[1], "MMM-DD-YYYY");
         break;
       case 1:
-        date = moment(date, 'MMM-YYYY')
+        date = moment(date, "MMM-YYYY");
         break;
       case 2:
         date = moment(date).startOf("year");
@@ -195,10 +196,7 @@ const StatisticsScreen = () => {
       weekStart: moment(date).startOf("isoWeek").format(dateFormat),
       weekEnd: moment(date).endOf("isoWeek").format(dateFormat),
     });
-
-
   };
-
 
   const onCloseBottomSheet = () => {
     sheetRef.current.snapTo(0);
@@ -214,8 +212,8 @@ const StatisticsScreen = () => {
   const sheetRef = React.useRef(null);
 
   function setupPickerData(allEntries) {
-    var maxDate = moment(getMaxDate(allEntries)).endOf('year');
-    var minDate = moment(getMinDate(allEntries)).startOf('year');
+    var maxDate = moment(getMaxDate(allEntries)).endOf("year");
+    var minDate = moment(getMinDate(allEntries)).startOf("year");
     var monthArray = [];
     var yearArray = [];
     var weekArray = [];
@@ -224,14 +222,16 @@ const StatisticsScreen = () => {
     // add two so end date lands on the next week's tuesday which will then be included into the list
     let weekEnd = moment(maxDate, "MMM-DD-YYYY").endOf("year");
 
-    setMinDate(moment(minDate).startOf('year').format("MM/DD/YYYY"));
-    setMaxDate(moment(maxDate).endOf('year').format("MM/DD/YYYY"));
+    // setMinDate(moment(minDate).startOf("year").format("MM/DD/YYYY"));
+    // setMaxDate(moment(maxDate).endOf("year").format("MM/DD/YYYY"));
+    setMinDate(moment(minDate).startOf("year").format("YYYY-MM-DDTHH:mm:ss"));
+    setMaxDate(moment(maxDate).endOf("year").format("YYYY-MM-DDTHH:mm:ss"));
 
     while (weekEnd.isAfter(weekStart)) {
       weekArray.push(
         weekStart.startOf("isoWeek").format("MMM DD") +
-        " - " +
-        weekStart.endOf("isoWeek").format("MMM DD, YYYY")
+          " - " +
+          weekStart.endOf("isoWeek").format("MMM DD, YYYY")
       );
       weekStart.add(1, "week");
     }
@@ -246,7 +246,7 @@ const StatisticsScreen = () => {
     }
     setYearData(yearArray);
     setMonthData(monthArray);
-    console.log(listMonths)
+    console.log(listMonths);
   }
 
   const getMaxDate = (allEntries) => {
@@ -289,13 +289,12 @@ const StatisticsScreen = () => {
         maximumDate={new Date(maxDate)}
         selectLineSize={5}
         date={datePicked}
-        onDateChange={date => {
-          setDatePicked(date)
+        onDateChange={(date) => {
+          setDatePicked(date);
         }}
       />
     );
-  }
-
+  };
 
   return (
     <Animated.View style={{ flex: 1, backgroundColor: "transparent" }}>
