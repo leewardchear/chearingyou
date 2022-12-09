@@ -88,11 +88,13 @@ const DayList = ({ style, navigation, newEntry }) => {
           showEmptyList(false);
         }
         for (let i = 0; i < resultSet.rows.length; i++) {
+          console.log(resultSet.rows.item(i));
           newlist.push(resultSet.rows.item(i));
         }
         fadeInAnim();
 
         setProcessing(false);
+
         setDateList(newlist);
       })
       .catch((error) => {
@@ -177,7 +179,7 @@ const DayList = ({ style, navigation, newEntry }) => {
             }}
           >
             <Text style={{ fontSize: 12, fontWeight: "400" }}>
-              {Colours[entryMood].code}
+              {Colours[entryMood].name}
             </Text>
             <View
               style={{

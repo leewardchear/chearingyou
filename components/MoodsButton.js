@@ -231,7 +231,7 @@ function MoodsButton(props) {
                     ? Colours[mood].code == Colours.default.code
                       ? "rgba(0,0,0,0)"
                       : Colours[mood].code
-                    : "white"
+                    : "transparent"
                 }
                 stroke="white"
                 strokeWidth="4"
