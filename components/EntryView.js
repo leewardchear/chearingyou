@@ -39,7 +39,7 @@ const EntryView = ({ pointerEvents, navigation }) => {
 
   const AnimBlur = Animated.createAnimatedComponent(BlurView);
   const ScrollBlur = Animated.createAnimatedComponent(ScrollView);
-  console.log("EntryView", calEntry);
+  // console.log("EntryView", calEntry);
 
   useEffect(() => {
     if (calEntry.id != null) {
@@ -80,8 +80,9 @@ const EntryView = ({ pointerEvents, navigation }) => {
 
     //     easing: Easing.sin,
     //   }).start(() => {
+    console.log("edit", calEntry.id);
     dispatch(setEntryUi(false));
-    dispatch(setEntryId(calEntry.id));
+    // dispatch(setEntryId(calEntry.id));
     navigation.navigate("HomeTab", {
       day: { dateString: calEntry.savedate },
       newEntry: false,
@@ -116,7 +117,7 @@ const EntryView = ({ pointerEvents, navigation }) => {
     const db = new Database();
     db.deleteItem(calEntry.id)
       .then((resultSet) => {
-        dispatch(setEntryId(resultSet.insertId));
+        // dispatch(setEntryId(resultSet.insertId));
       })
       .catch((error) => {
         console.log(error);
