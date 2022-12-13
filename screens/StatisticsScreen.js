@@ -56,8 +56,8 @@ const StatisticsScreen = () => {
   const [listWeeks, setWeekData] = useState([]);
   const [listMonths, setMonthData] = useState([]);
   const [listYears, setYearData] = useState([]);
-  const [minDate, setMinDate] = useState("01/01/2021");
-  const [maxDate, setMaxDate] = useState("01/01/2024");
+  const [minDate, setMinDate] = useState("2021-01-01");
+  const [maxDate, setMaxDate] = useState("2024-01-01");
   const [allResults, setAllResults] = useState([]);
 
   useEffect(() => {
@@ -66,8 +66,7 @@ const StatisticsScreen = () => {
     }
   }, [isFocused]);
 
-  useEffect(() => {
-  }, [minDate, maxDate, stitle, allResults]);
+  useEffect(() => {}, [minDate, maxDate, stitle, allResults]);
 
   useEffect(() => {
     switch (selectedFrequency) {
@@ -113,7 +112,7 @@ const StatisticsScreen = () => {
           }
         }
 
-        setAllResults(allEntries)
+        setAllResults(allEntries);
         setupData(allEntries);
       })
       .catch((error) => {
@@ -242,8 +241,8 @@ const StatisticsScreen = () => {
   const sheetRef = React.useRef(null);
 
   function setupData(allEntries) {
-    var maxDate = moment(getMaxDate(allEntries)).endOf('year');
-    var minDate = moment(getMinDate(allEntries)).startOf('year');
+    var maxDate = moment(getMaxDate(allEntries)).endOf("year");
+    var minDate = moment(getMinDate(allEntries)).startOf("year");
     var monthArray = [];
     var yearArray = [];
     var weekArray = [];
@@ -309,7 +308,6 @@ const StatisticsScreen = () => {
       return () => subscription.remove();
     }, [isOpen])
   );
-
 
   const DatePick = () => {
     return (
@@ -394,7 +392,6 @@ const StatisticsScreen = () => {
           size={25}
           onPress={handleRightPressed}
         />
-
       </View>
 
       <ScrollView>

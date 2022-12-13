@@ -85,11 +85,12 @@ const MainScreen = ({ route, navigation }) => {
   );
 
   useEffect(() => {
-    console.log("useEffect", { calEntry });
+    console.log("useEffect_calentry", { calEntry });
     if (JSON.stringify(calEntry) !== JSON.stringify({})) {
-      console.log("akosj", { calEntry });
+      // console.log("akosj", { calEntry });
 
       setEntryData(calEntry.text);
+      dispatch(setEntryId(calEntry.id));
       dispatch(setMood(calEntry.mood));
       dispatch(setEnv(calEntry.env));
     }
@@ -170,7 +171,7 @@ const MainScreen = ({ route, navigation }) => {
 
   useEffect(() => {}, [env]);
   useEffect(() => {
-    console.log("dismiss");
+    // console.log("dismiss");
 
     if (showmood) {
       dispatch(setHideEnv());
@@ -189,7 +190,7 @@ const MainScreen = ({ route, navigation }) => {
   }, [showenv]);
 
   useEffect(() => {
-    console.log("useEffect", { entryId, entryvalue, entryData, mood, env });
+    // console.log("useEffect", { entryId, entryvalue, entryData, mood, env });
 
     if (entryData === "" && mood === "default" && env === "") {
       return;
