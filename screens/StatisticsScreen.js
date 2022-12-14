@@ -21,6 +21,7 @@ import BottomSheet from "reanimated-bottom-sheet";
 import Database from "../db/database";
 import { IconButton, Portal } from "react-native-paper";
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
+import MyBarChart from "../components/Charts/BarChart";
 
 const windowHeight = Dimensions.get("window").height;
 const screenHeight = Dimensions.get("screen").height;
@@ -59,6 +60,7 @@ const StatisticsScreen = () => {
   const [minDate, setMinDate] = useState("01/01/2021");
   const [maxDate, setMaxDate] = useState("01/01/2024");
   const [allResults, setAllResults] = useState([]);
+  const [dbResults, setDbResults] = useState([]);
 
   useEffect(() => {
     if (isFocused) {
@@ -67,33 +69,54 @@ const StatisticsScreen = () => {
   }, [isFocused]);
 
   useEffect(() => {
-  }, [minDate, maxDate, stitle, allResults]);
+  }, [minDate, maxDate, stitle, allResults, dbResults]);
 
   useEffect(() => {
     switch (selectedFrequency) {
       case 0:
-        setWeeklyStates();
+        setTitle(getWeekly(currentDate.weekStart, currentDate.weekEnd));
+        getWeeklyData();
         break;
       case 1:
-        setMonthlyStates();
+        setTitle(`${currentDate.monthString} ${currentDate.year}`);
+        getMonthlyData();
         break;
       case 2:
-        setYearlyStates();
+        setTitle(`${currentDate.year}`);
+        getYearlyData();
         break;
     }
-  }, [selectedFrequency]);
+  }, [stitle, selectedFrequency]);
 
-  const setWeeklyStates = () => {
-    setTitle(getWeekly(currentDate.weekStart, currentDate.weekEnd));
-  };
+  function getMonthlyData() {
+    db.getMonthlyData(("0" + currentDate.month).slice(-2), currentDate.year)
+      .then((resultSet) => {
+        setDbResults(resultSet)
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
-  const setMonthlyStates = () => {
-    setTitle(`${currentDate.monthString} ${currentDate.year}`);
-  };
+  function getWeeklyData() {
+    db.getWeeklyData(currentDate.weekStart, currentDate.weekEnd)
+      .then((resultSet) => {
+        setDbResults(resultSet)
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
-  const setYearlyStates = () => {
-    setTitle(`${currentDate.year}`);
-  };
+  function getYearlyData() {
+    db.getYearlyData(currentDate.year)
+      .then((resultSet) => {
+        setDbResults(resultSet)
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
   const getWeekly = (start, end) => {
     var startDate = moment(start).startOf("isoWeek").format("MMM DD");
@@ -377,8 +400,9 @@ const StatisticsScreen = () => {
               paddingLeft: 15,
               paddingRight: 15,
               borderRadius: 10,
+              elevation: 5,
               justifyContent: "center",
-              backgroundColor: "rgba(255,255,255,0.4)",
+              backgroundColor: "#E7DBFB",
             }}
           >
             <Text
@@ -405,14 +429,16 @@ const StatisticsScreen = () => {
           weekEnd={currentDate.weekEnd}
           frequency={selectedFrequency}
           allResults={allResults}
+          dbResults={dbResults}
         />
         <MyPieChart
-          month={currentDate.month}
-          year={currentDate.year}
-          weekStart={currentDate.weekStart}
-          weekEnd={currentDate.weekEnd}
           frequency={selectedFrequency}
-          allResults={allResults}
+          dbResults={dbResults}
+        />
+
+        <MyBarChart
+          frequency={selectedFrequency}
+          dbResults={dbResults}
         />
       </ScrollView>
       <Portal>

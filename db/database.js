@@ -79,6 +79,7 @@ export default class Database {
         .catch((error) => console.error(error));
     });
   };
+
   updateItem = (entryId, gibberish, mood, env) => {
     // console.log("updateItem", gibberish, mood, env);
     return new Promise((resolve, reject) => {
