@@ -31,6 +31,8 @@ function CalendarScreen({ route, navigation }) {
   const [journalentries, setEntries] = useState({});
   const dispatch = useDispatch();
   const selectedDate = useSelector((state) => state.calendar.selectedDate);
+  const dbdate = useSelector((state) => state.loadedapp.dbupdate);
+
   const calEntry = useSelector((state) => state.calendar.calEntry);
 
   const [daylistshowing, setDayListShow] = useState(true);
@@ -59,6 +61,7 @@ function CalendarScreen({ route, navigation }) {
   }
 
   function reloadData() {
+    console.log("reload");
     db.listItems()
       .then((resultSet) => {
         var marked = {};
@@ -114,6 +117,11 @@ function CalendarScreen({ route, navigation }) {
   }, [navigation, selectedDate, daylistshowing, sumEntries]);
 
   useEffect(() => {}, [newEntry, journalentries]);
+
+  useEffect(() => {
+    console.log(dbdate);
+    reloadData();
+  }, [dbdate]);
 
   const setDate = (date) => {
     dispatch(setSelectedDate(date));

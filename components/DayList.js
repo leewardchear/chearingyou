@@ -37,6 +37,7 @@ const DayList = ({ style, navigation, newEntry }) => {
 
   const [emptyList, showEmptyList] = useState(false);
   const selecteddate = useSelector((state) => state.calendar.selectedDate);
+  const dbdate = useSelector((state) => state.loadedapp.dbupdate);
 
   const db = new Database();
   formattedDate = Moment(selecteddate.dateString).format("LL");
@@ -50,7 +51,7 @@ const DayList = ({ style, navigation, newEntry }) => {
     }).start(({ finish }) => {
       getData();
     });
-  }, [selecteddate, newEntry]);
+  }, [selecteddate, newEntry, dbdate]);
 
   useEffect(() => {}, [processing]);
 

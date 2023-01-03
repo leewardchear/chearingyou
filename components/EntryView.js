@@ -18,6 +18,7 @@ import { Colours } from "../constants.js";
 import Moment from "moment";
 import { setEntryId } from "../app/journalentry.js";
 import Database from "../db/database";
+import { setDbUpdate } from "../app/loadedappslice.js";
 
 const EntryView = ({ pointerEvents, navigation }) => {
   const blurAnim = useRef(new Animated.Value(0)).current;
@@ -112,11 +113,21 @@ const EntryView = ({ pointerEvents, navigation }) => {
       });
     });
   };
+  const storeData = async (value) => {
+    try {
+      await AsyncStorage.setItem("@db_update", JSON.stringify(value));
+    } catch (e) {
+      // saving error
+    }
+  };
 
   const deleteEntry = () => {
     const db = new Database();
     db.deleteItem(calEntry.id)
       .then((resultSet) => {
+        var dbupdate = Moment().valueOf();
+        storeData(dbupdate);
+        dispatch(setDbUpdate(dbupdate));
         // dispatch(setEntryId(resultSet.insertId));
       })
       .catch((error) => {
