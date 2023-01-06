@@ -12,7 +12,14 @@ import * as scale from "d3-scale";
 const db = new Database();
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
-const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency, allResults }) => {
+const MyLineGraph = ({
+  month,
+  year,
+  weekStart,
+  weekEnd,
+  frequency,
+  allResults,
+}) => {
   const [lineData, setLineData] = useState([]);
   const [lineFrequency, setLineFrequency] = useState();
   const [additionalWidth, setAdditionalWidth] = useState(-110);
@@ -65,7 +72,7 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency, allResults })
         moodList.push(moodObj);
       }
 
-      db.getYearlyData(year)
+      db.getYearlyData(year.toString())
         .then((resultSet) => {
           for (let i = 0; i < resultSet.rows.length; i++) {
             var day = moment(resultSet.rows.item(i).savedate).dayOfYear();
@@ -101,9 +108,8 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency, allResults })
 
       db.getMonthlyData(("0" + month).slice(-2), year)
         .then((resultSet) => {
-
           for (let i = 0; i < resultSet.rows.length; i++) {
-            console.log(resultSet.rows.item(i))
+            console.log(resultSet.rows.item(i));
             var dayIndex = parseInt(
               getDate(resultSet.rows.item(i).savedate).day,
               10
@@ -153,7 +159,7 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency, allResults })
     }
   }
 
-  const Clips = ({ }) => (
+  const Clips = ({}) => (
     <Defs key={"clips"}>
       <ClipPath id={"sad"}>
         <Rect y={175} width={"100%"} height={"100%"} />
