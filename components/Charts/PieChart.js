@@ -7,7 +7,14 @@ import { Colours } from "../../constants";
 
 const db = new Database();
 
-const MyPieChart = ({ month, year, weekStart, weekEnd, frequency, allResults }) => {
+const MyPieChart = ({
+  month,
+  year,
+  weekStart,
+  weekEnd,
+  frequency,
+  allResults,
+}) => {
   var moodList = [];
   var legendList = [];
   var graphicColor = [];
@@ -33,7 +40,7 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency, allResults }) 
   }
 
   function getYearlyData() {
-    db.getYearlyData(year)
+    db.getYearlyData(year.toString())
       .then((resultSet) => {
         plotPie(resultSet);
       })
@@ -63,7 +70,7 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency, allResults }) 
   }
 
   useEffect(() => {
-    console.log("PIE LOAD")
+    console.log("PIE LOAD");
     getData();
   }, [frequency, weekStart, month, year]);
 
@@ -85,7 +92,6 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency, allResults }) 
           color: Colours[mood].code,
         };
 
-
         var legendObj = {
           name: Colours[mood].name,
           symbol: { fill: Colours[mood].code, type: "square" },
@@ -103,9 +109,9 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency, allResults }) 
     }
 
     if (moodList.length == 0) {
-      setHasData(false)
+      setHasData(false);
     } else {
-      setHasData(true)
+      setHasData(true);
     }
 
     setTotal(total);
@@ -124,65 +130,74 @@ const MyPieChart = ({ month, year, weekStart, weekEnd, frequency, allResults }) 
         margin: 15,
       }}
     >
-      {!hasData && <Text style={{
-        backgroundColor: "rgba(102, 84, 137,0.3)",
-        height: "10%",
-        paddingLeft: 10,
-        paddingRight: 10,
-        borderRadius: 8,
-        color: '#604c6d',
-        flexDirection: "row",
-        justifyContent: "center",
-        alignSelf: "center",
-        textAlign: "center",
-        textAlignVertical: "center",
-
-      }}>No Data Available</Text>}
-
-      {hasData && <View
-        style={{
-          marginLeft: 30,
-          marginBottom: 30,
-          height: 250,
-          flexDirection: "row",
-          justifyContent: "space-around",
-        }}
-      >
-        <VictoryPie
-          height={280}
+      {!hasData && (
+        <Text
           style={{
-            data: {
-              fillOpacity: 0.9,
-              stroke: "white",
-              strokeWidth: 4,
-            },
-            labels: {
-              fontSize: 12,
-              fill: "#50265e",
-              fontWeight: "bold",
-            },
+            backgroundColor: "rgba(102, 84, 137,0.3)",
+            height: "10%",
+            paddingLeft: 10,
+            paddingRight: 10,
+            borderRadius: 8,
+            color: "#604c6d",
+            flexDirection: "row",
+            justifyContent: "center",
+            alignSelf: "center",
+            textAlign: "center",
+            textAlignVertical: "center",
           }}
-          innerRadius={25}
-          animate={{ duration: 1000 }}
-          colorScale={colorData}
-          data={graphicData}
-          // labelPosition={({ index }) => (index ? "centroid" : "startAngle")}
-          // labelPlacement={({ index }) => (index ? "parallel" : "vertical")}
-          labels={({ datum }) => `${Math.round((datum.y / totalCount) * 100)}%`}
-          // radius={({ datum }) => 10 + datum.y * 1}
-          labelRadius={({ innerRadius }) => innerRadius + 35}
-          padAngle={0.5}
-        />
+        >
+          No Data Available
+        </Text>
+      )}
 
-        <VictoryLegend
-          x={140}
-          y={40}
-          orientation="vertical"
-          itemsPerRow={7}
-          rowGutter={2}
-          data={legendData}
-        />
-      </View>}
+      {hasData && (
+        <View
+          style={{
+            marginLeft: 30,
+            marginBottom: 30,
+            height: 250,
+            flexDirection: "row",
+            justifyContent: "space-around",
+          }}
+        >
+          <VictoryPie
+            height={280}
+            style={{
+              data: {
+                fillOpacity: 0.9,
+                stroke: "white",
+                strokeWidth: 4,
+              },
+              labels: {
+                fontSize: 12,
+                fill: "#50265e",
+                fontWeight: "bold",
+              },
+            }}
+            innerRadius={25}
+            animate={{ duration: 1000 }}
+            colorScale={colorData}
+            data={graphicData}
+            // labelPosition={({ index }) => (index ? "centroid" : "startAngle")}
+            // labelPlacement={({ index }) => (index ? "parallel" : "vertical")}
+            labels={({ datum }) =>
+              `${Math.round((datum.y / totalCount) * 100)}%`
+            }
+            // radius={({ datum }) => 10 + datum.y * 1}
+            labelRadius={({ innerRadius }) => innerRadius + 35}
+            padAngle={0.5}
+          />
+
+          <VictoryLegend
+            x={140}
+            y={40}
+            orientation="vertical"
+            itemsPerRow={7}
+            rowGutter={2}
+            data={legendData}
+          />
+        </View>
+      )}
     </View>
   );
 };
