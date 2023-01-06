@@ -38,6 +38,7 @@ import {
   setProgState,
   setEnv,
 } from "../app/journalentry";
+import { setDbUpdate } from "../app/loadedappslice";
 import { Colors } from "react-native-paper";
 import { Colours } from "../constants.js";
 import Environment from "../components/Environment";
@@ -47,6 +48,9 @@ import {
   Gesture,
   Directions,
 } from "react-native-gesture-handler";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 // import ProgressWheel from "../components/ProgressWheel";
 
 const MainScreen = ({ route, navigation }) => {
@@ -58,6 +62,8 @@ const MainScreen = ({ route, navigation }) => {
 
   const [cleft, setLeft] = useState(0);
   const [ctop, setTop] = useState(0);
+
+  const [typingTimer, setTypingTimer] = useState();
 
   const dispatch = useDispatch();
   const showmood = useSelector((state) => state.journal.moodshow);
@@ -85,7 +91,7 @@ const MainScreen = ({ route, navigation }) => {
   );
 
   useEffect(() => {
-    console.log("useEffect_calentry", { calEntry });
+    // console.log("useEffect_calentry", { calEntry });
     if (JSON.stringify(calEntry) !== JSON.stringify({})) {
       // console.log("akosj", { calEntry });
 
@@ -189,31 +195,50 @@ const MainScreen = ({ route, navigation }) => {
     }
   }, [showenv]);
 
+  // var oneSec;
   useEffect(() => {
+    console.log("clear");
+
+    var oneSec = setTimeout(() => {
+      console.log("5 sec.");
+      if (entryData === "" && mood === "default" && env === "") {
+        console.log("dont save");
+
+        return;
+      }
+
+      if (entryId == null) {
+        console.log("save new");
+        db.newItem(entryData, mood, env, day.dateString)
+          .then((resultSet) => {
+            var dbupdate = Moment().valueOf();
+            storeData(dbupdate);
+            dispatch(setDbUpdate(dbupdate));
+            dispatch(setEntryId(resultSet.insertId));
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } else {
+        console.log("updateItem", entryId);
+        db.updateItem(entryId, entryData, mood, env)
+          .then((resultSet) => {
+            var dbupdate = Moment().valueOf();
+            storeData(dbupdate);
+            dispatch(setDbUpdate(dbupdate));
+            // dispatch(setEntryId(resultSet.insertId));
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    }, 5000);
+
     // console.log("useEffect", { entryId, entryvalue, entryData, mood, env });
 
-    if (entryData === "" && mood === "default" && env === "") {
-      return;
-    }
-
-    if (entryId == null) {
-      db.newItem(entryData, mood, env, day.dateString)
-        .then((resultSet) => {
-          dispatch(setEntryId(resultSet.insertId));
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    } else {
-      console.log("updateItem", entryId);
-      db.updateItem(entryId, entryData, mood, env)
-        .then((resultSet) => {
-          // dispatch(setEntryId(resultSet.insertId));
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
+    return () => {
+      clearTimeout(oneSec);
+    };
   }, [mood, env, entryData]);
 
   mainToggleShow = () => {
@@ -233,6 +258,25 @@ const MainScreen = ({ route, navigation }) => {
     .onStart((e) => {
       runOnJS(uiDismiss)("can pass arguments too");
     });
+
+  const storeData = async (value) => {
+    try {
+      await AsyncStorage.setItem("@db_update", JSON.stringify(value));
+    } catch (e) {
+      // saving error
+    }
+  };
+
+  const getData = async () => {
+    try {
+      const dbupdate = await AsyncStorage.getItem("@db_update");
+      if (value !== null) {
+        return dbupdate;
+      }
+    } catch (e) {
+      // error reading value
+    }
+  };
 
   return (
     <GestureDetector gesture={flingGesture}>
