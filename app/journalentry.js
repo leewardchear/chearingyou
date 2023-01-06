@@ -54,6 +54,7 @@ export const journalentry = createSlice({
     },
 
     setEntryId: (state, value) => {
+      console.log("setEntryId", value);
       state.entryId = value.payload;
     },
 
@@ -70,6 +71,7 @@ export const journalentry = createSlice({
     },
 
     clearEntry: (state, value) => {
+      console.log("clear");
       state.entryvalue = "";
       state.mood = "default";
       state.env = "";

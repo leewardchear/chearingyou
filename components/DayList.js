@@ -88,7 +88,7 @@ const DayList = ({ style, navigation, newEntry }) => {
           showEmptyList(false);
         }
         for (let i = 0; i < resultSet.rows.length; i++) {
-          console.log(resultSet.rows.item(i));
+          // console.log(resultSet.rows.item(i));
           newlist.push(resultSet.rows.item(i));
         }
         fadeInAnim();
@@ -140,6 +140,7 @@ const DayList = ({ style, navigation, newEntry }) => {
               text: entryText,
               fromwindow: fromwindow,
             };
+            console.log("openEntry");
             dispatch(setCalEntry(calEntry));
 
             dispatch(setEntryUi(true));
