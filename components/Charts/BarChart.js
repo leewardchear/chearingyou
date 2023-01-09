@@ -1,13 +1,15 @@
 import { VictoryChart, VictoryBar, VictoryStack, VictoryAxis } from "victory-native";
-import { View, StyleSheet } from "react-native";
+import { View, Dimensions, ScrollView } from "react-native";
 import { useState } from "react";
 import React, { useEffect } from "react";
-import { Colours, MoodColors } from "../../constants";
+import { Colours, } from "../../constants";
 
+const screenWidth = Dimensions.get('window').width;
 
 const MyBarChart = ({ frequency, dbResults }) => {
-    const [graphData, setGraphData] = useState({});
+    const [graphData, setGraphData] = useState([]);
     const [maxY, setMaxY] = useState(0);
+    const [barWidth, setBarWidth] = useState();
 
     useEffect(() => {
         plotBar(dbResults)
@@ -45,9 +47,30 @@ const MyBarChart = ({ frequency, dbResults }) => {
                 }
             }
             setGraphData(moodList);
-            console.log(moodList)
-
             setMaxYAxis()
+            getTotalCategories(moodList)
+        }
+    }
+
+    function getTotalCategories(dataset) {
+        const xCounts = Object.values(dataset).reduce((counts, arr) => {
+            arr.forEach(obj => {
+                if (!counts[obj.x]) {
+                    counts[obj.x] = 1;
+                } else {
+                    counts[obj.x] += 1;
+                }
+            });
+
+            return counts;
+        }, {});
+
+        const distinctYCount = Object.keys(xCounts).length;
+
+        if (distinctYCount === 1) {
+            setBarWidth(screenWidth / 4)
+        } else {
+            setBarWidth(screenWidth / (distinctYCount * 3))
         }
     }
 
@@ -73,10 +96,10 @@ const MyBarChart = ({ frequency, dbResults }) => {
         }
 
         setMaxY(greatestTotal);
-        console.log(greatestTotal)
     }
 
     return (
+
         <View
             style={{
                 height: 250,
@@ -87,88 +110,92 @@ const MyBarChart = ({ frequency, dbResults }) => {
                 margin: 15,
             }}
         >
+            <ScrollView horizontal={true} width={"100%"}>
 
-            <VictoryChart
-                domainPadding={{ x: 10 }}
-                padding={{ left: 30, top: 40, bottom: 55, right: 50 }}
-            >
+                <VictoryChart
+                    maxDomain={{ y: maxY + 1 }}
+                    domainPadding={{ x: (barWidth + 2) / 2 }}
+                    padding={{ left: 30, top: 20, bottom: 100, right: 50 }}
+                >
 
-                <VictoryAxis dependentAxis
-                    tickCount={2}
-                    tickFormat={(tick) => Math.round(tick)}
-                    style={{
-                        grid: {
-                            stroke: "rgba(109, 74, 120, 0.3)",
-                            strokeWidth: 1,
-                            strokeDasharray: "8,2"
-                        },
-                    }} />
+                    <VictoryAxis dependentAxis
+                        tickCount={maxY + 1}
 
-                <VictoryAxis tickFormat={(tick) => tick} />
+                        tickFormat={(tick) => Math.round(tick)}
+                        style={{
+                            grid: {
+                                stroke: "rgba(109, 74, 120, 0.3)",
+                                strokeWidth: 1,
+                                strokeDasharray: "8,2"
+                            },
+                        }} />
 
-                <VictoryStack colorScale={MoodColors}>
 
-                    {graphData["happy"] && <VictoryBar
-                        data={graphData["happy"]}
-                        barWidth={20}
-                        alignment="middle"
-                        style={barStyles.bar}
-                        shadowColor="black"
-                        shadowOffset={{ width: 1, height: 1 }}
-                        shadowOpacity={0.5}
-                    />
-                    }
-                    {graphData["angry"] && <VictoryBar
-                        data={graphData["angry"]}
-                        barWidth={20}
-                        alignment="middle"
-                        style={barStyles.bar}
-                        shadowColor="black"
-                        shadowOffset={{ width: 1, height: 1 }}
-                        shadowOpacity={0.1}
-                    />
-                    }
-                    {graphData["afraid"] && <VictoryBar
-                        data={graphData["afraid"]}
-                        barWidth={20}
-                        alignment="middle"
-                        style={barStyles.bar}
-                    />
-                    }
-                    {graphData["surprised"] && <VictoryBar
-                        data={graphData["surprised"]}
-                        barWidth={20}
-                        alignment="middle"
-                        style={barStyles.bar}
-                    />
-                    }
-                    {graphData["anxious"] && <VictoryBar
-                        data={graphData["anxious"]}
-                        barWidth={20}
-                        alignment="middle"
-                        style={barStyles.bar}
-                    />
-                    }
-                    {graphData["sad"] && <VictoryBar
-                        data={graphData["sad"]}
-                        barWidth={20}
-                        alignment="middle"
-                        style={barStyles.bar}
-                    />
-                    }
-                </VictoryStack>
-            </VictoryChart>
+                    <VictoryAxis
+                        tickFormat={(tick) => tick}
+
+                        style={{
+                            tickLabels: {
+                                angle: 30,
+                                fontSize: 14,
+                                textAnchor: 'start',
+                                textOverflow: 'ellipsis',
+                                maxWidth: 5,
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                            }
+                        }} />
+
+                    <VictoryStack >
+
+                        {graphData["happy"] && <VictoryBar
+                            data={graphData["happy"]}
+                            barWidth={barWidth}
+                            alignment="middle"
+                            style={{ data: { fill: Colours["happy"].code } }}
+                        />
+                        }
+                        {graphData["angry"] && <VictoryBar
+                            data={graphData["angry"]}
+                            barWidth={barWidth}
+                            alignment="middle"
+                            style={{ data: { fill: Colours["angry"].code } }}
+                        />
+                        }
+                        {graphData["afraid"] && <VictoryBar
+                            data={graphData["afraid"]}
+                            barWidth={barWidth}
+                            alignment="middle"
+                            style={{ data: { fill: Colours["afraid"].code } }}
+                        />
+                        }
+                        {graphData["surprised"] && <VictoryBar
+                            data={graphData["surprised"]}
+                            barWidth={barWidth}
+                            alignment="middle"
+                            style={{ data: { fill: Colours["surprised"].code } }}
+                        />
+                        }
+                        {graphData["anxious"] && <VictoryBar
+                            data={graphData["anxious"]}
+                            barWidth={barWidth}
+                            alignment="middle"
+                            style={{ data: { fill: Colours["anxious"].code } }}
+                        />
+                        }
+                        {graphData["sad"] && <VictoryBar
+                            data={graphData["sad"]}
+                            barWidth={barWidth}
+                            alignment="middle"
+                            style={{ data: { fill: Colours["sad"].code } }}
+                        />
+                        }
+                    </VictoryStack>
+                </VictoryChart>
+            </ScrollView>
 
         </View>
     );
 };
-const barStyles = StyleSheet.create({
-    bar: {
-        data: {
-            // stroke: "black",
-            // fillOpacity: 0.7,
-            // strokeWidth: 2
-        },
-    },
-});
+
 export default MyBarChart;
