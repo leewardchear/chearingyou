@@ -13,3 +13,6 @@ export const Colours = {
   // default: { name: "Neutral", val: "default", code: "#f1f1f1", intVal: 0 },
   default: { name: "Neutral", val: "default", code: "#c1c1c1", intVal: 0 },
 };
+
+export const MoodColors = [Colours.happy.code, Colours.angry.code, Colours.afraid.code
+  , Colours.surprised.code, Colours.anxious.code, Colours.sad.code];

@@ -3,23 +3,14 @@ import * as shape from "d3-shape";
 import { Defs, G, Line } from "react-native-svg";
 import { View, Dimensions, ScrollView } from "react-native";
 import React, { useEffect, useState } from "react";
-import Database from "../../db/database";
 import { Colours } from "../../constants";
 import moment, { max } from "moment";
 import { ClipPath, Rect } from "react-native-svg";
 import * as scale from "d3-scale";
 
-const db = new Database();
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
-const MyLineGraph = ({
-  month,
-  year,
-  weekStart,
-  weekEnd,
-  frequency,
-  allResults,
-}) => {
+const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency, allResults, dbResults }) => {
   const [lineData, setLineData] = useState([]);
   const [lineFrequency, setLineFrequency] = useState();
   const [additionalWidth, setAdditionalWidth] = useState(-110);
@@ -31,135 +22,123 @@ const MyLineGraph = ({
       case 0: // WEEKLY
         setAdditionalWidth(SCREEN_WIDTH - 110);
         setLineFrequency(7);
-        getWeeklyData();
+        getWeeklyData(dbResults);
         setXAxisInset(10);
         break;
       case 1: // MONTHLY
         setAdditionalWidth(SCREEN_WIDTH + 200);
         setLineFrequency(31);
-        getMonthlyData();
+        getMonthlyData(dbResults);
         setXAxisInset(6);
         break;
       case 2: // YEARLY
         setAdditionalWidth(SCREEN_WIDTH + 1500);
         setLineFrequency(365);
-        getYearlyData();
+        getYearlyData(dbResults);
         setXAxisInset(8);
         break;
     }
-  }, [frequency, weekStart, month, year, allResults]);
+  }, [frequency, weekStart, month, year, allResults, dbResults]);
 
-  function getYearlyData() {
+  function getYearlyData(resultSet) {
     try {
-      var daysInYear = 365;
-      var moodList = [];
+      if (resultSet !== undefined && resultSet.length !== 0) {
 
-      for (let i = 1; i <= daysInYear; i++) {
-        var date = moment().dayOfYear(i).format("MMM-DD");
-        var day = moment(date).dayOfYear(i).format("DD");
-        var month = moment(date).dayOfYear(i).format("MMM");
+        var daysInYear = 365;
+        var moodList = [];
 
-        var monthLabel = "";
-        if (day == "01") {
-          monthLabel = month;
+        for (let i = 1; i <= daysInYear; i++) {
+          var date = moment().dayOfYear(i).format("MMM-DD");
+          var day = moment(date).dayOfYear(i).format("DD");
+          var month = moment(date).dayOfYear(i).format("MMM");
+
+          var monthLabel = "";
+          if (day == "01") {
+            monthLabel = month;
+          }
+
+          var moodObj = {
+            day: i,
+            moodScale: 0,
+            label: monthLabel,
+          };
+          moodList.push(moodObj);
         }
 
-        var moodObj = {
-          day: i,
-          moodScale: 0,
-          label: monthLabel,
-        };
-        moodList.push(moodObj);
+        for (let i = 0; i < resultSet.rows.length; i++) {
+          var day = moment(resultSet.rows.item(i).savedate).dayOfYear();
+          var mood = resultSet.rows.item(i).mood;
+          moodList[day - 1].moodScale = parseInt(Colours[mood].intVal);
+        }
+        setLineData(moodList);
       }
-
-      db.getYearlyData(year.toString())
-        .then((resultSet) => {
-          for (let i = 0; i < resultSet.rows.length; i++) {
-            var day = moment(resultSet.rows.item(i).savedate).dayOfYear();
-            var mood = resultSet.rows.item(i).mood;
-            moodList[day - 1].moodScale = parseInt(Colours[mood].intVal);
-          }
-          setLineData(moodList);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
     } catch (error) {
       console.log(error);
     }
   }
 
-  function getMonthlyData() {
+  function getMonthlyData(resultSet) {
     try {
-      var daysInMonth = moment(month, "MM").daysInMonth();
-      var moodList = [];
-      for (let i = 1; i <= daysInMonth; i++) {
-        var moodObj = {
-          day: i,
-          moodScale: 0,
-          label: i,
-        };
+      if (resultSet !== undefined && resultSet.length !== 0) {
+        var daysInMonth = moment(month, "MM").daysInMonth();
+        var moodList = [];
+        for (let i = 1; i <= daysInMonth; i++) {
+          var moodObj = {
+            day: i,
+            moodScale: 0,
+            label: i,
+          };
 
-        moodList.push(moodObj);
+          moodList.push(moodObj);
+        }
+
+        const getDate = (string) =>
+          (([year, month, day]) => ({ year, month, day }))(string.split("-"));
+
+        for (let i = 0; i < resultSet.rows.length; i++) {
+          var dayIndex = parseInt(
+            getDate(resultSet.rows.item(i).savedate).day,
+            10
+          );
+          var mood = resultSet.rows.item(i).mood;
+          moodList[dayIndex - 1].moodScale = parseInt(Colours[mood].intVal);
+        }
+        setLineData(moodList);
       }
-
-      const getDate = (string) =>
-        (([year, month, day]) => ({ year, month, day }))(string.split("-"));
-
-      db.getMonthlyData(("0" + month).slice(-2), year)
-        .then((resultSet) => {
-          for (let i = 0; i < resultSet.rows.length; i++) {
-            console.log(resultSet.rows.item(i));
-            var dayIndex = parseInt(
-              getDate(resultSet.rows.item(i).savedate).day,
-              10
-            );
-            var mood = resultSet.rows.item(i).mood;
-            moodList[dayIndex - 1].moodScale = parseInt(Colours[mood].intVal);
-          }
-          setLineData(moodList);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
     } catch (error) {
       console.log(error);
     }
   }
 
-  function getWeeklyData() {
+  function getWeeklyData(resultSet) {
     try {
-      var moodList = [];
+      if (resultSet !== undefined && resultSet.length !== 0) {
 
-      for (let i = 1; i <= 7; i++) {
-        var moodObj = {
-          day: i,
-          moodScale: 0,
-          label: moment().day(i).format("ddd"),
-        };
+        var moodList = [];
 
-        moodList.push(moodObj);
+        for (let i = 1; i <= 7; i++) {
+          var moodObj = {
+            day: i,
+            moodScale: 0,
+            label: moment().day(i).format("ddd"),
+          };
+
+          moodList.push(moodObj);
+        }
+
+        for (let i = 0; i < resultSet.rows.length; i++) {
+          var day = moment(resultSet.rows.item(i).savedate).isoWeekday();
+          var mood = resultSet.rows.item(i).mood;
+          moodList[day - 1].moodScale = parseInt(Colours[mood].intVal);
+        }
+        setLineData(moodList);
       }
-
-      db.getWeeklyData(weekStart, weekEnd)
-        .then((resultSet) => {
-          for (let i = 0; i < resultSet.rows.length; i++) {
-            var day = moment(resultSet.rows.item(i).savedate).isoWeekday();
-            var mood = resultSet.rows.item(i).mood;
-            moodList[day - 1].moodScale = parseInt(Colours[mood].intVal);
-          }
-
-          setLineData(moodList);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
     } catch (error) {
       console.log(error);
     }
   }
 
-  const Clips = ({}) => (
+  const Clips = ({ }) => (
     <Defs key={"clips"}>
       <ClipPath id={"sad"}>
         <Rect y={175} width={"100%"} height={"100%"} />
@@ -261,7 +240,8 @@ const MyLineGraph = ({
         height: 250,
         flexDirection: "row",
         justifyContent: "space-around",
-        backgroundColor: "rgba(255,255,255,0.4)",
+        backgroundColor: "#ECE1FF",
+        elevation: 5,
         borderRadius: 15,
         margin: 15,
       }}

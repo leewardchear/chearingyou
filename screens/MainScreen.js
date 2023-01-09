@@ -175,7 +175,7 @@ const MainScreen = ({ route, navigation }) => {
     return unsubscribe;
   }, [navigation]);
 
-  useEffect(() => {}, [env]);
+  useEffect(() => { }, [env]);
   useEffect(() => {
     // console.log("dismiss");
 
