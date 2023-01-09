@@ -175,7 +175,7 @@ const MainScreen = ({ route, navigation }) => {
     return unsubscribe;
   }, [navigation]);
 
-  useEffect(() => {}, [env]);
+  useEffect(() => { }, [env]);
   useEffect(() => {
     // console.log("dismiss");
 
@@ -195,43 +195,13 @@ const MainScreen = ({ route, navigation }) => {
     }
   }, [showenv]);
 
-  // var oneSec;
+  var oneSec;
   useEffect(() => {
     console.log("clear");
 
-    var oneSec = setTimeout(() => {
+    oneSec = setTimeout(() => {
       console.log("5 sec.");
-      if (entryData === "" && mood === "default" && env === "") {
-        console.log("dont save");
-
-        return;
-      }
-
-      if (entryId == null) {
-        console.log("save new");
-        db.newItem(entryData, mood, env, day.dateString)
-          .then((resultSet) => {
-            var dbupdate = Moment().valueOf();
-            storeData(dbupdate);
-            dispatch(setDbUpdate(dbupdate));
-            dispatch(setEntryId(resultSet.insertId));
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      } else {
-        console.log("updateItem", entryId);
-        db.updateItem(entryId, entryData, mood, env)
-          .then((resultSet) => {
-            var dbupdate = Moment().valueOf();
-            storeData(dbupdate);
-            dispatch(setDbUpdate(dbupdate));
-            // dispatch(setEntryId(resultSet.insertId));
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }
+      saveEntry();
     }, 5000);
 
     // console.log("useEffect", { entryId, entryvalue, entryData, mood, env });
@@ -240,6 +210,40 @@ const MainScreen = ({ route, navigation }) => {
       clearTimeout(oneSec);
     };
   }, [mood, env, entryData]);
+  saveEntry = () => {
+    clearTimeout(oneSec);
+    if (entryData === "" && mood === "default" && env === "") {
+      console.log("dont save");
+
+      return;
+    }
+
+    if (entryId == null) {
+      console.log("save new");
+      db.newItem(entryData, mood, env, day.dateString)
+        .then((resultSet) => {
+          var dbupdate = Moment().valueOf();
+          storeData(dbupdate);
+          dispatch(setDbUpdate(dbupdate));
+          dispatch(setEntryId(resultSet.insertId));
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else {
+      console.log("updateItem", entryId);
+      db.updateItem(entryId, entryData, mood, env)
+        .then((resultSet) => {
+          var dbupdate = Moment().valueOf();
+          storeData(dbupdate);
+          dispatch(setDbUpdate(dbupdate));
+          // dispatch(setEntryId(resultSet.insertId));
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  };
 
   mainToggleShow = () => {
     dispatch(setMoodUi());
@@ -411,7 +415,7 @@ const MainScreen = ({ route, navigation }) => {
                   console.log("SAVE DAY", day);
 
                   dispatch(setProgState(1));
-
+                  saveEntry();
                   // setEntryData("");
                 }}
               >
