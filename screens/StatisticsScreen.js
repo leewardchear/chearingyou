@@ -68,8 +68,7 @@ const StatisticsScreen = () => {
     }
   }, [isFocused]);
 
-  useEffect(() => {
-  }, [minDate, maxDate, stitle, allResults, dbResults]);
+  useEffect(() => {}, [minDate, maxDate, stitle, allResults, dbResults]);
 
   useEffect(() => {
     switch (selectedFrequency) {
@@ -91,7 +90,7 @@ const StatisticsScreen = () => {
   function getMonthlyData() {
     db.getMonthlyData(("0" + currentDate.month).slice(-2), currentDate.year)
       .then((resultSet) => {
-        setDbResults(resultSet)
+        setDbResults(resultSet);
       })
       .catch((error) => {
         console.log(error);
@@ -101,7 +100,7 @@ const StatisticsScreen = () => {
   function getWeeklyData() {
     db.getWeeklyData(currentDate.weekStart, currentDate.weekEnd)
       .then((resultSet) => {
-        setDbResults(resultSet)
+        setDbResults(resultSet);
       })
       .catch((error) => {
         console.log(error);
@@ -109,9 +108,9 @@ const StatisticsScreen = () => {
   }
 
   function getYearlyData() {
-    db.getYearlyData(currentDate.year)
+    db.getYearlyData(currentDate.year.toString())
       .then((resultSet) => {
-        setDbResults(resultSet)
+        setDbResults(resultSet);
       })
       .catch((error) => {
         console.log(error);
@@ -429,15 +428,9 @@ const StatisticsScreen = () => {
           allResults={allResults}
           dbResults={dbResults}
         />
-        <MyPieChart
-          frequency={selectedFrequency}
-          dbResults={dbResults}
-        />
+        <MyPieChart frequency={selectedFrequency} dbResults={dbResults} />
 
-        <MyBarChart
-          frequency={selectedFrequency}
-          dbResults={dbResults}
-        />
+        <MyBarChart frequency={selectedFrequency} dbResults={dbResults} />
       </ScrollView>
       <Portal>
         <BottomSheet
