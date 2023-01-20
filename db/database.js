@@ -281,6 +281,28 @@ export default class Database {
     });
   };
 
+  getAllMood = (mood, searchText) => {
+    return new Promise((resolve, reject) => {
+      this.initDatabase()
+        .then((asd) => {
+          asd.transaction((tx) => {
+            tx.executeSql(
+              "SELECT id, text, savedate, mood, env FROM items  WHERE (mood = ? AND (text LIKE '%' || ? || '%' OR env LIKE '%' || ? || '%' )) ORDER BY savedate DESC",
+              [mood, searchText, searchText],
+              (txObj, resultSet) => {
+                resolve(resultSet);
+              },
+              (txObj, error) => {
+                console.log("Error", error);
+                reject(error);
+              }
+            );
+          });
+        })
+        .catch((error) => console.error(error));
+    });
+  };
+
   fakeData = (gibberish, mood) => {
     return new Promise((resolve, reject) => {
       this.initDatabase()

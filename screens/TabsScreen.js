@@ -3,7 +3,8 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 import { Dimensions, Keyboard, View } from "react-native";
 import MainScreen from "./MainScreen";
-import SplashScreen from "./SplashScreen";
+import ListScreen from "./ListScreen";
+import SettingsScreen from "./SettingsScreen";
 import CalendarScreen from "./CalendarScreen";
 import StatisticsScreen from "./StatisticsScreen";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -106,6 +107,7 @@ function TabsScreen(props) {
               },
             }}
           >
+
             <Tab.Screen
               key={Date.now()}
               name="CalendarTab"
@@ -123,6 +125,26 @@ function TabsScreen(props) {
                 ),
               }}
             />
+
+
+            <Tab.Screen
+              key={Date.now()}
+              name="StatisticsTab"
+              initialParams={{ newEntry: {} }}
+              component={StatisticsScreen}
+              navigation={props.navigation}
+              options={{
+                tabBarLabel: "Statistics",
+                tabBarIcon: ({ color, size }) => (
+                  <MaterialCommunityIcons
+                    name="chart-bar"
+                    color={color}
+                    size={30}
+                  />
+                ),
+              }}
+            />
+
             <Tab.Screen
               key={Date.now()}
               name="HomeTab"
@@ -174,21 +196,41 @@ function TabsScreen(props) {
 
             <Tab.Screen
               key={Date.now()}
-              name="StatisticsTab"
+              name="ListTab"
               initialParams={{ newEntry: {} }}
-              component={StatisticsScreen}
+              component={ListScreen}
               navigation={props.navigation}
               options={{
-                tabBarLabel: "Statistics",
+                tabBarLabel: "List",
                 tabBarIcon: ({ color, size }) => (
                   <MaterialCommunityIcons
-                    name="chart-bar"
+                    name="format-list-bulleted"
                     color={color}
                     size={30}
                   />
                 ),
               }}
             />
+
+            <Tab.Screen
+              key={Date.now()}
+              name="SettingsTab"
+              initialParams={{ newEntry: {} }}
+              component={SettingsScreen}
+              navigation={props.navigation}
+              options={{
+                tabBarLabel: "Settings",
+                tabBarIcon: ({ color, size }) => (
+                  <MaterialCommunityIcons
+                    name="cog-outline"
+                    color={color}
+                    size={30}
+                  />
+                ),
+              }}
+            />
+
+
           </Tab.Navigator>
         </Portal.Host>
       </SafeAreaView>
