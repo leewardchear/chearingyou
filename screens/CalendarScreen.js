@@ -1,10 +1,8 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   View,
-  StyleSheet,
   Animated,
   Text,
-  TouchableHighlight,
 } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { useState } from "react";
@@ -13,13 +11,11 @@ import Moment from "moment";
 import Database from "../db/database";
 import { Colours } from "../constants.js";
 import DayList from "../components/DayList.js";
-import EntryView from "../components/EntryView";
 
 import { setDayListUI, setSelectedDate } from "../app/calendar.js";
 import { useSelector, useDispatch } from "react-redux";
 import { hideProg, setProgState } from "../app/journalentry";
 
-import { current } from "@reduxjs/toolkit";
 
 import moment from "moment";
 import { LinearGradient } from "expo-linear-gradient";
@@ -32,8 +28,6 @@ function CalendarScreen({ route, navigation }) {
   const dispatch = useDispatch();
   const selectedDate = useSelector((state) => state.calendar.selectedDate);
   const dbdate = useSelector((state) => state.loadedapp.dbupdate);
-
-  const calEntry = useSelector((state) => state.calendar.calEntry);
 
   const [daylistshowing, setDayListShow] = useState(true);
 
@@ -60,8 +54,8 @@ function CalendarScreen({ route, navigation }) {
     }
   }
 
+
   function reloadData() {
-    console.log("reload");
     db.listItems()
       .then((resultSet) => {
         var marked = {};
@@ -116,7 +110,7 @@ function CalendarScreen({ route, navigation }) {
     return unsubscribe;
   }, [navigation, selectedDate, daylistshowing, sumEntries]);
 
-  useEffect(() => {}, [newEntry, journalentries]);
+  useEffect(() => { }, [newEntry, journalentries]);
 
   useEffect(() => {
     console.log(dbdate);
@@ -172,7 +166,7 @@ function CalendarScreen({ route, navigation }) {
                     if (
                       typeof journalentries[date.dateString] !== "undefined" &&
                       typeof journalentries[date.dateString].moodColors !==
-                        "undefined"
+                      "undefined"
                     ) {
                       setDate(date);
                     } else {
@@ -237,19 +231,12 @@ function CalendarScreen({ route, navigation }) {
       </View>
       <DayList
         style={{ flex: 1 }}
-        selecteddate={selectedDate}
         navigation={navigation}
         newEntry={newEntry}
+        isSingleDate={true}
       />
     </Animated.View>
   );
 }
 
 export default CalendarScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "column",
-    flex: 1,
-  },
-});
