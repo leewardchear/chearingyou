@@ -2,24 +2,17 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   StyleSheet,
   TextInput,
-  Image,
   View,
-  TouchableOpacity,
   TouchableHighlight,
   Text,
-  TouchableWithoutFeedback,
-  Dimensions,
   Keyboard,
   Animated,
   Easing,
-  ScrollView,
 } from "react-native";
 import Database from "../db/database";
 import { useSelector, useDispatch } from "react-redux";
 
-import { LinearGradient } from "expo-linear-gradient";
 import Moment from "moment";
-import { SafeAreaView } from "react-native-safe-area-context";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MoodsButton from "../components/MoodsButton";
 import ProgressWheel from "../components/ProgressWheel";
@@ -39,7 +32,6 @@ import {
   setEnv,
 } from "../app/journalentry";
 import { setDbUpdate } from "../app/loadedappslice";
-import { Colors } from "react-native-paper";
 import { Colours } from "../constants.js";
 import Environment from "../components/Environment";
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
@@ -60,10 +52,7 @@ const MainScreen = ({ route, navigation }) => {
   const [entryData, setEntryData] = useState(entryvalue);
   const progState = useSelector((state) => state.journal.progshow);
 
-  const [cleft, setLeft] = useState(0);
   const [ctop, setTop] = useState(0);
-
-  const [typingTimer, setTypingTimer] = useState();
 
   const dispatch = useDispatch();
   const showmood = useSelector((state) => state.journal.moodshow);
@@ -77,7 +66,6 @@ const MainScreen = ({ route, navigation }) => {
 
   const db = new Database();
   const { day, newEntry } = route.params;
-  const isFocused = useIsFocused();
 
   // console.log("initday", { day, entryId });
   useFocusEffect(
@@ -268,17 +256,6 @@ const MainScreen = ({ route, navigation }) => {
       await AsyncStorage.setItem("@db_update", JSON.stringify(value));
     } catch (e) {
       // saving error
-    }
-  };
-
-  const getData = async () => {
-    try {
-      const dbupdate = await AsyncStorage.getItem("@db_update");
-      if (value !== null) {
-        return dbupdate;
-      }
-    } catch (e) {
-      // error reading value
     }
   };
 
