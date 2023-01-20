@@ -118,7 +118,7 @@ const MainScreen = ({ route, navigation }) => {
       Animated.timing(entryBottom, {
         duration: event.duration,
         toValue:
-          event.endCoordinates.height - (Platform.OS === "android" ? 240 : 135),
+          event.endCoordinates.height - (Platform.OS === "android" ? 240 : -20),
         useNativeDriver: false,
         easing: Easing.sin,
       }).start();
@@ -132,7 +132,7 @@ const MainScreen = ({ route, navigation }) => {
     const keyboardWillHide = (event) => {
       Animated.timing(entryBottom, {
         duration: event.duration,
-        toValue: 10,
+        toValue: -20,
         useNativeDriver: false,
         easing: Easing.sin,
       }).start();
@@ -175,7 +175,7 @@ const MainScreen = ({ route, navigation }) => {
     return unsubscribe;
   }, [navigation]);
 
-  useEffect(() => { }, [env]);
+  useEffect(() => {}, [env]);
   useEffect(() => {
     // console.log("dismiss");
 
@@ -341,11 +341,17 @@ const MainScreen = ({ route, navigation }) => {
           <TouchableHighlight
             onPress={envToggleShow}
             style={{
-              backgroundColor: "#F1F0EA",
-              borderTopLeftRadius: 10,
-              borderTopRightRadius: 10,
-              marginHorizontal: 10,
-              marginTop: showmood ? 40 : 0,
+              backgroundColor: "#f6f6f6",
+              borderTopLeftRadius: 15,
+              borderTopRightRadius: 15,
+              marginHorizontal: 25,
+              marginTop: showmood ? 20 : 0,
+              shadowColor: "#000000",
+              shadowOffset: {
+                height: 10,
+              },
+              shadowRadius: 5,
+              shadowOpacity: 0.1,
             }}
           >
             <View style={{ padding: 10, alignSelf: "flex-start" }}>
@@ -365,23 +371,33 @@ const MainScreen = ({ route, navigation }) => {
               flex: 1,
               flexDirection: "column",
 
-              marginHorizontal: 10,
-              marginBottom: 10,
+              marginHorizontal: 25,
+              marginBottom: 35,
             }}
           >
             <TextInput
               style={{
-                ...styles.noteInput,
+                textAlignVertical: "top",
+                padding: 10,
+                fontSize: 18,
                 flex: 1,
                 flexDirection: "row",
-                backgroundColor: "#F1F0EA",
-                borderBottomLeftRadius: 10,
-                borderBottomRightRadius: 10,
+                backgroundColor: "#f6f6f6",
+                borderBottomLeftRadius: 15,
+                borderBottomRightRadius: 15,
+                shadowColor: "#000000",
+                shadowOffset: {
+                  height: 10,
+                },
+                shadowRadius: 5,
+                shadowOpacity: 0.08,
               }}
               multiline={true}
               scrollEnabled={true}
               selectionColor={"black"}
               placeholder={"How do you feel today?"}
+              placeholderStyle={{ fontFamily: "Helvetica", fontSize: 20 }}
+              placeholderTextColor="#a8a8a8"
               onChangeText={(value) => {
                 setEntryData(value);
               }}
@@ -454,10 +470,10 @@ const styles = StyleSheet.create({
   },
 
   date: {
-    color: "white",
+    color: "black",
     fontSize: 20,
     textAlignVertical: "bottom",
-    // fontFamily: "notoserif",
+    fontFamily: "Helvetica",
   },
 
   noteInput: {
@@ -469,8 +485,8 @@ const styles = StyleSheet.create({
   saveButton: {
     alignSelf: "center",
     color: "white",
-    backgroundColor: "#be94f5",
-    paddingHorizontal: 30,
+    backgroundColor: "#7D73C3",
+    paddingHorizontal: 60,
   },
 
   colorButton: {
@@ -481,8 +497,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   button: {
-    borderRadius: 20,
-    padding: 10,
+    borderRadius: 50,
+    padding: 17,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",

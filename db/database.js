@@ -215,6 +215,28 @@ export default class Database {
     });
   };
 
+  recentCats = () => {
+    return new Promise((resolve, reject) => {
+      this.initDatabase()
+        .then((db) => {
+          db.transaction((tx) => {
+            tx.executeSql(
+              "SELECT env FROM items WHERE env is not NULL AND env <> '' GROUP BY env ORDER BY savedate DESC LIMIT 5 ",
+              [],
+              (txObj, resultSet) => {
+                resolve(resultSet);
+              },
+              (txObj, error) => {
+                console.log("Error", error);
+                reject(error);
+              }
+            );
+          });
+        })
+        .catch((error) => console.error(error));
+    });
+  };
+
   deleteItem = (entryId) => {
     return new Promise((resolve, reject) => {
       this.initDatabase()

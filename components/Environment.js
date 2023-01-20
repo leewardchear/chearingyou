@@ -11,9 +11,11 @@ import React, { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Colours } from "../constants.js";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Database from "../db/database";
 
 import { setEnvUi, setEnv, setShowEnv, setHideEnv } from "../app/journalentry";
 import { ScrollView, TextInput } from "react-native";
+const db = new Database();
 
 function Environment(props) {
   const dispatch = useDispatch();
@@ -23,6 +25,7 @@ function Environment(props) {
   const categenv = useSelector((state) => state.journal.env);
   const mood = useSelector((state) => state.journal.mood);
   const showenv = useSelector((state) => state.journal.envshow);
+  const dbdate = useSelector((state) => state.loadedapp.dbupdate);
 
   const [hideButtons, hidem] = useState(false);
 
@@ -56,11 +59,13 @@ function Environment(props) {
     "From Parents",
     "Life Lesson",
   ]);
+
+  const [recentcats, setRecents] = useState([]);
   const [newCat, setNewCat] = useState([""]);
 
   const showEnv = () => {
     Animated.timing(openanim, {
-      toValue: 200,
+      toValue: 150,
       duration: 150,
       useNativeDriver: false,
       easing: Easing.sin,
@@ -112,6 +117,22 @@ function Environment(props) {
   }, [category]);
 
   useEffect(() => {}, [categ]);
+
+  useEffect(() => {
+    db.recentCats()
+      .then((resultSet) => {
+        recents = [];
+        for (let i = 0; i < resultSet.rows.length; i++) {
+          if (resultSet.rows.item(i).env != "") {
+            recents.push(resultSet.rows.item(i).env);
+          }
+          setRecents(recents);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [dbdate]);
 
   const getCategories = async () => {
     try {
@@ -205,10 +226,22 @@ function Environment(props) {
             keyboardDismissMode="none"
             keyboardShouldPersistTaps="true"
           >
-            <Text style={{ fontWeight: "bold" }}>Recent</Text>
-            <View style={{ flexWrap: "wrap", flexDirection: "row" }}>
-              <EnvButtons env="Temp" style={styles.category}></EnvButtons>
-            </View>
+            {recentcats.length > 0 && (
+              <View>
+                <Text style={{ fontWeight: "bold" }}>Recent</Text>
+                <View style={{ flexWrap: "wrap", flexDirection: "row" }}>
+                  {recentcats.map((recent, key) => {
+                    return (
+                      <EnvButtons
+                        env={recent}
+                        style={styles.category}
+                        key={key}
+                      ></EnvButtons>
+                    );
+                  })}
+                </View>
+              </View>
+            )}
             <Text style={{ fontWeight: "bold" }}>All</Text>
 
             <View style={{ flexWrap: "wrap", flexDirection: "row" }}>

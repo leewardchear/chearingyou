@@ -134,7 +134,7 @@ function MoodsButton(props) {
     useEffect(() => {}, []);
     return (
       <AnimatedPath
-        strokeWidth={2}
+        strokeWidth={0.3}
         stroke="white"
         transform={rotation}
         onPressIn={() => {
