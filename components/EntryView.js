@@ -184,7 +184,7 @@ const EntryView = ({ pointerEvents, navigation }) => {
           useNativeDriver: false,
 
           easing: Easing.sin,
-        }).start(() => {});
+        }).start(() => { });
       }
     };
     return (
@@ -295,7 +295,7 @@ const EntryView = ({ pointerEvents, navigation }) => {
         position: "absolute",
         // top: showAnim,
         top: 0,
-        width: calEntry.fromwindow.width,
+        width: "100%",
         // height: animatedHeight,
         height: "100%",
         left: 0,
@@ -388,7 +388,7 @@ const EntryView = ({ pointerEvents, navigation }) => {
                 // height: "100%",
                 paddingHorizontal: 20,
               }}
-              // onLayout={(e) => console.log("e", e.nativeEvent.layout)}
+            // onLayout={(e) => console.log("e", e.nativeEvent.layout)}
             >
               <Text>{calEntry.text}</Text>
             </ScrollBlur>

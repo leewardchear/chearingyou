@@ -7,7 +7,7 @@ const moodCountSlice = createSlice({
     },
     reducers: {
         setCount: (state, value) => {
-            console.log("dispatched" + value.payload.mood)
+            console.log("dispatched " + value.payload.mood)
 
             state.mood[value.payload.mood] = value.payload.count;
         },

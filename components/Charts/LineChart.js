@@ -47,10 +47,11 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency, allResults, d
         var daysInYear = 365;
         var moodList = [];
 
+        let currentMoment = moment();
         for (let i = 1; i <= daysInYear; i++) {
-          var date = moment().dayOfYear(i).format("MMM-DD");
-          var day = moment(date).dayOfYear(i).format("DD");
-          var month = moment(date).dayOfYear(i).format("MMM");
+          currentMoment.dayOfYear(i);
+          var day = currentMoment.format("DD");
+          var month = currentMoment.format("MMM");
 
           var monthLabel = "";
           if (day == "01") {
@@ -96,12 +97,10 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency, allResults, d
           (([year, month, day]) => ({ year, month, day }))(string.split("-"));
 
         for (let i = 0; i < resultSet.rows.length; i++) {
-          var dayIndex = parseInt(
-            getDate(resultSet.rows.item(i).savedate).day,
-            10
-          );
-          var mood = resultSet.rows.item(i).mood;
-          moodList[dayIndex - 1].moodScale = parseInt(Colours[mood].intVal);
+          var row = resultSet.rows.item(i);
+          var dayIndex = parseInt(getDate(row.savedate).day, 10) - 1;
+          var mood = parseInt(Colours[row.mood].intVal);
+          moodList[dayIndex].moodScale = mood;
         }
         setLineData(moodList);
       }
