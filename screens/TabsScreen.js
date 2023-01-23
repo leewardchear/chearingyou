@@ -21,8 +21,12 @@ const Tab = createBottomTabNavigator();
 // const Tab = createMaterialBottomTabNavigator();
 
 function TabsScreen(props) {
-  const [bottomNav, setBottomNav] = useState(0);
-  const [marginTop, setMarginTop] = useState(10);
+  const [bottomNav, setBottomNav] = useState(
+    Platform.OS === "android" ? -50 : -25
+  );
+  const [marginTop, setMarginTop] = useState(
+    Platform.OS === "android" ? 0 : -20
+  );
   const calEntry = useSelector((state) => state.calendar.calEntry);
 
   const entryUi = useSelector((state) => state.calendar.entryUi);
@@ -33,14 +37,14 @@ function TabsScreen(props) {
   useEffect(() => {
     const keyboardWillShow = (event) => {
       if (Platform.OS === "android") {
-        setBottomNav(event.endCoordinates.height + 0);
+        setBottomNav(event.endCoordinates.height - 0);
         setMarginTop(-90);
       }
     };
 
     const keyboardWillHide = (event) => {
       if (Platform.OS === "android") {
-        setBottomNav(0);
+        setBottomNav(-50);
         setMarginTop(10);
       } else {
         setMarginTop(10);
@@ -87,19 +91,19 @@ function TabsScreen(props) {
               tabBarStyle: {
                 justifyContent: "center",
                 elevation: 0,
-                backgroundColor: "rgba(255,255,255,0.8)",
+                backgroundColor: "white",
                 color: "blue",
-                borderRadius: 50,
-                borderTopLeftRadius: 15,
-                borderTopRightRadius: 15,
-                marginTop: marginTop - 150,
+                borderRadius: 0,
+                borderTopLeftRadius: 0,
+                borderTopRightRadius: 0,
+                marginTop: marginTop,
                 height: 80,
-                margin: 10,
+                margin: 0,
                 padding: 0,
                 borderWidth: 0,
                 borderTopWidth: 0,
-                borderColor: "rgba(255,0,0,0.7)",
-                borderTopColor: "rgba(255,0,0,0.7)",
+                // borderColor: "rgba(255,0,0,0.7)",
+                borderTopColor: "grey",
                 top: bottomNav + 46,
               },
               tabBarItemStyle: {
@@ -107,7 +111,6 @@ function TabsScreen(props) {
               },
             }}
           >
-
             <Tab.Screen
               key={Date.now()}
               name="CalendarTab"
@@ -125,7 +128,6 @@ function TabsScreen(props) {
                 ),
               }}
             />
-
 
             <Tab.Screen
               key={Date.now()}
@@ -229,8 +231,6 @@ function TabsScreen(props) {
                 ),
               }}
             />
-
-
           </Tab.Navigator>
         </Portal.Host>
       </SafeAreaView>
