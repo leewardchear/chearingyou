@@ -60,13 +60,13 @@ function TabsScreen(props) {
       keyboardWillHideSub.remove();
     };
   }, []);
-  useEffect(() => { }, [bottomNav]);
+  useEffect(() => {}, [bottomNav]);
 
   return (
     <LinearGradient
       start={{ x: 0, y: 0 }}
       end={{ x: 0.7, y: 0 }}
-      colors={["#e6d7fd", "#e6d7fd", "#d3dfff"]}
+      colors={["white", "white"]}
       style={{ flex: 1, paddingBottom: Platform.OS === "ios" ? 10 : 0 }}
     >
       <SafeAreaView style={{ flex: 1 }}>
@@ -87,14 +87,20 @@ function TabsScreen(props) {
               tabBarStyle: {
                 justifyContent: "center",
                 elevation: 0,
-                backgroundColor: "rgba(255,255,255,0.5)",
+                backgroundColor: "rgba(255,255,255,0.8)",
                 color: "blue",
-                borderRadius: 10,
-                marginTop: marginTop,
+                borderRadius: 50,
+                borderTopLeftRadius: 15,
+                borderTopRightRadius: 15,
+                marginTop: marginTop - 150,
                 height: 80,
                 margin: 10,
                 padding: 0,
-                top: bottomNav,
+                borderWidth: 0,
+                borderTopWidth: 0,
+                borderColor: "rgba(255,0,0,0.7)",
+                borderTopColor: "rgba(255,0,0,0.7)",
+                top: bottomNav + 46,
               },
               tabBarItemStyle: {
                 height: 80,

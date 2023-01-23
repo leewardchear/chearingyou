@@ -126,7 +126,7 @@ function CalendarScreen({ route, navigation }) {
     <Animated.View style={{ flex: 1 }}>
       <View>
         <Calendar
-          style={{ backgroundColor: "transparent" }}
+          style={{ backgroundColor: "transparent", marginHorizontal: 5 }}
           theme={{
             backgroundColor: "black",
             calendarBackground: "transparent",
@@ -182,7 +182,7 @@ function CalendarScreen({ route, navigation }) {
                       borderColor: "white",
                       width: 35,
                       height: 35,
-                      borderRadius: 10,
+                      borderRadius: 13,
                       alignContent: "center",
                       justifyContent: "center",
                     }}
@@ -194,14 +194,36 @@ function CalendarScreen({ route, navigation }) {
                         : journalentries[date.dateString].moodColors
                     }
                   >
-                    <Text
-                      style={{
-                        textAlign: "center",
-                        color: state === "disabled" ? "gray" : "black",
-                      }}
-                    >
-                      {date.day}
-                    </Text>
+                    {state === "today" && (
+                      <Text
+                        style={{
+                          textAlign: "center",
+                          color: "white",
+                        }}
+                      >
+                        {date.day}
+                      </Text>
+                    )}
+                    {state === "disabled" && (
+                      <Text
+                        style={{
+                          textAlign: "center",
+                          color: "grey",
+                        }}
+                      >
+                        {date.day}
+                      </Text>
+                    )}
+                    {state === "" && (
+                      <Text
+                        style={{
+                          textAlign: "center",
+                          color: "black",
+                        }}
+                      >
+                        {date.day}
+                      </Text>
+                    )}
                   </LinearGradient>
                   {Moment().format("YYYY-MM-DD") == date.dateString && (
                     <View
@@ -217,7 +239,7 @@ function CalendarScreen({ route, navigation }) {
                         borderColor:
                           selectedDate.dateString == date.dateString
                             ? "white"
-                            : "black",
+                            : "white",
                         borderRadius: 10,
                         borderStyle: "dotted",
                       }}
