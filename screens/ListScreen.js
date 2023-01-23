@@ -29,12 +29,9 @@ function ListScreen() {
             </View>
 
             <Tab.Navigator
-                tabBarOptions={{
-                    showLabel: false,
-                    visible: false
-                }}
-
                 screenOptions={{
+                    showLabel: false,
+                    visible: false,
                     tabBarStyle: [{ display: "none" }, null],
                     headerShown: false,
                     tabBarScrollEnabled: true,

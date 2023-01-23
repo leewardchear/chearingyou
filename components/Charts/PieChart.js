@@ -118,7 +118,7 @@ const MyPieChart = ({ frequency, dbResults }) => {
             data: {
               fillOpacity: 0.9,
               stroke: "white",
-              strokeWidth: 4,
+              strokeWidth: 2,
             },
             labels: {
               fontSize: 14,
@@ -134,8 +134,8 @@ const MyPieChart = ({ frequency, dbResults }) => {
           // labelPlacement={({ index }) => (index ? "parallel" : "vertical")}
           labels={({ datum }) => `${Math.round((datum.y / totalCount) * 100)}%`}
           // radius={({ datum }) => 10 + datum.y * 1}
-          labelRadius={({ innerRadius }) => innerRadius + 20}
-          padAngle={0.5}
+          labelRadius={({ innerRadius }) => innerRadius + 35}
+        // padAngle={0.5}
         />
 
         <VictoryLegend
