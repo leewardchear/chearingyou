@@ -24,7 +24,7 @@ const MyBarChart = ({ frequency, dbResults }) => {
     setMaxYAxis();
   }, [graphData]);
 
-  useEffect(() => {}, [maxY]);
+  useEffect(() => { }, [maxY]);
 
   function plotBar(resultSet) {
     var moodList = {};
@@ -72,7 +72,9 @@ const MyBarChart = ({ frequency, dbResults }) => {
 
     const distinctYCount = Object.keys(xCounts).length;
 
-    if (distinctYCount === 1) {
+    if (distinctYCount === 0) {
+      return
+    } else if (distinctYCount === 1) {
       setBarWidth(screenWidth / 4);
     } else {
       setBarWidth(screenWidth / (distinctYCount * 3));
@@ -100,6 +102,7 @@ const MyBarChart = ({ frequency, dbResults }) => {
       }
     }
 
+    console.log("GREATEST:  " + greatestTotal)
     setMaxY(greatestTotal);
   }
 

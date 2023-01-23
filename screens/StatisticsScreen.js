@@ -68,7 +68,7 @@ const StatisticsScreen = () => {
     }
   }, [isFocused]);
 
-  useEffect(() => {}, [minDate, maxDate, stitle, allResults, dbResults]);
+  useEffect(() => { }, [minDate, maxDate, stitle, allResults, dbResults]);
 
   useEffect(() => {
     switch (selectedFrequency) {
