@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import EntryView from "../components/EntryView";
 import { ThemeProvider } from "styled-components/native";
 import { useSelector } from "react-redux";
+import { BackgroundPrimary } from "../components/ThemeStyles";
 
 const Tab = createBottomTabNavigator();
 
@@ -65,11 +66,8 @@ function TabsScreen(props) {
 
   return (
     <ThemeProvider theme={theme}>
-      <LinearGradient
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0.7, y: 0 }}
-        colors={["white", "white"]}
-        style={{ flex: 1, paddingBottom: Platform.OS === "ios" ? 0 : 0 }}
+      <BackgroundPrimary
+        style={{ paddingBottom: Platform.OS === "ios" ? 0 : 0 }}
       >
         <SafeAreaView style={{ flex: 1 }}>
           <Portal.Host>
@@ -237,7 +235,7 @@ function TabsScreen(props) {
         {entryUi && (
           <EntryView pointerEvents="none" navigation={props.navigation} />
         )}
-      </LinearGradient>
+      </BackgroundPrimary>
     </ThemeProvider>
   );
 }

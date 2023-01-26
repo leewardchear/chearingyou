@@ -1,8 +1,7 @@
-import { Animated } from "react-native";
 import DayList from "../components/DayList";
 import { ThemeProvider } from 'styled-components/native';
 import { useSelector, } from "react-redux";
-import { TextPrimary, BackgroundPrimary, } from "../components/ThemeStyles";
+import { BackgroundPrimary, } from "../components/ThemeStyles";
 
 function ResultsList({ searchText, primaryMood, secondaryMood }) {
     const theme = useSelector((state) => state.themeActions.theme);
