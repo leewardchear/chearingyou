@@ -289,7 +289,7 @@ const MainScreen = ({ route, navigation }) => {
               >
                 <View>
                   <MaterialIconCY
-                    name="home-analytics"
+                    name="home"
                     size={50}
                   />
                 </View>
@@ -410,12 +410,10 @@ const MainScreen = ({ route, navigation }) => {
                   <TouchableHighlight
                     underlayColor="#DDDDDD"
                     onPress={() => {
-                      // navigation.navigate("Splash");
-                      console.log("SAVE DAY", day);
 
                       dispatch(setProgState(1));
                       saveEntry();
-                      // setEntryData("");
+
                     }}
                   >
                     <View style={{ ...styles.button, ...styles.saveButton }}>

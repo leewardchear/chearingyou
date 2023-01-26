@@ -219,7 +219,7 @@ function CalendarScreen({ route, navigation }) {
                         <Text
                           style={{
                             textAlign: "center",
-                            color: "black",
+                            color: theme.PRIMARY_TEXT_COLOR,
                           }}
                         >
                           {date.day}

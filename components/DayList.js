@@ -5,6 +5,7 @@ import {
   Text,
   Easing,
   TouchableOpacity,
+  StyleSheet
 } from "react-native";
 import Database from "../db/database";
 import { Colours } from "../constants";
@@ -16,7 +17,7 @@ import { useSelector, useDispatch } from "react-redux";
 import Animated from "react-native-reanimated";
 import pSBC from "shade-blend-color";
 import { ScreenWidth } from "react-native-elements/dist/helpers";
-import { BackgroundPrimary, TextPrimary, TextSecondary } from "../components/ThemeStyles";
+import { BackgroundPrimary, MaterialIconCY, TextPrimary, TextSecondary } from "../components/ThemeStyles";
 import { ThemeProvider } from 'styled-components/native';
 
 const DayList = ({ style, navigation, newEntry, isSingleDate, mood, searchText }) => {
@@ -199,7 +200,7 @@ const DayList = ({ style, navigation, newEntry, isSingleDate, mood, searchText }
               margin: 5,
               marginHorizontal: 10,
               maxHeight: 90,
-              backgroundColor: "rgba(255, 255, 255, 0.3 )",
+              backgroundColor: theme.SECONDARY_BACKGROUND_COLOR,
             }}
           >
             <View
@@ -215,9 +216,9 @@ const DayList = ({ style, navigation, newEntry, isSingleDate, mood, searchText }
                 justifyContent: "center",
               }}
             >
-              <Text style={{ fontSize: 12, fontWeight: "400" }}>
+              <TextPrimary style={{ fontSize: 12, fontWeight: "400" }}>
                 {Colours[entryMood].name}
-              </Text>
+              </TextPrimary>
               <View
                 style={{
                   borderRadius: 5,
@@ -225,7 +226,7 @@ const DayList = ({ style, navigation, newEntry, isSingleDate, mood, searchText }
                 }}
               >
                 {entryEnv > 1 && (
-                  <Text
+                  <TextSecondary
                     style={{
                       fontSize: 9,
                       fontStyle: "italic",
@@ -234,7 +235,7 @@ const DayList = ({ style, navigation, newEntry, isSingleDate, mood, searchText }
                     }}
                   >
                     {entry.env}
-                  </Text>
+                  </TextSecondary>
                 )}
               </View>
             </View>
@@ -249,22 +250,21 @@ const DayList = ({ style, navigation, newEntry, isSingleDate, mood, searchText }
             >
 
               {entry.text !== null && entryText < 1 && (
-                <Text style={{ fontStyle: "italic", color: "grey" }}>
+                <TextPrimary style={{ fontStyle: "italic", }}>
                   Note is empty
-                </Text>
+                </TextPrimary>
               )}
-              <Text
-                style={{ fontSize: 13, fontWeight: "400", color: "#1f1f1f" }}
+              <TextPrimary
+                style={{ fontSize: 13, fontWeight: "400", }}
                 numberOfLines={2}
                 ellipsizeMode="tail"
               >
                 {entry.text}
-              </Text>
+              </TextPrimary>
             </View>
           </View>
         </TouchableOpacity>
       </ThemeProvider>
-
     );
   };
 
@@ -372,29 +372,29 @@ const DayList = ({ style, navigation, newEntry, isSingleDate, mood, searchText }
                 flexDirection: "column",
                 justifyContent: "space-between",
               }}>
-                <Text
+                <TextPrimary
                   style={{ fontWeight: "bold", textAlign: "left" }}>
                   {entryDate}
-                </Text>
+                </TextPrimary>
 
-                <Text
+                <TextPrimary
                   style={{ textAlign: "left" }}>
                   {entryEnv}
-                </Text>
+                </TextPrimary>
               </View>
 
               {entry.text !== null && entryText < 1 && (
-                <Text style={{ fontStyle: "italic", color: "grey" }}>
+                <TextPrimary style={{ fontStyle: "italic", color: "grey" }}>
                   Note is empty
-                </Text>
+                </TextPrimary>
               )}
-              <Text
+              <TextPrimary
                 style={{ paddingTop: 5, fontSize: 13, fontWeight: "400", color: "#1f1f1f" }}
                 numberOfLines={2}
                 ellipsizeMode="tail"
               >
                 {entry.text}
-              </Text>
+              </TextPrimary>
             </View>
           </View>}
         </TouchableOpacity >
@@ -428,32 +428,26 @@ const DayList = ({ style, navigation, newEntry, isSingleDate, mood, searchText }
             });
           }}
         >
-          <MaterialCommunityIcons
-            style={{ color: "white" }}
-            name="note-plus-outline"
+          <MaterialIconCY
+            name="sticky-note-o"
             size={32}
           />
         </TouchableHighlight>
         }
 
-        {isSingleDate && <Text
+        {isSingleDate && <TextPrimary
           style={{
-            color: "white",
             fontSize: 20
           }}>
           {formattedDate}
-        </Text>}
+        </TextPrimary>}
 
         {isSingleDate && <TouchableHighlight
           onPress={() => {
             dispatch(setDayListUI(false));
           }}
         >
-          <MaterialCommunityIcons
-            style={{ color: "white" }}
-            name="window-close"
-            size={32}
-          />
+
         </TouchableHighlight>}
 
       </View>
@@ -474,8 +468,24 @@ const DayList = ({ style, navigation, newEntry, isSingleDate, mood, searchText }
             }}
           >
             <View>
-              <Text>There are no notes for today.</Text>
-              <Text>Tap here to make a note</Text>
+              <TextPrimary style={{
+                paddingBottom: 20,
+              }}>There are no notes for today.</TextPrimary>
+              <TouchableHighlight
+                borderRadius={50}
+                underlayColor="grey"
+                onPress={() => {
+                }}
+              >
+                <View style={{
+                  borderRadius: 50,
+                  padding: 17,
+                  paddingHorizontal: 60,
+                  backgroundColor: "#7D73C3",
+                }}>
+                  <TextPrimary>New Note</TextPrimary>
+                </View>
+              </TouchableHighlight>
             </View>
           </TouchableHighlight>
 
@@ -509,3 +519,4 @@ const DayList = ({ style, navigation, newEntry, isSingleDate, mood, searchText }
 };
 
 export default DayList;
+
