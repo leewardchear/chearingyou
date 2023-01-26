@@ -66,7 +66,7 @@ const MainScreen = ({ route, navigation }) => {
   const entryId = useSelector((state) => state.journal.entryId);
   const theme = useSelector((state) => state.themeActions.theme);
 
-  const entryBottom = useRef(new Animated.Value(10)).current;
+  const entryBottom = useRef(new Animated.Value(0)).current;
 
   const db = new Database();
   const { day, newEntry } = route.params;
@@ -110,7 +110,7 @@ const MainScreen = ({ route, navigation }) => {
       Animated.timing(entryBottom, {
         duration: event.duration,
         toValue:
-          event.endCoordinates.height - (Platform.OS === "android" ? 240 : -20),
+          event.endCoordinates.height - (Platform.OS === "android" ? 230 : 120),
         useNativeDriver: false,
         easing: Easing.sin,
       }).start();
@@ -124,7 +124,7 @@ const MainScreen = ({ route, navigation }) => {
     const keyboardWillHide = (event) => {
       Animated.timing(entryBottom, {
         duration: event.duration,
-        toValue: -20,
+        toValue: Platform.OS === "android" ? 20 : 0,
         useNativeDriver: false,
         easing: Easing.sin,
       }).start();
