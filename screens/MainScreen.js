@@ -327,7 +327,7 @@ const MainScreen = ({ route, navigation }) => {
             <TouchableHighlight
               onPress={envToggleShow}
               style={{
-                backgroundColor: "#f6f6f6",
+                backgroundColor: theme.SECONDARY_BACKGROUND_COLOR,
                 borderTopLeftRadius: 15,
                 borderTopRightRadius: 15,
                 marginHorizontal: 25,
@@ -341,14 +341,14 @@ const MainScreen = ({ route, navigation }) => {
               }}
             >
               <View style={{ padding: 10, alignSelf: "flex-start" }}>
-                <Text
+                <TextPrimary
                   style={{
                     fontStyle: "italic",
-                    color: env == "" || env == null ? "lightgrey" : "black",
+                    color: env == "" || env == null ? theme.PRIMARY_TEXT_COLOR : theme.PRIMARY_TEXT_COLOR,
                   }}
                 >
                   {env == "" || env == null ? "Select a category" : env}
-                </Text>
+                </TextPrimary>
               </View>
             </TouchableHighlight>
 
