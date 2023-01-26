@@ -5,6 +5,7 @@ import {
   Text,
   Easing,
   TouchableOpacity,
+  StyleSheet
 } from "react-native";
 import Database from "../db/database";
 import { Colours } from "../constants";
@@ -16,6 +17,8 @@ import { useSelector, useDispatch } from "react-redux";
 import Animated from "react-native-reanimated";
 import pSBC from "shade-blend-color";
 import { ScreenWidth } from "react-native-elements/dist/helpers";
+import { BackgroundPrimary, MaterialIconCY, TextPrimary, TextSecondary } from "../components/ThemeStyles";
+import { ThemeProvider } from 'styled-components/native';
 
 const DayList = ({ style, navigation, newEntry, isSingleDate, mood, searchText }) => {
   const itemAnim = useRef(new Animated.Value(0)).current;
@@ -27,6 +30,7 @@ const DayList = ({ style, navigation, newEntry, isSingleDate, mood, searchText }
   const dbdate = useSelector((state) => state.loadedapp.dbupdate);
   const [moodCount, setMoodCount] = useState(0);
   const [topCategories, setTopCategories] = useState([]);
+  const theme = useSelector((state) => state.themeActions.theme);
 
   const db = new Database();
 
@@ -160,104 +164,107 @@ const DayList = ({ style, navigation, newEntry, isSingleDate, mood, searchText }
     var entryText = entry.text == null ? "" : entry.text;
 
     return (
-      <TouchableOpacity
-        ref={buttonRef}
-        onPress={(event) => {
-          var fromwindow = {};
-          buttonRef.current?.measure((x, y, width, height, pageX, pageY) => {
-            fromwindow = {
-              x: x,
-              y: y,
-              width: width,
-              height: height,
-              pageX: pageX,
-              pageY: pageY,
-            };
-            var calEntry = {
-              id: entry.id,
-              mood: entryMood,
-              env: entryEnv,
-              savedate: entry.savedate,
-              text: entryText,
-              fromwindow: fromwindow,
-            };
-            dispatch(setCalEntry(calEntry));
-            dispatch(setEntryUi(true));
-          });
-        }}
-      >
-        <View
-          style={{
-            flexDirection: "row",
-            borderRadius: 10,
-            padding: 5,
-            margin: 5,
-            marginHorizontal: 10,
-            maxHeight: 90,
-            backgroundColor: "rgba(255, 255, 255, 0.3 )",
+      <ThemeProvider theme={theme}>
+
+        <TouchableOpacity
+          ref={buttonRef}
+          onPress={(event) => {
+            var fromwindow = {};
+            buttonRef.current?.measure((x, y, width, height, pageX, pageY) => {
+              fromwindow = {
+                x: x,
+                y: y,
+                width: width,
+                height: height,
+                pageX: pageX,
+                pageY: pageY,
+              };
+              var calEntry = {
+                id: entry.id,
+                mood: entryMood,
+                env: entryEnv,
+                savedate: entry.savedate,
+                text: entryText,
+                fromwindow: fromwindow,
+              };
+              dispatch(setCalEntry(calEntry));
+              dispatch(setEntryUi(true));
+            });
           }}
         >
           <View
             style={{
-              flex: 0.2,
+              flexDirection: "row",
+              borderRadius: 10,
+              padding: 5,
               margin: 5,
-              minHeight: 60,
-              marginRight: 8,
-              borderRadius: 5,
-              backgroundColor: pSBC(0.5, Colours[entryMood].code, "c"),
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
+              marginHorizontal: 10,
+              maxHeight: 90,
+              backgroundColor: theme.SECONDARY_BACKGROUND_COLOR,
             }}
           >
-            <Text style={{ fontSize: 12, fontWeight: "400" }}>
-              {Colours[entryMood].name}
-            </Text>
             <View
               style={{
+                flex: 0.2,
+                margin: 5,
+                minHeight: 60,
+                marginRight: 8,
                 borderRadius: 5,
-                padding: 2,
+                backgroundColor: pSBC(0.5, Colours[entryMood].code, "c"),
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              {entryEnv > 1 && (
-                <Text
-                  style={{
-                    fontSize: 9,
-                    fontStyle: "italic",
-                    textAlign: "center",
-                    fontWeight: "300",
-                  }}
-                >
-                  {entry.env}
-                </Text>
+              <TextPrimary style={{ fontSize: 12, fontWeight: "400" }}>
+                {Colours[entryMood].name}
+              </TextPrimary>
+              <View
+                style={{
+                  borderRadius: 5,
+                  padding: 2,
+                }}
+              >
+                {entryEnv > 1 && (
+                  <TextSecondary
+                    style={{
+                      fontSize: 9,
+                      fontStyle: "italic",
+                      textAlign: "center",
+                      fontWeight: "300",
+                    }}
+                  >
+                    {entry.env}
+                  </TextSecondary>
+                )}
+              </View>
+            </View>
+            <View
+              style={{
+                padding: 5,
+                paddingHorizontal: 8,
+                flex: 1,
+                borderLeftColor: pSBC(0.5, Colours[entryMood].code, "c"),
+                borderLeftWidth: 2,
+              }}
+            >
+
+              {entry.text !== null && entryText < 1 && (
+                <TextPrimary style={{ fontStyle: "italic", }}>
+                  Note is empty
+                </TextPrimary>
               )}
+              <TextPrimary
+                style={{ fontSize: 13, fontWeight: "400", }}
+                numberOfLines={2}
+                ellipsizeMode="tail"
+              >
+                {entry.text}
+              </TextPrimary>
             </View>
           </View>
-          <View
-            style={{
-              padding: 5,
-              paddingHorizontal: 8,
-              flex: 1,
-              borderLeftColor: pSBC(0.5, Colours[entryMood].code, "c"),
-              borderLeftWidth: 2,
-            }}
-          >
-
-            {entry.text !== null && entryText < 1 && (
-              <Text style={{ fontStyle: "italic", color: "grey" }}>
-                Note is empty
-              </Text>
-            )}
-            <Text
-              style={{ fontSize: 13, fontWeight: "400", color: "#1f1f1f" }}
-              numberOfLines={2}
-              ellipsizeMode="tail"
-            >
-              {entry.text}
-            </Text>
-          </View>
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      </ThemeProvider>
     );
   };
 
@@ -326,18 +333,17 @@ const DayList = ({ style, navigation, newEntry, isSingleDate, mood, searchText }
                 justifyContent: "flex-start",
                 alignItems: "flex-start",
               }}>
-                <Text style={{
+                <TextSecondary style={{
                   textTransform: 'uppercase',
                   fontWeight: "bold",
-                  color: "white",
                   fontSize: 22,
                 }}>
                   {entryMood}
-                </Text>
-                <Text style={{ paddingTop: 8, color: "white", fontSize: 14 }}>
-                  <Text style={{ fontWeight: 'bold' }}>Entries: </Text> {moodCount}{"\n"}
-                  <Text style={{ fontWeight: 'bold' }}>Top Category: </Text> {topCategories.join(', ')}
-                </Text>
+                </TextSecondary>
+                <TextSecondary style={{ paddingTop: 8, fontSize: 14 }}>
+                  <TextSecondary style={{ fontWeight: 'bold' }}>Entries: </TextSecondary> {moodCount}{"\n"}
+                  <TextSecondary style={{ fontWeight: 'bold' }}>Top Category: </TextSecondary> {topCategories.join(', ')}
+                </TextSecondary>
               </View>
             </View>
           </View>}
@@ -366,29 +372,29 @@ const DayList = ({ style, navigation, newEntry, isSingleDate, mood, searchText }
                 flexDirection: "column",
                 justifyContent: "space-between",
               }}>
-                <Text
+                <TextPrimary
                   style={{ fontWeight: "bold", textAlign: "left" }}>
                   {entryDate}
-                </Text>
+                </TextPrimary>
 
-                <Text
+                <TextPrimary
                   style={{ textAlign: "left" }}>
                   {entryEnv}
-                </Text>
+                </TextPrimary>
               </View>
 
               {entry.text !== null && entryText < 1 && (
-                <Text style={{ fontStyle: "italic", color: "grey" }}>
+                <TextPrimary style={{ fontStyle: "italic", color: "grey" }}>
                   Note is empty
-                </Text>
+                </TextPrimary>
               )}
-              <Text
+              <TextPrimary
                 style={{ paddingTop: 5, fontSize: 13, fontWeight: "400", color: "#1f1f1f" }}
                 numberOfLines={2}
                 ellipsizeMode="tail"
               >
                 {entry.text}
-              </Text>
+              </TextPrimary>
             </View>
           </View>}
         </TouchableOpacity >
@@ -422,32 +428,26 @@ const DayList = ({ style, navigation, newEntry, isSingleDate, mood, searchText }
             });
           }}
         >
-          <MaterialCommunityIcons
-            style={{ color: "white" }}
-            name="note-plus-outline"
+          <MaterialIconCY
+            name="sticky-note-o"
             size={32}
           />
         </TouchableHighlight>
         }
 
-        {isSingleDate && <Text
+        {isSingleDate && <TextPrimary
           style={{
-            color: "white",
             fontSize: 20
           }}>
           {formattedDate}
-        </Text>}
+        </TextPrimary>}
 
         {isSingleDate && <TouchableHighlight
           onPress={() => {
             dispatch(setDayListUI(false));
           }}
         >
-          <MaterialCommunityIcons
-            style={{ color: "white" }}
-            name="window-close"
-            size={32}
-          />
+
         </TouchableHighlight>}
 
       </View>
@@ -468,8 +468,24 @@ const DayList = ({ style, navigation, newEntry, isSingleDate, mood, searchText }
             }}
           >
             <View>
-              <Text>There are no notes for today.</Text>
-              <Text>Tap here to make a note</Text>
+              <TextPrimary style={{
+                paddingBottom: 20,
+              }}>There are no notes for today.</TextPrimary>
+              <TouchableHighlight
+                borderRadius={50}
+                underlayColor="grey"
+                onPress={() => {
+                }}
+              >
+                <View style={{
+                  borderRadius: 50,
+                  padding: 17,
+                  paddingHorizontal: 60,
+                  backgroundColor: "#7D73C3",
+                }}>
+                  <TextPrimary>New Note</TextPrimary>
+                </View>
+              </TouchableHighlight>
             </View>
           </TouchableHighlight>
 
@@ -503,3 +519,4 @@ const DayList = ({ style, navigation, newEntry, isSingleDate, mood, searchText }
 };
 
 export default DayList;
+

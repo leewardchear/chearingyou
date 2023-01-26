@@ -13,6 +13,8 @@ import TabsScreen from "./screens/TabsScreen";
 import { AppState } from "react-native";
 import { bindActionCreators } from "redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { StatusBar } from 'react-native';
+import { useSelector, } from "react-redux";
 
 const Stack = createStackNavigator();
 
@@ -22,38 +24,39 @@ const database_displayname = "SQLite Test Databa se";
 const database_size = 200000;
 
 export class App extends Component {
+
   constructor(props) {
     super(props);
 
     // fetchData();
     appisloaded = store.getState().loadedapp.loadedvalue;
+
   }
 
   render() {
     return (
+
       <Provider store={store}>
         <ConnectedRoot />
       </Provider>
     );
   }
 
-  componentDidMount() {}
+  componentDidMount() { }
 }
 
 export default App;
 
 export class ConnectedContainer extends Component {
+
   getDbUpdate = async (props) => {
-    console.log("getDbUpdate");
     try {
       const dbupdate = await AsyncStorage.getItem("@db_update");
-      console.log("dbupdate", dbupdate);
 
       if (dbupdate !== null) {
         return dbupdate;
       }
     } catch (e) {
-      console.log("getDbUpdate exception", e);
       // error reading value
     }
   };
@@ -70,6 +73,8 @@ export class ConnectedContainer extends Component {
   render() {
     return (
       <NavigationContainer>
+        {/* <StatusBar backgroundColor={theme.PRIMARY_TEXT_COLOR} barStyle="light-content" /> */}
+
         <Stack.Navigator
           initialRouteName={appisloaded ? "TabsScreen" : "Splash"}
         >
@@ -99,10 +104,3 @@ const ConnectedRoot = connect(
 const mapStateToProps = (state) => ({
   dbupdate: state.loadedappslice.dbupdate,
 });
-// const mapDispatchToProps = (dispatch) => {
-//   return {
-//     dbupdate: (number) => dispatch(setDbUpdate(number)),
-//   };
-// };
-
-// export default connect(mapStateToProps, mapDispatchToProps)(App);

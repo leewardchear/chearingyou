@@ -8,6 +8,8 @@ import { View, Dimensions, ScrollView } from "react-native";
 import { useState } from "react";
 import React, { useEffect } from "react";
 import { Colours } from "../../constants";
+import { useSelector, } from "react-redux";
+import { BackgroundSecondary, } from "../ThemeStyles";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -15,6 +17,7 @@ const MyBarChart = ({ frequency, dbResults }) => {
   const [graphData, setGraphData] = useState([]);
   const [maxY, setMaxY] = useState(0);
   const [barWidth, setBarWidth] = useState();
+  const theme = useSelector((state) => state.themeActions.theme);
 
   useEffect(() => {
     plotBar(dbResults);
@@ -102,16 +105,14 @@ const MyBarChart = ({ frequency, dbResults }) => {
       }
     }
 
-    console.log("GREATEST:  " + greatestTotal)
     setMaxY(greatestTotal);
   }
 
   return (
-    <View
+    <BackgroundSecondary
       style={{
         height: 250,
         justifyContent: "space-around",
-        backgroundColor: "#ECE1FF",
         elevation: 5,
         borderRadius: 15,
         margin: 15,
@@ -129,7 +130,7 @@ const MyBarChart = ({ frequency, dbResults }) => {
             tickFormat={(tick) => Math.round(tick)}
             style={{
               grid: {
-                stroke: "rgba(109, 74, 120, 0.3)",
+                stroke: theme.SECONDARY_TEXT_COLOR,
                 strokeWidth: 1,
                 strokeDasharray: "8,2",
               },
@@ -203,7 +204,7 @@ const MyBarChart = ({ frequency, dbResults }) => {
           </VictoryStack>
         </VictoryChart>
       </ScrollView>
-    </View>
+    </BackgroundSecondary>
   );
 };
 

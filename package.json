@@ -59,6 +59,8 @@
     "redux": "^4.2.0",
     "redux-persist": "^6.0.0",
     "shade-blend-color": "^1.0.0",
+    "styled-components": "^5.3.6",
+    "toggle-switch-react-native": "^3.3.0",
     "victory-native": "^36.6.8"
   },
   "devDependencies": {
