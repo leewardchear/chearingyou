@@ -25,7 +25,7 @@ function TabsScreen(props) {
     Platform.OS === "android" ? -50 : -25
   );
   const [marginTop, setMarginTop] = useState(
-    Platform.OS === "android" ? 0 : -20
+    Platform.OS === "android" ? -22 : -20
   );
   const calEntry = useSelector((state) => state.calendar.calEntry);
 
@@ -37,7 +37,7 @@ function TabsScreen(props) {
   useEffect(() => {
     const keyboardWillShow = (event) => {
       if (Platform.OS === "android") {
-        setBottomNav(event.endCoordinates.height - 0);
+        setBottomNav(event.endCoordinates.height);
         setMarginTop(-90);
       }
     };
@@ -47,7 +47,7 @@ function TabsScreen(props) {
         setBottomNav(-50);
         setMarginTop(10);
       } else {
-        setMarginTop(10);
+        setMarginTop(-20);
       }
     };
     const keyboardWillShowSub = Keyboard.addListener(
@@ -71,7 +71,7 @@ function TabsScreen(props) {
       start={{ x: 0, y: 0 }}
       end={{ x: 0.7, y: 0 }}
       colors={["white", "white"]}
-      style={{ flex: 1, paddingBottom: Platform.OS === "ios" ? 10 : 0 }}
+      style={{ flex: 1, paddingBottom: Platform.OS === "ios" ? 0 : 0 }}
     >
       <SafeAreaView style={{ flex: 1 }}>
         <Portal.Host>
@@ -100,11 +100,11 @@ function TabsScreen(props) {
                 height: 80,
                 margin: 0,
                 padding: 0,
-                borderWidth: 0,
-                borderTopWidth: 0,
-                // borderColor: "rgba(255,0,0,0.7)",
-                borderTopColor: "grey",
-                top: bottomNav + 46,
+                borderWidth: 1,
+                borderTopWidth: 1,
+                borderColor: "red",
+                borderTopColor: "red",
+                top: bottomNav + 50,
               },
               tabBarItemStyle: {
                 height: 80,

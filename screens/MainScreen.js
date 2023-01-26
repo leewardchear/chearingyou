@@ -62,7 +62,9 @@ const MainScreen = ({ route, navigation }) => {
   const env = useSelector((state) => state.journal.env);
   const entryId = useSelector((state) => state.journal.entryId);
 
-  const entryBottom = useRef(new Animated.Value(0)).current;
+  const entryBottom = useRef(
+    new Animated.Value(Platform.OS === "android" ? 20 : 0)
+  ).current;
 
   const db = new Database();
   const { day, newEntry } = route.params;
@@ -106,7 +108,7 @@ const MainScreen = ({ route, navigation }) => {
       Animated.timing(entryBottom, {
         duration: event.duration,
         toValue:
-          event.endCoordinates.height - (Platform.OS === "android" ? 230 : 120),
+          event.endCoordinates.height - (Platform.OS === "android" ? 240 : 120),
         useNativeDriver: false,
         easing: Easing.sin,
       }).start();
@@ -263,8 +265,11 @@ const MainScreen = ({ route, navigation }) => {
     <GestureDetector gesture={flingGesture}>
       <Animated.View
         style={{
+          borderColor: "red",
+          borderWidth: 1,
           flex: 1,
-          paddingBottom: entryBottom,
+          paddingBottom: 25,
+          marginBottom: entryBottom,
         }}
       >
         <View
@@ -397,7 +402,14 @@ const MainScreen = ({ route, navigation }) => {
             }}
           />
 
-          <View>
+          <View
+            style={
+              {
+                // borderWidth: 1,
+                // borderColor: "red",
+              }
+            }
+          >
             <View
               style={{ flexDirection: "row", justifyContent: "space-evenly" }}
             >
