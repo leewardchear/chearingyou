@@ -24,7 +24,7 @@ import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import MyBarChart from "../components/Charts/BarChart";
 import { ThemeProvider } from 'styled-components/native';
 import { useSelector, } from "react-redux";
-import { BackgroundPrimary, TextPrimary, TextSecondary } from "../components/ThemeStyles";
+import { TextPrimary, TextSecondary } from "../components/ThemeStyles";
 
 const windowHeight = Dimensions.get("window").height;
 const screenHeight = Dimensions.get("screen").height;
@@ -360,155 +360,153 @@ const StatisticsScreen = () => {
   return (
     <ThemeProvider theme={theme}>
 
-      <BackgroundPrimary style={{ flex: 1, }}>
-        <SegmentedControlTab
-          values={["Weekly", "Monthly", "Yearly"]}
-          selectedIndex={selectedFrequency}
-          borderRadius={5}
-          onTabPress={handleIndexPressed}
-          tabsContainerStyle={{
-            height: 35,
-            backgroundColor: "transparent",
-            margin: 10,
-          }}
-          tabStyle={{
-            backgroundColor: theme.PRIMARY_THEME,
-            borderWidth: 1.5,
-            borderColor: theme.PRIMARY_THEME,
-          }}
-          activeTabStyle={{ backgroundColor: theme.SECONDARY_THEME }}
-          tabTextStyle={{ color: theme.SECONDARY_TEXT_COLOR }}
+      <SegmentedControlTab
+        values={["Weekly", "Monthly", "Yearly"]}
+        selectedIndex={selectedFrequency}
+        borderRadius={5}
+        onTabPress={handleIndexPressed}
+        tabsContainerStyle={{
+          height: 35,
+          backgroundColor: "transparent",
+          margin: 10,
+        }}
+        tabStyle={{
+          backgroundColor: theme.PRIMARY_THEME,
+          borderWidth: 1.5,
+          borderColor: theme.PRIMARY_THEME,
+        }}
+        activeTabStyle={{ backgroundColor: theme.SECONDARY_THEME }}
+        tabTextStyle={{ color: theme.SECONDARY_TEXT_COLOR }}
+      />
+
+      <View
+        style={{
+          alignItems: "center",
+          flexDirection: "row",
+          justifyContent: "center",
+        }}
+      >
+        <IconButton
+          icon="chevron-left"
+          color={theme.PRIMARY_THEME}
+          size={25}
+          onPress={handleLeftPressed}
         />
 
-        <View
-          style={{
-            alignItems: "center",
-            flexDirection: "row",
-            justifyContent: "center",
-          }}
+        <TouchableNativeFeedback
+          onPress={handleOnDatePressed}
+          background={TouchableNativeFeedback.Ripple("#75508b")}
         >
-          <IconButton
-            icon="chevron-left"
-            color={theme.PRIMARY_THEME}
-            size={25}
-            onPress={handleLeftPressed}
-          />
-
-          <TouchableNativeFeedback
-            onPress={handleOnDatePressed}
-            background={TouchableNativeFeedback.Ripple("#75508b")}
+          <View
+            style={{
+              backgroundColor: theme.SECONDARY_THEME,
+              height: 40,
+              width: "70%",
+              paddingLeft: 15,
+              paddingRight: 15,
+              borderRadius: 5,
+              elevation: 5,
+              justifyContent: "center",
+            }}
           >
-            <View
-              style={{
-                backgroundColor: theme.SECONDARY_THEME,
-                height: 40,
-                width: "70%",
-                paddingLeft: 15,
-                paddingRight: 15,
-                borderRadius: 5,
-                elevation: 5,
-                justifyContent: "center",
-              }}
-            >
-              <TextPrimary
-                style={{ fontSize: 20, textAlign: "center" }}>
-                {stitle}
-              </TextPrimary>
-            </View>
-          </TouchableNativeFeedback>
-          <IconButton
-            icon="chevron-right"
-            color={theme.PRIMARY_THEME}
-            size={25}
-            onPress={handleRightPressed}
-          />
-        </View>
+            <TextPrimary
+              style={{ fontSize: 20, textAlign: "center" }}>
+              {stitle}
+            </TextPrimary>
+          </View>
+        </TouchableNativeFeedback>
+        <IconButton
+          icon="chevron-right"
+          color={theme.PRIMARY_THEME}
+          size={25}
+          onPress={handleRightPressed}
+        />
+      </View>
 
-        <ScrollView>
-          <MyLineGraph
-            month={currentDate.month}
-            year={currentDate.year}
-            weekStart={currentDate.weekStart}
-            weekEnd={currentDate.weekEnd}
-            frequency={selectedFrequency}
-            allResults={allResults}
-            dbResults={dbResults}
-          />
-          <MyPieChart frequency={selectedFrequency} dbResults={dbResults} />
-          <MyBarChart frequency={selectedFrequency} dbResults={dbResults} />
-        </ScrollView>
-        <Portal>
-          <BottomSheet
-            ref={sheetRef}
-            snapPoints={[0, windowHeight / 2]}
-            borderRadius={20}
-            enabledGestureInteraction={true}
-            initialSnap={0}
-            renderContent={
-              (renderSheetContent = () => (
+      <ScrollView>
+        <MyLineGraph
+          month={currentDate.month}
+          year={currentDate.year}
+          weekStart={currentDate.weekStart}
+          weekEnd={currentDate.weekEnd}
+          frequency={selectedFrequency}
+          allResults={allResults}
+          dbResults={dbResults}
+        />
+        <MyPieChart frequency={selectedFrequency} dbResults={dbResults} />
+        <MyBarChart frequency={selectedFrequency} dbResults={dbResults} />
+      </ScrollView>
+      <Portal>
+        <BottomSheet
+          ref={sheetRef}
+          snapPoints={[0, windowHeight / 2]}
+          borderRadius={20}
+          enabledGestureInteraction={true}
+          initialSnap={0}
+          renderContent={
+            (renderSheetContent = () => (
+              <View
+                style={{
+                  height: "100%",
+                }}
+              >
                 <View
                   style={{
-                    height: "100%",
+                    flexDirection: "column",
+                    alignItems: "center",
                   }}
                 >
                   <View
                     style={{
-                      flexDirection: "column",
-                      alignItems: "center",
+                      width: "100%",
+                      paddingLeft: 20,
+                      backgroundColor: theme.PRIMARY_THEME,
+                      flexDirection: "row",
+                      justifyContent: "space-between",
                     }}
                   >
-                    <View
+                    <TextPrimary
                       style={{
-                        width: "100%",
-                        paddingLeft: 20,
-                        backgroundColor: theme.PRIMARY_THEME,
-                        flexDirection: "row",
-                        justifyContent: "space-between",
+                        color: theme.SECONDARY_TEXT_COLOR,
+                        paddingTop: 15,
                       }}
                     >
-                      <TextPrimary
-                        style={{
-                          color: theme.SECONDARY_TEXT_COLOR,
-                          paddingTop: 15,
-                        }}
-                      >
-                        Select a date
-                      </TextPrimary>
+                      Select a date
+                    </TextPrimary>
 
-                      <IconButton
-                        icon="chevron-down"
-                        color={theme.SECONDARY_TEXT_COLOR}
-                        size={25}
-                        onPress={onCloseBottomSheet}
-                      />
-                    </View>
-
-                    <DatePick />
-                    <TouchableOpacity
-                      style={{
-                        alignItems: "center",
-                        backgroundColor: theme.PRIMARY_THEME,
-                        padding: 10,
-                        width: "100%",
-                      }}
-                      onPress={onChangeBtnPressed}
-                    >
-                      <TextSecondary
-                        style={{
-                          fontSize: 18,
-                          fontStyle: "normal",
-                        }}
-                      >
-                        Change
-                      </TextSecondary>
-                    </TouchableOpacity>
+                    <IconButton
+                      icon="chevron-down"
+                      color={theme.SECONDARY_TEXT_COLOR}
+                      size={25}
+                      onPress={onCloseBottomSheet}
+                    />
                   </View>
+
+                  <DatePick />
+                  <TouchableOpacity
+                    style={{
+                      alignItems: "center",
+                      backgroundColor: theme.PRIMARY_THEME,
+                      padding: 10,
+                      width: "100%",
+                    }}
+                    onPress={onChangeBtnPressed}
+                  >
+                    <TextSecondary
+                      style={{
+                        fontSize: 18,
+                        fontStyle: "normal",
+                      }}
+                    >
+                      Change
+                    </TextSecondary>
+                  </TouchableOpacity>
                 </View>
-              ))
-            }
-          />
-        </Portal>
-      </BackgroundPrimary>
+              </View>
+            ))
+          }
+        />
+      </Portal>
     </ThemeProvider>
   );
 };

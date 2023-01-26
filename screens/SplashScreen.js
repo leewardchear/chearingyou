@@ -10,6 +10,7 @@ import { LinearGradient } from "expo-linear-gradient";
 
 import { useSelector, useDispatch } from "react-redux";
 import { setLoaded, setUnloaded } from "../app/loadedappslice.js";
+import { BackgroundPrimary, } from "../components/ThemeStyles";
 
 function SplashScreen({ navigation }) {
   const loadedvalue = useSelector((state) => state.loadedapp.loadedvalue);
@@ -22,11 +23,9 @@ function SplashScreen({ navigation }) {
   });
 
   return (
-    <LinearGradient
-      start={{ x: 0, y: 0 }}
-      end={{ x: 0.7, y: 0 }}
-      colors={["#e6d7fd", "#e6d7fd", "#d3dfff"]}
-      style={{ flex: 1, paddingBottom: 10 }}
+
+    <BackgroundPrimary
+      style={{ paddingBottom: 10 }}
     >
       <View style={styles.splash}>
         <TouchableWithoutFeedback
@@ -35,7 +34,7 @@ function SplashScreen({ navigation }) {
           <Text>ChearIng You</Text>
         </TouchableWithoutFeedback>
       </View>
-    </LinearGradient>
+    </BackgroundPrimary>
   );
 }
 
