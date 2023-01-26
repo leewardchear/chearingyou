@@ -16,10 +16,11 @@ import { setDayListUI, setSelectedDate } from "../app/calendar.js";
 import { useSelector, useDispatch } from "react-redux";
 import { hideProg, setProgState } from "../app/journalentry";
 
-
 import moment from "moment";
 import { LinearGradient } from "expo-linear-gradient";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { BackgroundPrimary, } from "../components/ThemeStyles";
+import { ThemeProvider } from 'styled-components/native';
 
 const db = new Database();
 
@@ -28,12 +29,10 @@ function CalendarScreen({ route, navigation }) {
   const dispatch = useDispatch();
   const selectedDate = useSelector((state) => state.calendar.selectedDate);
   const dbdate = useSelector((state) => state.loadedapp.dbupdate);
-
   const [daylistshowing, setDayListShow] = useState(true);
-
   const [sumEntries, setEntrySum] = useState(0);
-
   const { newEntry, focusDate } = route.params;
+  const theme = useSelector((state) => state.themeActions.theme);
 
   const [currentMonth, setCurrentMonth] = useState({
     dateString: moment().format("YYYY-MM-DD"),
@@ -123,142 +122,146 @@ function CalendarScreen({ route, navigation }) {
 
   const today = new Date().toISOString().split("T")[0];
   return (
-    <Animated.View style={{ flex: 1 }}>
-      <View>
-        <Calendar
-          style={{ backgroundColor: "transparent", marginHorizontal: 5 }}
-          theme={{
-            backgroundColor: "black",
-            calendarBackground: "transparent",
-            textSectionTitleColor: "#b6c1cd",
-            textSectionTitleDisabledColor: "#d9e1e8",
-            selectedDayBackgroundColor: "#00adf5",
-            selectedDayTextColor: "#ffffff",
-            todayTextColor: "#00adf5",
-            dayTextColor: "#2d4150",
-            textDisabledColor: "#d9e1e8",
-            dotColor: "#00adf5",
-            selectedDotColor: "#ffffff",
-            arrowColor: "orange",
-            disabledArrowColor: "#d9e1e8",
-            monthTextColor: "white",
-            indicatorColor: "blue",
-            textDayFontFamily: "arial",
-            textMonthFontFamily: "arial",
-            textDayHeaderFontFamily: "arial",
-            textDayFontWeight: "300",
-            textMonthFontWeight: "normal",
-            textDayHeaderFontWeight: "300",
-            textDayFontSize: 16,
-            textMonthFontSize: 20,
-            textDayHeaderFontSize: 14,
-          }}
-          markingType={"custom"}
-          markedDates={journalentries}
-          onMonthChange={(month) => {
-            setCurrentMonth(month);
-          }}
-          dayComponent={({ date, state }) => {
-            return (
-              <View>
-                <TouchableOpacity
-                  onPress={() => {
-                    if (
-                      typeof journalentries[date.dateString] !== "undefined" &&
-                      typeof journalentries[date.dateString].moodColors !==
-                      "undefined"
-                    ) {
-                      setDate(date);
-                    } else {
-                      setDate(date);
-                      // navigation.navigate("HomeTab", { day: day });
-                    }
-                  }}
-                >
-                  <LinearGradient
-                    style={{
-                      borderWidth:
-                        selectedDate.dateString == date.dateString ? 2 : 0,
-                      borderColor: "white",
-                      width: 35,
-                      height: 35,
-                      borderRadius: 13,
-                      alignContent: "center",
-                      justifyContent: "center",
+    <ThemeProvider theme={theme}>
+
+      <Animated.View style={{ backgroundColor: theme.PRIMARY_BACKGROUND_COLOR, flex: 1 }}>
+        <BackgroundPrimary>
+          <Calendar
+            style={{ backgroundColor: theme.SECONDARY_BACKGROUND_COLOR, marginHorizontal: 5 }}
+            theme={{
+              backgroundColor: "black",
+              calendarBackground: "transparent",
+              textSectionTitleColor: "#b6c1cd",
+              textSectionTitleDisabledColor: "#d9e1e8",
+              selectedDayBackgroundColor: "#00adf5",
+              selectedDayTextColor: "#ffffff",
+              todayTextColor: "#00adf5",
+              dayTextColor: "#2d4150",
+              textDisabledColor: "#d9e1e8",
+              dotColor: "#00adf5",
+              selectedDotColor: "#ffffff",
+              arrowColor: "orange",
+              disabledArrowColor: "#d9e1e8",
+              monthTextColor: "white",
+              indicatorColor: "blue",
+              textDayFontFamily: "arial",
+              textMonthFontFamily: "arial",
+              textDayHeaderFontFamily: "arial",
+              textDayFontWeight: "300",
+              textMonthFontWeight: "normal",
+              textDayHeaderFontWeight: "300",
+              textDayFontSize: 16,
+              textMonthFontSize: 20,
+              textDayHeaderFontSize: 14,
+            }}
+            markingType={"custom"}
+            markedDates={journalentries}
+            onMonthChange={(month) => {
+              setCurrentMonth(month);
+            }}
+            dayComponent={({ date, state }) => {
+              return (
+                <View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      if (
+                        typeof journalentries[date.dateString] !== "undefined" &&
+                        typeof journalentries[date.dateString].moodColors !==
+                        "undefined"
+                      ) {
+                        setDate(date);
+                      } else {
+                        setDate(date);
+                        // navigation.navigate("HomeTab", { day: day });
+                      }
                     }}
-                    start={{ x: 0, y: 0.5 }} // change angle of the gradient transition
-                    end={{ x: 1, y: 1 }}
-                    colors={
-                      typeof journalentries[date.dateString] === "undefined"
-                        ? ["transparent", "transparent"]
-                        : journalentries[date.dateString].moodColors
-                    }
                   >
-                    {state === "today" && (
-                      <Text
-                        style={{
-                          textAlign: "center",
-                          color: "white",
-                        }}
-                      >
-                        {date.day}
-                      </Text>
-                    )}
-                    {state === "disabled" && (
-                      <Text
-                        style={{
-                          textAlign: "center",
-                          color: "grey",
-                        }}
-                      >
-                        {date.day}
-                      </Text>
-                    )}
-                    {state === "" && (
-                      <Text
-                        style={{
-                          textAlign: "center",
-                          color: "black",
-                        }}
-                      >
-                        {date.day}
-                      </Text>
-                    )}
-                  </LinearGradient>
-                  {Moment().format("YYYY-MM-DD") == date.dateString && (
-                    <View
+                    <LinearGradient
                       style={{
-                        flex: 1,
-                        position: "absolute",
-                        top: 0,
-                        right: 0,
-                        bottom: 0,
-                        left: 0,
-                        backgroundColor: "rgba(255,255,255,0.5)",
-                        borderWidth: 2,
-                        borderColor:
-                          selectedDate.dateString == date.dateString
-                            ? "white"
-                            : "white",
-                        borderRadius: 10,
-                        borderStyle: "dotted",
+                        borderWidth:
+                          selectedDate.dateString == date.dateString ? 2 : 0,
+                        borderColor: "white",
+                        width: 35,
+                        height: 35,
+                        borderRadius: 13,
+                        alignContent: "center",
+                        justifyContent: "center",
                       }}
-                    ></View>
-                  )}
-                </TouchableOpacity>
-              </View>
-            );
-          }}
+                      start={{ x: 0, y: 0.5 }} // change angle of the gradient transition
+                      end={{ x: 1, y: 1 }}
+                      colors={
+                        typeof journalentries[date.dateString] === "undefined"
+                          ? ["transparent", "transparent"]
+                          : journalentries[date.dateString].moodColors
+                      }
+                    >
+                      {state === "today" && (
+                        <Text
+                          style={{
+                            textAlign: "center",
+                            color: "white",
+                          }}
+                        >
+                          {date.day}
+                        </Text>
+                      )}
+                      {state === "disabled" && (
+                        <Text
+                          style={{
+                            textAlign: "center",
+                            color: "grey",
+                          }}
+                        >
+                          {date.day}
+                        </Text>
+                      )}
+                      {state === "" && (
+                        <Text
+                          style={{
+                            textAlign: "center",
+                            color: "black",
+                          }}
+                        >
+                          {date.day}
+                        </Text>
+                      )}
+                    </LinearGradient>
+                    {Moment().format("YYYY-MM-DD") == date.dateString && (
+                      <View
+                        style={{
+                          flex: 1,
+                          position: "absolute",
+                          top: 0,
+                          right: 0,
+                          bottom: 0,
+                          left: 0,
+                          backgroundColor: "rgba(255,255,255,0.5)",
+                          borderWidth: 2,
+                          borderColor:
+                            selectedDate.dateString == date.dateString
+                              ? "white"
+                              : "white",
+                          borderRadius: 10,
+                          borderStyle: "dotted",
+                        }}
+                      ></View>
+                    )}
+                  </TouchableOpacity>
+                </View>
+              );
+            }}
+          />
+        </BackgroundPrimary>
+        <DayList
+          style={{ flex: 1 }}
+          navigation={navigation}
+          newEntry={newEntry}
+          isSingleDate={true}
         />
-      </View>
-      <DayList
-        style={{ flex: 1 }}
-        navigation={navigation}
-        newEntry={newEntry}
-        isSingleDate={true}
-      />
-    </Animated.View>
+      </Animated.View>
+    </ThemeProvider>
+
   );
 }
 
-export default CalendarScreen;
+export default CalendarScreen;  

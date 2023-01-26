@@ -15,6 +15,7 @@ import { Colours } from "../constants";
 import { Platform } from "react-native";
 import { useEffect, useState } from "react";
 import EntryView from "../components/EntryView";
+
 import { useSelector } from "react-redux";
 
 const Tab = createBottomTabNavigator();
@@ -28,8 +29,8 @@ function TabsScreen(props) {
   const entryUi = useSelector((state) => state.calendar.entryUi);
 
   useEffect(() => {
-    // console.log("entryUi", entryUi);
   }, [entryUi]);
+
   useEffect(() => {
     const keyboardWillShow = (event) => {
       if (Platform.OS === "android") {
@@ -60,7 +61,7 @@ function TabsScreen(props) {
       keyboardWillHideSub.remove();
     };
   }, []);
-  useEffect(() => {}, [bottomNav]);
+  useEffect(() => { }, [bottomNav]);
 
   return (
     <LinearGradient
@@ -242,3 +243,4 @@ function TabsScreen(props) {
 }
 
 export default TabsScreen;
+

@@ -1,25 +1,37 @@
 import { Animated } from "react-native";
 import DayList from "../components/DayList";
+import { ThemeProvider } from 'styled-components/native';
+import { useSelector, } from "react-redux";
+import { TextPrimary, BackgroundPrimary, } from "../components/ThemeStyles";
 
 function ResultsList({ searchText, primaryMood, secondaryMood }) {
-    return (
-        <Animated.View style={{ flex: 1, flexDirection: "row", justifyContent: "space-around" }}>
-            <DayList
-                style={{ flex: 1 }}
-                newEntry={false}
-                isSingleDate={false}
-                mood={primaryMood}
-                searchText={searchText}
-            />
+    const theme = useSelector((state) => state.themeActions.theme);
 
-            <DayList
-                style={{ flex: 1 }}
-                newEntry={false}
-                isSingleDate={false}
-                mood={secondaryMood}
-                searchText={searchText}
-            />
-        </Animated.View>
+    return (
+        <ThemeProvider theme={theme}>
+
+            <BackgroundPrimary style={{
+                flexDirection: "row",
+                justifyContent: "space-around"
+            }}>
+                <DayList
+                    style={{ flex: 1 }}
+                    newEntry={false}
+                    isSingleDate={false}
+                    mood={primaryMood}
+                    searchText={searchText}
+                />
+
+                <DayList
+                    style={{ flex: 1 }}
+                    newEntry={false}
+                    isSingleDate={false}
+                    mood={secondaryMood}
+                    searchText={searchText}
+                />
+            </BackgroundPrimary>
+        </ThemeProvider>
+
     );
 }
 

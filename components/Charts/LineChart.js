@@ -7,6 +7,8 @@ import { Colours } from "../../constants";
 import moment, { max } from "moment";
 import { ClipPath, Rect } from "react-native-svg";
 import * as scale from "d3-scale";
+import { useSelector, } from "react-redux";
+import { BackgroundSecondary, } from "../ThemeStyles";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
@@ -234,12 +236,11 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency, allResults, d
   );
 
   return (
-    <View
+    <BackgroundSecondary
       style={{
         height: 250,
         flexDirection: "row",
         justifyContent: "space-around",
-        backgroundColor: "#ECE1FF",
         elevation: 5,
         borderRadius: 15,
         margin: 15,
@@ -347,7 +348,7 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency, allResults, d
           </View>
         </ScrollView>
       </View>
-    </View>
+    </BackgroundSecondary>
   );
 };
 
@@ -356,6 +357,8 @@ const xAxisHeight = 40;
 
 const CustomGrid = ({ x, y, data, ticks }) => {
   ticks = [-4, -3, -2, -1, 0, 1, 2];
+  const theme = useSelector((state) => state.themeActions.theme);
+
   return (
     <G>
       {
@@ -367,7 +370,7 @@ const CustomGrid = ({ x, y, data, ticks }) => {
             x2={"100%"}
             y1={y(tick)}
             y2={y(tick)}
-            stroke={"rgba(109, 74, 120, 0.1)"}
+            stroke={theme.SECONDARY_TEXT_COLOR}
           />
         ))
       }
@@ -381,7 +384,7 @@ const CustomGrid = ({ x, y, data, ticks }) => {
             y2={"100%"}
             x1={x(index)}
             x2={x(index)}
-            stroke={"rgba(109, 74, 120, 0.1)"}
+            stroke={theme.SECONDARY_TEXT_COLOR}
           />
         ))
       }

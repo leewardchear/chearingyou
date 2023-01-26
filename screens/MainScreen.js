@@ -61,6 +61,7 @@ const MainScreen = ({ route, navigation }) => {
   const showenv = useSelector((state) => state.journal.envshow);
   const env = useSelector((state) => state.journal.env);
   const entryId = useSelector((state) => state.journal.entryId);
+  const theme = useSelector((state) => state.themeActions.theme);
 
   const entryBottom = useRef(new Animated.Value(10)).current;
 
@@ -163,7 +164,7 @@ const MainScreen = ({ route, navigation }) => {
     return unsubscribe;
   }, [navigation]);
 
-  useEffect(() => {}, [env]);
+  useEffect(() => { }, [env]);
   useEffect(() => {
     // console.log("dismiss");
 
@@ -347,7 +348,6 @@ const MainScreen = ({ route, navigation }) => {
             style={{
               flex: 1,
               flexDirection: "column",
-
               marginHorizontal: 25,
               marginBottom: 35,
             }}
@@ -359,7 +359,7 @@ const MainScreen = ({ route, navigation }) => {
                 fontSize: 18,
                 flex: 1,
                 flexDirection: "row",
-                backgroundColor: "#f6f6f6",
+                backgroundColor: theme.SECONDARY_BACKGROUND_COLOR,
                 borderBottomLeftRadius: 15,
                 borderBottomRightRadius: 15,
                 shadowColor: "#000000",
@@ -374,7 +374,7 @@ const MainScreen = ({ route, navigation }) => {
               selectionColor={"black"}
               placeholder={"How do you feel today?"}
               placeholderStyle={{ fontFamily: "Helvetica", fontSize: 20 }}
-              placeholderTextColor="#a8a8a8"
+              placeholderTextColor={theme.PRIMARY_TEXT_COLOR}
               onChangeText={(value) => {
                 setEntryData(value);
               }}
@@ -436,29 +436,6 @@ const MainScreen = ({ route, navigation }) => {
 export default MainScreen;
 
 const styles = StyleSheet.create({
-  topView: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-  },
-
-  background: {
-    flexDirection: "column",
-    flex: 1,
-  },
-
-  date: {
-    color: "black",
-    fontSize: 20,
-    textAlignVertical: "bottom",
-    fontFamily: "Helvetica",
-  },
-
-  noteInput: {
-    textAlignVertical: "top",
-    padding: 10,
-    fontSize: 18,
-  },
-
   saveButton: {
     alignSelf: "center",
     color: "white",
@@ -466,13 +443,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 60,
   },
 
-  colorButton: {
-    alignSelf: "center",
-    resizeMode: "contain",
-    width: 32,
-    height: 32,
-    marginHorizontal: 5,
-  },
   button: {
     borderRadius: 50,
     padding: 17,
