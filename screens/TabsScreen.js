@@ -13,9 +13,9 @@ import { Portal } from "react-native-paper";
 import { Platform } from "react-native";
 import { useEffect, useState } from "react";
 import EntryView from "../components/EntryView";
-import { ThemeProvider } from 'styled-components/native';
+import { ThemeProvider } from "styled-components/native";
 import { useSelector } from "react-redux";
-import { BackgroundPrimary, } from "../components/ThemeStyles";
+import { BackgroundPrimary } from "../components/ThemeStyles";
 
 const Tab = createBottomTabNavigator();
 
@@ -24,19 +24,18 @@ function TabsScreen(props) {
     Platform.OS === "android" ? -50 : -25
   );
   const [marginTop, setMarginTop] = useState(
-    Platform.OS === "android" ? 0 : -20
+    Platform.OS === "android" ? -22 : -30
   );
   const calEntry = useSelector((state) => state.calendar.calEntry);
   const theme = useSelector((state) => state.themeActions.theme);
   const entryUi = useSelector((state) => state.calendar.entryUi);
 
-  useEffect(() => {
-  }, [entryUi]);
+  useEffect(() => {}, [entryUi]);
 
   useEffect(() => {
     const keyboardWillShow = (event) => {
       if (Platform.OS === "android") {
-        setBottomNav(event.endCoordinates.height - 0);
+        setBottomNav(event.endCoordinates.height);
         setMarginTop(-90);
       }
     };
@@ -44,9 +43,9 @@ function TabsScreen(props) {
     const keyboardWillHide = (event) => {
       if (Platform.OS === "android") {
         setBottomNav(-50);
-        setMarginTop(10);
+        setMarginTop(-5);
       } else {
-        setMarginTop(10);
+        setMarginTop(-10);
       }
     };
     const keyboardWillShowSub = Keyboard.addListener(
@@ -63,12 +62,13 @@ function TabsScreen(props) {
       keyboardWillHideSub.remove();
     };
   }, []);
-  useEffect(() => { }, [bottomNav]);
+  useEffect(() => {}, [bottomNav]);
 
   return (
     <ThemeProvider theme={theme}>
-
-      <BackgroundPrimary style={{ paddingBottom: Platform.OS === "ios" ? 10 : 0 }}>
+      <BackgroundPrimary
+        style={{ paddingBottom: Platform.OS === "ios" ? 0 : 0 }}
+      >
         <SafeAreaView style={{ flex: 1 }}>
           <Portal.Host>
             <Tab.Navigator
@@ -93,14 +93,16 @@ function TabsScreen(props) {
                   borderTopLeftRadius: 0,
                   borderTopRightRadius: 0,
                   marginTop: marginTop,
-                  height: 80,
+                  height: 90,
                   margin: 0,
                   padding: 0,
+                  paddingTop: 0,
                   borderWidth: 0,
                   borderTopWidth: 0,
                   // borderColor: "rgba(255,0,0,0.7)",
                   borderTopColor: "grey",
-                  top: bottomNav + 46,
+                  top: bottomNav + 55,
+                  marginBottom: -5,
                 },
                 tabBarItemStyle: {
                   height: 80,
@@ -235,9 +237,7 @@ function TabsScreen(props) {
         )}
       </BackgroundPrimary>
     </ThemeProvider>
-
   );
 }
 
 export default TabsScreen;
-

@@ -41,8 +41,12 @@ import {
   Directions,
 } from "react-native-gesture-handler";
 
-import { ThemeProvider } from 'styled-components/native';
-import { TextPrimary, BackgroundPrimary, MaterialIconCY } from "../components/ThemeStyles";
+import { ThemeProvider } from "styled-components/native";
+import {
+  TextPrimary,
+  BackgroundPrimary,
+  MaterialIconCY,
+} from "../components/ThemeStyles";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -66,7 +70,9 @@ const MainScreen = ({ route, navigation }) => {
   const entryId = useSelector((state) => state.journal.entryId);
   const theme = useSelector((state) => state.themeActions.theme);
 
-  const entryBottom = useRef(new Animated.Value(0)).current;
+  const entryBottom = useRef(
+    new Animated.Value(Platform.OS === "android" ? 20 : 0)
+  ).current;
 
   const db = new Database();
   const { day, newEntry } = route.params;
@@ -110,7 +116,7 @@ const MainScreen = ({ route, navigation }) => {
       Animated.timing(entryBottom, {
         duration: event.duration,
         toValue:
-          event.endCoordinates.height - (Platform.OS === "android" ? 230 : 120),
+          event.endCoordinates.height - (Platform.OS === "android" ? 240 : 120),
         useNativeDriver: false,
         easing: Easing.sin,
       }).start();
@@ -167,7 +173,7 @@ const MainScreen = ({ route, navigation }) => {
     return unsubscribe;
   }, [navigation]);
 
-  useEffect(() => { }, [env]);
+  useEffect(() => {}, [env]);
   useEffect(() => {
     // console.log("dismiss");
 
@@ -269,7 +275,8 @@ const MainScreen = ({ route, navigation }) => {
         <Animated.View
           style={{
             flex: 1,
-            paddingBottom: entryBottom,
+            paddingBottom: 20,
+            marginBottom: entryBottom,
           }}
         >
           <View
@@ -286,10 +293,7 @@ const MainScreen = ({ route, navigation }) => {
               }}
             >
               <View>
-                <MaterialIconCY
-                  name="home"
-                  size={50}
-                />
+                <MaterialIconCY name="home" size={50} />
               </View>
             </TouchableHighlight>
             <View
@@ -408,10 +412,8 @@ const MainScreen = ({ route, navigation }) => {
                 <TouchableHighlight
                   underlayColor="#DDDDDD"
                   onPress={() => {
-
                     dispatch(setProgState(1));
                     saveEntry();
-
                   }}
                 >
                   <View style={{ ...styles.button, ...styles.saveButton }}>
@@ -433,7 +435,6 @@ const MainScreen = ({ route, navigation }) => {
         </Animated.View>
       </GestureDetector>
     </ThemeProvider>
-
   );
 };
 
