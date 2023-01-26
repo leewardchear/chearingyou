@@ -11,9 +11,13 @@ install the app on iOS
 `npx react-native run-ios`
 
 `clone`
+
 `npm install`
+
 `npx patch-packages`
+
 `npx expo install`
+
 `npx react-native run-android`
 
 so it doesnt require bundler
