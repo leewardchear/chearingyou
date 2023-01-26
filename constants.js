@@ -16,3 +16,6 @@ export const Colours = {
 
 export const MoodColors = [Colours.happy.code, Colours.angry.code, Colours.afraid.code
   , Colours.surprised.code, Colours.anxious.code, Colours.sad.code];
+
+export const DARK_THEME = "DARK_THEME";
+export const LIGHT_THEME = "LIGHT_THEME";

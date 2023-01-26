@@ -24,7 +24,8 @@ function ListScreen() {
                     flex={1}
                     autoCorrect={false}
                     round
-                    lightTheme
+                    darkTheme
+                // backgroundColor={"black"}
                 />
             </View>
 

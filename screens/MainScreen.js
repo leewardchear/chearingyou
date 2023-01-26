@@ -41,6 +41,13 @@ import {
   Directions,
 } from "react-native-gesture-handler";
 
+import { ThemeProvider } from "styled-components/native";
+import {
+  TextPrimary,
+  BackgroundPrimary,
+  MaterialIconCY,
+} from "../components/ThemeStyles";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // import ProgressWheel from "../components/ProgressWheel";
@@ -61,6 +68,7 @@ const MainScreen = ({ route, navigation }) => {
   const showenv = useSelector((state) => state.journal.envshow);
   const env = useSelector((state) => state.journal.env);
   const entryId = useSelector((state) => state.journal.entryId);
+  const theme = useSelector((state) => state.themeActions.theme);
 
   const entryBottom = useRef(
     new Animated.Value(Platform.OS === "android" ? 20 : 0)
@@ -262,215 +270,182 @@ const MainScreen = ({ route, navigation }) => {
   };
 
   return (
-    <GestureDetector gesture={flingGesture}>
-      <Animated.View
-        style={{
-          borderColor: "red",
-          borderWidth: 1,
-          flex: 1,
-          paddingBottom: 25,
-          marginBottom: entryBottom,
-        }}
-      >
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "flex-start",
-            alignContent: "center",
-            padding: 5,
-          }}
-        >
-          <TouchableHighlight
-            onPress={() => {
-              db.deleteDb();
-            }}
-          >
-            <View>
-              <MaterialCommunityIcons
-                name="microsoft-xbox-controller-menu"
-                size={60}
-              />
-            </View>
-          </TouchableHighlight>
-          <View
-            style={{
-              padding: 10,
-              flexDirection: "column",
-              alignSelf: "center",
-              justifyContent: "flex-end",
-            }}
-          >
-            <Text style={styles.date}>{formattedDate}</Text>
-          </View>
-        </View>
-        <View style={{ flex: 1, marginTop: -20 }}>
-          <MoodsButton
-            style={{
-              zIndex: 10,
-              margin: 10,
-              backgroundColor: "rgba(0, 0, 0, 0.0)",
-              shadowColor: "#000000",
-
-              shadowOffset: {
-                width: -3,
-                height: -3,
-              },
-
-              shadowRadius: 2,
-              shadowOpacity: 0.25,
-            }}
-          />
-          <TouchableHighlight
-            onPress={envToggleShow}
-            style={{
-              backgroundColor: "#f6f6f6",
-              borderTopLeftRadius: 15,
-              borderTopRightRadius: 15,
-              marginHorizontal: 25,
-              marginTop: showmood ? 20 : 0,
-              shadowColor: "#000000",
-              shadowOffset: {
-                height: 10,
-              },
-              shadowRadius: 5,
-              shadowOpacity: 0.1,
-            }}
-          >
-            <View style={{ padding: 10, alignSelf: "flex-start" }}>
-              <Text
-                style={{
-                  fontStyle: "italic",
-                  color: env == "" || env == null ? "lightgrey" : "black",
-                }}
-              >
-                {env == "" || env == null ? "Select a category" : env}
-              </Text>
-            </View>
-          </TouchableHighlight>
-
-          <View
+    <ThemeProvider theme={theme}>
+      <BackgroundPrimary>
+        <GestureDetector gesture={flingGesture}>
+          <Animated.View
             style={{
               flex: 1,
-              flexDirection: "column",
-
-              marginHorizontal: 25,
-              marginBottom: 35,
+              paddingBottom: 25,
+              marginBottom: entryBottom,
             }}
-          >
-            <TextInput
-              style={{
-                textAlignVertical: "top",
-                padding: 10,
-                fontSize: 18,
-                flex: 1,
-                flexDirection: "row",
-                backgroundColor: "#f6f6f6",
-                borderBottomLeftRadius: 15,
-                borderBottomRightRadius: 15,
-                shadowColor: "#000000",
-                shadowOffset: {
-                  height: 10,
-                },
-                shadowRadius: 5,
-                shadowOpacity: 0.08,
-              }}
-              multiline={true}
-              scrollEnabled={true}
-              selectionColor={"black"}
-              placeholder={"How do you feel today?"}
-              placeholderStyle={{ fontFamily: "Helvetica", fontSize: 20 }}
-              placeholderTextColor="#a8a8a8"
-              onChangeText={(value) => {
-                setEntryData(value);
-              }}
-              value={entryData}
-            ></TextInput>
-          </View>
-          <Environment
-            style={{
-              position: "relative",
-              marginHorizontal: 10,
-              bottom: ctop,
-
-              // shadowColor: "#000000",
-              // shadowOffset: {
-              //   width: -3,
-              //   height: -3,
-              // },
-              // shadowRadius: 15,
-              // shadowOpacity: 0.25,
-            }}
-          />
-
-          <View
-            style={
-              {
-                // borderWidth: 1,
-                // borderColor: "red",
-              }
-            }
           >
             <View
-              style={{ flexDirection: "row", justifyContent: "space-evenly" }}
+              style={{
+                flexDirection: "row",
+                justifyContent: "flex-start",
+                alignContent: "center",
+                padding: 5,
+              }}
             >
               <TouchableHighlight
-                underlayColor="#DDDDDD"
                 onPress={() => {
-                  // navigation.navigate("Splash");
-                  console.log("SAVE DAY", day);
-
-                  dispatch(setProgState(1));
-                  saveEntry();
-                  // setEntryData("");
+                  db.deleteDb();
                 }}
               >
-                <View style={{ ...styles.button, ...styles.saveButton }}>
-                  {progState == 1 && <ProgressWheel />}
-                  {progState == 1 && (
-                    <Text style={{ fontSize: 17 }}>Saving Note...</Text>
-                  )}
-                  {progState == 0 && (
-                    <Text style={{ fontSize: 17 }}>Save This</Text>
-                  )}
-                  {progState == 2 && (
-                    <Text style={{ fontSize: 17 }}>Note Saved!</Text>
-                  )}
+                <View>
+                  <MaterialIconCY name="home" size={50} />
                 </View>
               </TouchableHighlight>
+              <View
+                style={{
+                  padding: 10,
+                  flexDirection: "column",
+                  alignSelf: "center",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <TextPrimary style={styles.date}>{formattedDate}</TextPrimary>
+              </View>
             </View>
-          </View>
-        </View>
-      </Animated.View>
-    </GestureDetector>
+            <View style={{ flex: 1, marginTop: -20 }}>
+              <MoodsButton
+                style={{
+                  zIndex: 10,
+                  margin: 10,
+                  backgroundColor: "rgba(0, 0, 0, 0.0)",
+                  shadowColor: "#000000",
+
+                  shadowOffset: {
+                    width: -3,
+                    height: -3,
+                  },
+
+                  shadowRadius: 2,
+                  shadowOpacity: 0.25,
+                }}
+              />
+              <TouchableHighlight
+                onPress={envToggleShow}
+                style={{
+                  backgroundColor: "#f6f6f6",
+                  borderTopLeftRadius: 15,
+                  borderTopRightRadius: 15,
+                  marginHorizontal: 25,
+                  marginTop: showmood ? 20 : 0,
+                  shadowColor: "#000000",
+                  shadowOffset: {
+                    height: 10,
+                  },
+                  shadowRadius: 5,
+                  shadowOpacity: 0.1,
+                }}
+              >
+                <View style={{ padding: 10, alignSelf: "flex-start" }}>
+                  <Text
+                    style={{
+                      fontStyle: "italic",
+                      color: env == "" || env == null ? "lightgrey" : "black",
+                    }}
+                  >
+                    {env == "" || env == null ? "Select a category" : env}
+                  </Text>
+                </View>
+              </TouchableHighlight>
+
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: "column",
+                  marginHorizontal: 25,
+                  marginBottom: 35,
+                }}
+              >
+                <TextInput
+                  style={{
+                    textAlignVertical: "top",
+                    padding: 10,
+                    fontSize: 18,
+                    flex: 1,
+                    flexDirection: "row",
+                    backgroundColor: theme.SECONDARY_BACKGROUND_COLOR,
+                    borderBottomLeftRadius: 15,
+                    borderBottomRightRadius: 15,
+                    shadowColor: "#000000",
+                    shadowOffset: {
+                      height: 10,
+                    },
+                    shadowRadius: 5,
+                    shadowOpacity: 0.08,
+                  }}
+                  multiline={true}
+                  scrollEnabled={true}
+                  selectionColor={"black"}
+                  placeholder={"How do you feel today?"}
+                  placeholderStyle={{ fontFamily: "Helvetica", fontSize: 20 }}
+                  placeholderTextColor={theme.PRIMARY_TEXT_COLOR}
+                  onChangeText={(value) => {
+                    setEntryData(value);
+                  }}
+                  value={entryData}
+                ></TextInput>
+              </View>
+              <Environment
+                style={{
+                  position: "relative",
+                  marginHorizontal: 10,
+                  bottom: ctop,
+
+                  // shadowColor: "#000000",
+                  // shadowOffset: {
+                  //   width: -3,
+                  //   height: -3,
+                  // },
+                  // shadowRadius: 15,
+                  // shadowOpacity: 0.25,
+                }}
+              />
+
+              <View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-evenly",
+                  }}
+                >
+                  <TouchableHighlight
+                    underlayColor="#DDDDDD"
+                    onPress={() => {
+                      dispatch(setProgState(1));
+                      saveEntry();
+                    }}
+                  >
+                    <View style={{ ...styles.button, ...styles.saveButton }}>
+                      {progState == 1 && <ProgressWheel />}
+                      {progState == 1 && (
+                        <Text style={{ fontSize: 17 }}>Saving Note...</Text>
+                      )}
+                      {progState == 0 && (
+                        <Text style={{ fontSize: 17 }}>Save This</Text>
+                      )}
+                      {progState == 2 && (
+                        <Text style={{ fontSize: 17 }}>Note Saved!</Text>
+                      )}
+                    </View>
+                  </TouchableHighlight>
+                </View>
+              </View>
+            </View>
+          </Animated.View>
+        </GestureDetector>
+      </BackgroundPrimary>
+    </ThemeProvider>
   );
 };
 
 export default MainScreen;
 
 const styles = StyleSheet.create({
-  topView: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-  },
-
-  background: {
-    flexDirection: "column",
-    flex: 1,
-  },
-
-  date: {
-    color: "black",
-    fontSize: 20,
-    textAlignVertical: "bottom",
-    fontFamily: "Helvetica",
-  },
-
-  noteInput: {
-    textAlignVertical: "top",
-    padding: 10,
-    fontSize: 18,
-  },
-
   saveButton: {
     alignSelf: "center",
     color: "white",
@@ -478,13 +453,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 60,
   },
 
-  colorButton: {
-    alignSelf: "center",
-    resizeMode: "contain",
-    width: 32,
-    height: 32,
-    marginHorizontal: 5,
-  },
   button: {
     borderRadius: 50,
     padding: 17,

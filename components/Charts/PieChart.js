@@ -3,6 +3,8 @@ import { View, Text } from "react-native";
 import { useState } from "react";
 import React, { useEffect } from "react";
 import { Colours } from "../../constants";
+import { useSelector, } from "react-redux";
+import { BackgroundSecondary, } from "../ThemeStyles";
 
 const MyPieChart = ({ frequency, dbResults }) => {
   var moodList = [];
@@ -14,6 +16,7 @@ const MyPieChart = ({ frequency, dbResults }) => {
   const [colorData, setColorData] = useState([]);
   const [totalCount, setTotal] = useState(0);
   const [hasData, setHasData] = useState(false);
+  const theme = useSelector((state) => state.themeActions.theme);
 
   useEffect(() => {
     plotPie(dbResults);
@@ -77,11 +80,10 @@ const MyPieChart = ({ frequency, dbResults }) => {
   const dy = (chartHeight - legendHeight) / 2;
 
   return (
-    <View
+    <BackgroundSecondary
       style={{
         height: chartHeight,
         justifyContent: "space-around",
-        backgroundColor: "#ECE1FF",
         elevation: 5,
         borderRadius: 15,
         marginLeft: 15,
@@ -148,7 +150,7 @@ const MyPieChart = ({ frequency, dbResults }) => {
         />
       </View>
       }
-    </View>
+    </BackgroundSecondary>
   );
 };
 
