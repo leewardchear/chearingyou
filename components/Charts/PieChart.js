@@ -3,7 +3,6 @@ import { View, Text } from "react-native";
 import { useState } from "react";
 import React, { useEffect } from "react";
 import { Colours } from "../../constants";
-import { useSelector, } from "react-redux";
 import { BackgroundSecondary, } from "../ThemeStyles";
 
 const MyPieChart = ({ frequency, dbResults }) => {
@@ -16,7 +15,6 @@ const MyPieChart = ({ frequency, dbResults }) => {
   const [colorData, setColorData] = useState([]);
   const [totalCount, setTotal] = useState(0);
   const [hasData, setHasData] = useState(false);
-  const theme = useSelector((state) => state.themeActions.theme);
 
   useEffect(() => {
     plotPie(dbResults);
