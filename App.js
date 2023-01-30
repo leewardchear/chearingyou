@@ -13,8 +13,8 @@ import TabsScreen from "./screens/TabsScreen";
 import { AppState } from "react-native";
 import { bindActionCreators } from "redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { StatusBar } from 'react-native';
-import { useSelector, } from "react-redux";
+import { StatusBar } from "react-native";
+import { useSelector } from "react-redux";
 
 const Stack = createStackNavigator();
 
@@ -24,35 +24,31 @@ const database_displayname = "SQLite Test Databa se";
 const database_size = 200000;
 
 export class App extends Component {
-
   constructor(props) {
     super(props);
 
     // fetchData();
     appisloaded = store.getState().loadedapp.loadedvalue;
-
   }
 
   render() {
     return (
-
       <Provider store={store}>
         <ConnectedRoot />
       </Provider>
     );
   }
 
-  componentDidMount() { }
+  componentDidMount() {}
 }
 
 export default App;
 
 export class ConnectedContainer extends Component {
-
   getDbUpdate = async (props) => {
     try {
       const dbupdate = await AsyncStorage.getItem("@db_update");
-
+      console.log({ dbupdate });
       if (dbupdate !== null) {
         return dbupdate;
       }
@@ -66,8 +62,8 @@ export class ConnectedContainer extends Component {
 
     AppState.addEventListener("change", (state) => {
       console.log("compdismount", this.props);
-      this.getDbUpdate();
-      // this.props.setDbUpdate("test");
+      console.log(this.getDbUpdate());
+      this.props.setDbUpdate(this.getDbUpdate().dbupdate);
     });
   }
   render() {
