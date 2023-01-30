@@ -1,9 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  View,
-  Animated,
-  Text,
-} from "react-native";
+import { View, Animated, Text } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
@@ -19,7 +15,7 @@ import { hideProg, setProgState } from "../app/journalentry";
 import moment from "moment";
 import { LinearGradient } from "expo-linear-gradient";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { ThemeProvider } from 'styled-components/native';
+import { ThemeProvider } from "styled-components/native";
 
 const db = new Database();
 
@@ -51,7 +47,6 @@ function CalendarScreen({ route, navigation }) {
       return Colours.default.code;
     }
   }
-
 
   function reloadData() {
     db.listItems()
@@ -108,7 +103,7 @@ function CalendarScreen({ route, navigation }) {
     return unsubscribe;
   }, [navigation, selectedDate, daylistshowing, sumEntries]);
 
-  useEffect(() => { }, [newEntry, journalentries]);
+  useEffect(() => {}, [newEntry, journalentries]);
 
   useEffect(() => {
     console.log(dbdate);
@@ -122,10 +117,16 @@ function CalendarScreen({ route, navigation }) {
   const today = new Date().toISOString().split("T")[0];
   return (
     <ThemeProvider theme={theme}>
-
-      <Animated.View style={{ backgroundColor: theme.PRIMARY_BACKGROUND_COLOR, flex: 1 }}>
+      <Animated.View
+        style={{ backgroundColor: theme.PRIMARY_BACKGROUND_COLOR, flex: 1 }}
+      >
         <Calendar
-          style={{ backgroundColor: theme.SECONDARY_BACKGROUND_COLOR, marginHorizontal: 5 }}
+          style={{
+            backgroundColor: theme.SECONDARY_BACKGROUND_COLOR,
+            marginHorizontal: 10,
+            marginTop: 10,
+            borderRadius: 10,
+          }}
           theme={{
             backgroundColor: "black",
             calendarBackground: "transparent",
@@ -165,7 +166,7 @@ function CalendarScreen({ route, navigation }) {
                     if (
                       typeof journalentries[date.dateString] !== "undefined" &&
                       typeof journalentries[date.dateString].moodColors !==
-                      "undefined"
+                        "undefined"
                     ) {
                       setDate(date);
                     } else {
@@ -257,8 +258,7 @@ function CalendarScreen({ route, navigation }) {
         />
       </Animated.View>
     </ThemeProvider>
-
   );
 }
 
-export default CalendarScreen;  
+export default CalendarScreen;
