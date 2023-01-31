@@ -13,8 +13,8 @@ import SplashScreen from "./screens/SplashScreen";
 import TabsScreen from "./screens/TabsScreen";
 import { AppState } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { StatusBar } from 'react-native';
 import { lightTheme, darkTheme } from './utils/Theme';
+import { StatusBar } from "react-native";
 
 const Stack = createStackNavigator();
 const database_name = "chearingyou.db";
@@ -23,18 +23,15 @@ const database_displayname = "SQLite Test Databa se";
 const database_size = 200000;
 
 export class App extends Component {
-
   constructor(props) {
     super(props);
 
     // fetchData();
     appisloaded = store.getState().loadedapp.loadedvalue;
-
   }
 
   render() {
     return (
-
       <Provider store={store}>
         <ConnectedRoot />
       </Provider>
@@ -47,11 +44,10 @@ export class App extends Component {
 export default App;
 
 export class ConnectedContainer extends Component {
-
-  getDbUpdate = async () => {
+  getDbUpdate = async (props) => {
     try {
       const dbupdate = await AsyncStorage.getItem("@db_update");
-
+      console.log({ dbupdate });
       if (dbupdate !== null) {
         return dbupdate;
       }
@@ -66,7 +62,7 @@ export class ConnectedContainer extends Component {
     db.initDatabase();
     this.loadAppSettings();
     AppState.addEventListener("change", (state) => {
-      this.getDbUpdate();
+      this.props.setDbUpdate(this.getDbUpdate().dbupdate);
     });
   }
 
