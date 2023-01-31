@@ -6,28 +6,37 @@ import { setTheme } from "../app/themeActions";
 import { ThemeProvider } from 'styled-components/native';
 import { lightTheme, darkTheme } from '../utils/Theme';
 import { TextPrimary, MaterialIconCY, } from "../components/ThemeStyles";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function SettingsScreen() {
-    const [isDarkMode, setIsDarkMode] = useState(false);
+    const [isDarkMode, setIsDarkModeSwitch] = useState(true);
     const dispatch = useDispatch();
     const theme = useSelector((state) => state.themeActions.theme);
 
-    useEffect(() => {
-        if (theme.mode === 'light') {
-            setIsDarkMode(false)
-        } else {
-            setIsDarkMode(true)
+    const toggleDarkMode = async value => {
+        setIsDarkModeSwitch(value);
+        dispatch(value ? setTheme(darkTheme) : setTheme(lightTheme));
+        try {
+            await AsyncStorage.setItem('darkMode', isDarkMode ? 'light' : 'dark');
+        } catch (error) {
+            console.error(error);
         }
+    };
+
+    useEffect(() => {
+        loadAppSettings();
     }, [isDarkMode]);
 
+    const loadAppSettings = () => {
+        try {
+            if (theme !== null && theme.mode === "light") {
+                setIsDarkModeSwitch(false);
+            } else if (theme !== null && theme.mode === "dark") {
+                setIsDarkModeSwitch(true);
+            }
 
-    const handleSwitchPressed = () => {
-        if (theme.mode === 'light') {
-            dispatch(setTheme(darkTheme))
-            setIsDarkMode(true)
-        } else {
-            dispatch(setTheme(lightTheme))
-            setIsDarkMode(false)
+        } catch (error) {
+            console.error(error);
         }
     };
 
@@ -66,7 +75,7 @@ export default function SettingsScreen() {
                     offColor={theme.SECONDARY_THEME}
                     labelStyle={{ color: "black", fontWeight: "50" }}
                     size="medium"
-                    onToggle={handleSwitchPressed} />
+                    onToggle={toggleDarkMode} />
 
             </View>
         </ThemeProvider>

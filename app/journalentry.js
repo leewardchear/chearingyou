@@ -54,7 +54,6 @@ export const journalentry = createSlice({
     },
 
     setEntryId: (state, value) => {
-      console.log("setEntryId", value);
       state.entryId = value.payload;
     },
 

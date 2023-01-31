@@ -9,8 +9,6 @@ const loadedSlice = createSlice({
   reducers: {
     setLoaded: (state) => {
       state.loadedvalue = true;
-      console.log("AHASD")
-
     },
     setUnloaded: (state) => {
       state.loadedvalue = false;

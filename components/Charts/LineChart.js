@@ -370,7 +370,7 @@ const CustomGrid = ({ x, y, data, ticks }) => {
             x2={"100%"}
             y1={y(tick)}
             y2={y(tick)}
-            stroke={theme.SECONDARY_TEXT_COLOR}
+            stroke={theme.PRIMARY_BACKGROUND_COLOR}
           />
         ))
       }
@@ -384,7 +384,7 @@ const CustomGrid = ({ x, y, data, ticks }) => {
             y2={"100%"}
             x1={x(index)}
             x2={x(index)}
-            stroke={theme.SECONDARY_TEXT_COLOR}
+            stroke={theme.PRIMARY_BACKGROUND_COLOR}
           />
         ))
       }
