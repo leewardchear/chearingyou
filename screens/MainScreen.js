@@ -77,7 +77,6 @@ const MainScreen = ({ route, navigation }) => {
   const db = new Database();
   const { day, newEntry } = route.params;
 
-  // console.log("initday", { day, entryId });
   useFocusEffect(
     React.useCallback(() => {
       if (newEntry) {
@@ -89,10 +88,7 @@ const MainScreen = ({ route, navigation }) => {
   );
 
   useEffect(() => {
-    // console.log("useEffect_calentry", { calEntry });
     if (JSON.stringify(calEntry) !== JSON.stringify({})) {
-      // console.log("akosj", { calEntry });
-
       setEntryData(calEntry.text);
       dispatch(setEntryId(calEntry.id));
       dispatch(setMood(calEntry.mood));
@@ -123,7 +119,6 @@ const MainScreen = ({ route, navigation }) => {
       if (env == "") {
         dispatch(setShowEnv());
       }
-      console.log("hidemood");
       dispatch(setHideMoods());
     };
 
@@ -173,7 +168,7 @@ const MainScreen = ({ route, navigation }) => {
     return unsubscribe;
   }, [navigation]);
 
-  useEffect(() => {}, [env]);
+  useEffect(() => { }, [env]);
   useEffect(() => {
     // console.log("dismiss");
 
@@ -195,10 +190,7 @@ const MainScreen = ({ route, navigation }) => {
 
   var oneSec;
   useEffect(() => {
-    console.log("clear");
-
     oneSec = setTimeout(() => {
-      console.log("5 sec.");
       saveEntry();
     }, 5000);
 
@@ -211,13 +203,10 @@ const MainScreen = ({ route, navigation }) => {
   saveEntry = () => {
     clearTimeout(oneSec);
     if (entryData === "" && mood === "default" && env === "") {
-      console.log("dont save");
-
       return;
     }
 
     if (entryId == null) {
-      console.log("save new");
       db.newItem(entryData, mood, env, day.dateString)
         .then((resultSet) => {
           var dbupdate = Moment().valueOf();
@@ -229,13 +218,11 @@ const MainScreen = ({ route, navigation }) => {
           console.log(error);
         });
     } else {
-      console.log("updateItem", entryId);
       db.updateItem(entryId, entryData, mood, env)
         .then((resultSet) => {
           var dbupdate = Moment().valueOf();
           storeData(dbupdate);
           dispatch(setDbUpdate(dbupdate));
-          // dispatch(setEntryId(resultSet.insertId));
         })
         .catch((error) => {
           console.log(error);

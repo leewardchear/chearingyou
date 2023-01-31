@@ -2,19 +2,17 @@ import React, { useEffect } from "react";
 import {
   Text,
   View,
-  Button,
   StyleSheet,
   TouchableWithoutFeedback,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 
-import { useSelector, useDispatch } from "react-redux";
-import { setLoaded, setUnloaded } from "../app/loadedappslice.js";
+import { useDispatch } from "react-redux";
+import { setLoaded, } from "../app/loadedappslice.js";
 import { BackgroundPrimary, } from "../components/ThemeStyles";
 
 function SplashScreen({ navigation }) {
-  const loadedvalue = useSelector((state) => state.loadedapp.loadedvalue);
   const dispatch = useDispatch();
+
   useEffect(() => {
     dispatch(setLoaded());
     setTimeout(() => {

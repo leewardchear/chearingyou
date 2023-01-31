@@ -2,7 +2,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import {
   View,
   Dimensions,
-  Text,
+  SafeAreaView,
   TouchableNativeFeedback,
   BackHandler,
   TouchableOpacity,
@@ -359,83 +359,84 @@ const StatisticsScreen = () => {
 
   return (
     <ThemeProvider theme={theme}>
-
-      <SegmentedControlTab
-        values={["Weekly", "Monthly", "Yearly"]}
-        selectedIndex={selectedFrequency}
-        borderRadius={5}
-        onTabPress={handleIndexPressed}
-        tabsContainerStyle={{
-          height: 35,
-          backgroundColor: "transparent",
-          margin: 10,
-        }}
-        tabStyle={{
-          backgroundColor: theme.PRIMARY_THEME,
-          borderWidth: 1.5,
-          borderColor: theme.PRIMARY_THEME,
-        }}
-        activeTabStyle={{ backgroundColor: theme.SECONDARY_THEME }}
-        tabTextStyle={{ color: theme.SECONDARY_TEXT_COLOR }}
-      />
-
-      <View
-        style={{
-          alignItems: "center",
-          flexDirection: "row",
-          justifyContent: "center",
-        }}
-      >
-        <IconButton
-          icon="chevron-left"
-          color={theme.PRIMARY_THEME}
-          size={25}
-          onPress={handleLeftPressed}
+      <SafeAreaView style={{ flex: 1 }}>
+        <SegmentedControlTab
+          values={["Weekly", "Monthly", "Yearly"]}
+          selectedIndex={selectedFrequency}
+          borderRadius={5}
+          onTabPress={handleIndexPressed}
+          tabsContainerStyle={{
+            height: 35,
+            backgroundColor: "transparent",
+            margin: 10,
+          }}
+          tabStyle={{
+            backgroundColor: theme.PRIMARY_THEME,
+            borderWidth: 1.5,
+            borderColor: theme.PRIMARY_THEME,
+          }}
+          activeTabStyle={{ backgroundColor: theme.SECONDARY_THEME }}
+          tabTextStyle={{ color: theme.SECONDARY_TEXT_COLOR }}
         />
 
-        <TouchableNativeFeedback
-          onPress={handleOnDatePressed}
-          background={TouchableNativeFeedback.Ripple("#75508b")}
+        <View
+          style={{
+            alignItems: "center",
+            flexDirection: "row",
+            justifyContent: "center",
+          }}
         >
-          <View
-            style={{
-              backgroundColor: theme.SECONDARY_THEME,
-              height: 40,
-              width: "70%",
-              paddingLeft: 15,
-              paddingRight: 15,
-              borderRadius: 5,
-              elevation: 5,
-              justifyContent: "center",
-            }}
-          >
-            <TextPrimary
-              style={{ fontSize: 20, textAlign: "center" }}>
-              {stitle}
-            </TextPrimary>
-          </View>
-        </TouchableNativeFeedback>
-        <IconButton
-          icon="chevron-right"
-          color={theme.PRIMARY_THEME}
-          size={25}
-          onPress={handleRightPressed}
-        />
-      </View>
+          <IconButton
+            icon="chevron-left"
+            color={theme.PRIMARY_THEME}
+            size={25}
+            onPress={handleLeftPressed}
+          />
 
-      <ScrollView>
-        <MyLineGraph
-          month={currentDate.month}
-          year={currentDate.year}
-          weekStart={currentDate.weekStart}
-          weekEnd={currentDate.weekEnd}
-          frequency={selectedFrequency}
-          allResults={allResults}
-          dbResults={dbResults}
-        />
-        <MyPieChart frequency={selectedFrequency} dbResults={dbResults} />
-        <MyBarChart frequency={selectedFrequency} dbResults={dbResults} />
-      </ScrollView>
+          <TouchableNativeFeedback
+            onPress={handleOnDatePressed}
+            background={TouchableNativeFeedback.Ripple("#75508b")}
+          >
+            <View
+              style={{
+                backgroundColor: theme.SECONDARY_THEME,
+                height: 40,
+                width: "70%",
+                paddingLeft: 15,
+                paddingRight: 15,
+                borderRadius: 5,
+                elevation: 5,
+                justifyContent: "center",
+              }}
+            >
+              <TextPrimary
+                style={{ fontSize: 20, textAlign: "center" }}>
+                {stitle}
+              </TextPrimary>
+            </View>
+          </TouchableNativeFeedback>
+          <IconButton
+            icon="chevron-right"
+            color={theme.PRIMARY_THEME}
+            size={25}
+            onPress={handleRightPressed}
+          />
+        </View>
+
+        <ScrollView >
+          <MyLineGraph
+            month={currentDate.month}
+            year={currentDate.year}
+            weekStart={currentDate.weekStart}
+            weekEnd={currentDate.weekEnd}
+            frequency={selectedFrequency}
+            allResults={allResults}
+            dbResults={dbResults}
+          />
+          <MyPieChart frequency={selectedFrequency} dbResults={dbResults} />
+          <MyBarChart frequency={selectedFrequency} dbResults={dbResults} />
+        </ScrollView>
+      </SafeAreaView>
       <Portal>
         <BottomSheet
           ref={sheetRef}

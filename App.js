@@ -6,18 +6,17 @@ import { connect, Provider } from "react-redux";
 import { store } from "./store/store.js";
 
 import { setDbUpdate } from "./app/loadedappslice.js";
+import { setTheme } from "./app/themeActions.js";
 
 import Database from "./db/database";
 import SplashScreen from "./screens/SplashScreen";
 import TabsScreen from "./screens/TabsScreen";
 import { AppState } from "react-native";
-import { bindActionCreators } from "redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { StatusBar } from 'react-native';
-import { useSelector, } from "react-redux";
+import { lightTheme, darkTheme } from './utils/Theme';
 
 const Stack = createStackNavigator();
-
 const database_name = "chearingyou.db";
 const database_version = "1.0";
 const database_displayname = "SQLite Test Databa se";
@@ -49,7 +48,7 @@ export default App;
 
 export class ConnectedContainer extends Component {
 
-  getDbUpdate = async (props) => {
+  getDbUpdate = async () => {
     try {
       const dbupdate = await AsyncStorage.getItem("@db_update");
 
@@ -57,24 +56,35 @@ export class ConnectedContainer extends Component {
         return dbupdate;
       }
     } catch (e) {
-      // error reading value
+      console.error(e);
     }
   };
+
+
   componentDidMount() {
     const db = new Database();
     db.initDatabase();
-
+    this.loadAppSettings();
     AppState.addEventListener("change", (state) => {
-      console.log("compdismount", this.props);
       this.getDbUpdate();
-      // this.props.setDbUpdate("test");
     });
   }
+
+
+  loadAppSettings = async () => {
+    try {
+      const value = await AsyncStorage.getItem('darkMode');
+      if (value !== null) {
+        value === 'dark' ? this.props.setTheme(darkTheme) : this.props.setTheme(lightTheme)
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   render() {
     return (
       <NavigationContainer>
-        {/* <StatusBar backgroundColor={theme.PRIMARY_TEXT_COLOR} barStyle="light-content" /> */}
-
         <Stack.Navigator
           initialRouteName={appisloaded ? "TabsScreen" : "Splash"}
         >
@@ -94,7 +104,7 @@ export class ConnectedContainer extends Component {
   }
 }
 
-const mapDispatchToProps = { setDbUpdate };
+const mapDispatchToProps = { setDbUpdate, setTheme };
 
 const ConnectedRoot = connect(
   mapStateToProps,
@@ -103,4 +113,5 @@ const ConnectedRoot = connect(
 
 const mapStateToProps = (state) => ({
   dbupdate: state.loadedappslice.dbupdate,
+  setTheme: state.themeActions.setTheme
 });

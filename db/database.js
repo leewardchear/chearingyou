@@ -45,7 +45,6 @@ export default class Database {
               vals,
               (txObj, resultSet) => {
                 resolve(resultSet);
-                // console.log(resultSet);
               },
               (txObj, error) => {
                 console.log("Error", error);
