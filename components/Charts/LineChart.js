@@ -1,69 +1,69 @@
-import { LineChart, YAxis, XAxis, Path } from "react-native-svg-charts";
-import * as shape from "d3-shape";
-import { Defs, G, Line } from "react-native-svg";
-import { View, Dimensions, ScrollView } from "react-native";
+import { View, Dimensions, ScrollView, Animated, Text } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Colours } from "../../constants";
 import moment, { max } from "moment";
-import { ClipPath, Rect } from "react-native-svg";
-import * as scale from "d3-scale";
-import { useSelector, } from "react-redux";
+
 import { BackgroundSecondary, } from "../ThemeStyles";
+import {
+  VictoryChart,
+  VictoryLine,
+  VictoryAxis,
+  Background,
+  VictoryLabel
+} from "victory-native";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
 const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency, allResults, dbResults }) => {
   const [lineData, setLineData] = useState([]);
-  const [lineFrequency, setLineFrequency] = useState();
-  const [additionalWidth, setAdditionalWidth] = useState(-110);
+  const [lineFrequency, setLineFrequency] = useState(31);
+  const [additionalWidth, setAdditionalWidth] = useState();
   const [xAxisInset, setXAxisInset] = useState(5);
 
   useEffect(() => {
     setLineData([]);
+
+    let frequencyData;
+    let additionalWidthValue;
+    let xAxisInsetValue;
+
     switch (frequency) {
       case 0: // WEEKLY
-        setAdditionalWidth(SCREEN_WIDTH - 110);
-        setLineFrequency(7);
+        frequencyData = 7;
+        additionalWidthValue = SCREEN_WIDTH - 90;
+        xAxisInsetValue = 10;
         getWeeklyData(dbResults);
-        setXAxisInset(10);
         break;
       case 1: // MONTHLY
-        setAdditionalWidth(SCREEN_WIDTH + 200);
-        setLineFrequency(31);
+        frequencyData = 31;
+        additionalWidthValue = SCREEN_WIDTH + 200;
+        xAxisInsetValue = 6;
         getMonthlyData(dbResults);
-        setXAxisInset(6);
         break;
       case 2: // YEARLY
-        setAdditionalWidth(SCREEN_WIDTH + 1500);
-        setLineFrequency(365);
+        frequencyData = 365;
+        additionalWidthValue = SCREEN_WIDTH + 1500;
+        xAxisInsetValue = 8;
         getYearlyData(dbResults);
-        setXAxisInset(8);
         break;
     }
-  }, [frequency, weekStart, month, year, allResults, dbResults]);
+
+    setLineFrequency(frequencyData);
+    setAdditionalWidth(additionalWidthValue);
+    setXAxisInset(xAxisInsetValue);
+  }, [frequency, dbResults]);
 
   function getYearlyData(resultSet) {
     try {
-      if (resultSet !== undefined && resultSet.length !== 0) {
 
+      if (resultSet !== undefined && resultSet.length !== 0) {
         var daysInYear = 365;
         var moodList = [];
 
-        let currentMoment = moment();
         for (let i = 1; i <= daysInYear; i++) {
-          currentMoment.dayOfYear(i);
-          var day = currentMoment.format("DD");
-          var month = currentMoment.format("MMM");
-
-          var monthLabel = "";
-          if (day == "01") {
-            monthLabel = month;
-          }
-
           var moodObj = {
-            day: i,
-            moodScale: 0,
-            label: monthLabel,
+            x: i,
+            y: 9,
           };
           moodList.push(moodObj);
         }
@@ -71,7 +71,7 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency, allResults, d
         for (let i = 0; i < resultSet.rows.length; i++) {
           var day = moment(resultSet.rows.item(i).savedate).dayOfYear();
           var mood = resultSet.rows.item(i).mood;
-          moodList[day - 1].moodScale = parseInt(Colours[mood].intVal);
+          moodList[day - 1].y = parseInt(Colours[mood].intVal);
         }
         setLineData(moodList);
       }
@@ -85,24 +85,23 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency, allResults, d
       if (resultSet !== undefined && resultSet.length !== 0) {
         var daysInMonth = moment(month, "MM").daysInMonth();
         var moodList = [];
+
         for (let i = 1; i <= daysInMonth; i++) {
           var moodObj = {
-            day: i,
-            moodScale: 0,
-            label: i,
+            x: i,
+            y: 9,
           };
-
           moodList.push(moodObj);
         }
 
         const getDate = (string) =>
-          (([year, month, day]) => ({ year, month, day }))(string.split("-"));
+          (([year, month, x]) => ({ year, month, x }))(string.split("-"));
 
         for (let i = 0; i < resultSet.rows.length; i++) {
           var row = resultSet.rows.item(i);
-          var dayIndex = parseInt(getDate(row.savedate).day, 10) - 1;
+          var dayIndex = parseInt(getDate(row.savedate).x, 10) - 1;
           var mood = parseInt(Colours[row.mood].intVal);
-          moodList[dayIndex].moodScale = mood;
+          moodList[dayIndex].y = mood;
         }
         setLineData(moodList);
       }
@@ -114,23 +113,20 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency, allResults, d
   function getWeeklyData(resultSet) {
     try {
       if (resultSet !== undefined && resultSet.length !== 0) {
-
         var moodList = [];
 
         for (let i = 1; i <= 7; i++) {
           var moodObj = {
-            day: i,
-            moodScale: 0,
-            label: moment().day(i).format("ddd"),
+            x: i,
+            y: 9,
           };
-
           moodList.push(moodObj);
         }
 
         for (let i = 0; i < resultSet.rows.length; i++) {
           var day = moment(resultSet.rows.item(i).savedate).isoWeekday();
           var mood = resultSet.rows.item(i).mood;
-          moodList[day - 1].moodScale = parseInt(Colours[mood].intVal);
+          moodList[day - 1].y = parseInt(Colours[mood].intVal);
         }
         setLineData(moodList);
       }
@@ -139,257 +135,155 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency, allResults, d
     }
   }
 
-  const Clips = ({ }) => (
-    <Defs key={"clips"}>
-      <ClipPath id={"sad"}>
-        <Rect y={175} width={"100%"} height={"100%"} />
-      </ClipPath>
-      <ClipPath id={"angry"}>
-        <Rect y={140} width={"100%"} height={"100%"} />
-      </ClipPath>
-      <ClipPath id={"afraid"}>
-        <Rect y={102} width={"100%"} height={"100%"} />
-      </ClipPath>
-      <ClipPath id={"anxious"}>
-        <Rect y={70} width={"100%"} height={"100%"} />
-      </ClipPath>
-      <ClipPath id={"default"}>
-        <Rect y={67} width={"100%"} height={"100%"} />
-      </ClipPath>
-      <ClipPath id={"surprised"}>
-        <Rect y={35} width={"100%"} height={"100%"} />
-      </ClipPath>
-      <ClipPath id={"happy"}>
-        <Rect y={0} width={"100%"} height={"100%"} />
-      </ClipPath>
-    </Defs>
-  );
 
-  // Line extras:
-  const BlueLine = ({ line }) => (
-    <Path
-      d={line}
-      stroke={Colours["sad"].code}
-      strokeWidth={3}
-      clipPath={"url(#sad)"}
-    />
-  );
+  const chartPadding = 10
+  const chartLeftPadding = lineFrequency === 7 ? 10 : 1;
+  const chartBottomPadding = 80
 
-  // Line extras:
-  const RedLine = ({ line }) => (
-    <Path
-      d={line}
-      stroke={Colours["angry"].code}
-      strokeWidth={3}
-      clipPath={"url(#angry"}
-    />
-  );
+  const CustomBackground = ({ width, scale }) => {
+    const data = [
+      { yAxis: chartPadding, color: Colours.happy.code },
+      { yAxis: 40, color: Colours.surprised.code },
+      { yAxis: 70, color: Colours.default.code },
+      { yAxis: 100, color: Colours.anxious.code },
+      { yAxis: 130, color: Colours.afraid.code },
+      { yAxis: 160, color: Colours.angry.code },
+      { yAxis: 190, color: Colours.sad.code }
+    ];
 
-  // Line extras:
-  const PurpleLine = ({ line }) => (
-    <Path
-      d={line}
-      stroke={Colours["anxious"].code}
-      strokeWidth={3}
-      clipPath={"url(#anxious"}
-    />
-  );
-
-  // Line extras:
-  const YellowLine = ({ line }) => (
-    <Path
-      d={line}
-      stroke={Colours["surprised"].code}
-      strokeWidth={3}
-      clipPath={"url(#surprised"}
-    />
-  );
-
-  // Line extras:
-  const OrangeLine = ({ line }) => (
-    <Path
-      d={line}
-      stroke={Colours["afraid"].code}
-      strokeWidth={3}
-      clipPath={"url(#afraid"}
-    />
-  );
-
-  // Line extras:
-  const GreenLine = ({ line }) => (
-    <Path
-      d={line}
-      stroke={Colours["happy"].code}
-      strokeWidth={3}
-      clipPath={"url(#happy"}
-    />
-  );
-
-  // Line extras:
-  const DefaultLine = ({ line }) => (
-    <Path
-      d={line}
-      stroke={Colours["default"].code}
-      strokeWidth={2}
-      clipPath={"url(#default"}
-    />
-  );
+    return data.map((item, index) => (
+      <Background
+        key={index}
+        scale={scale}
+        y={item.yAxis}
+        x={chartLeftPadding}
+        height={30}
+        width={width}
+        style={{ fill: item.color, opacity: 0.25 }}
+      />
+    ));
+  };
 
   return (
     <BackgroundSecondary
       style={{
         height: 250,
         flexDirection: "row",
-        justifyContent: "space-around",
         elevation: 5,
         borderRadius: 15,
         margin: 15,
+        justifyContent: "space-around",
       }}
     >
+
       <View
         style={{
           flex: 1,
-          marginTop: 8,
-          marginLeft: 8,
-          marginRight: 2,
-          flexDirection: "row",
-          height: "100%",
-        }}
-      >
-        <YAxis
+          paddingLeft: chartPadding,
+          paddingRight: 15,
+        }}>
+        <VictoryAxis
+          dependentAxis
+          padding={{ left: 58, top: chartPadding, bottom: 80 }}
           style={{
-            height: "90%",
-            marginBottom: xAxisHeight,
+            tickLabels: {
+              fill: "#604c6d",
+              fontSize: 11,
+              fontWeight: "bold",
+            },
           }}
-          data={lineData}
-          // data={[lineData]}
-          contentInset={{ top: 2 }}
-          svg={{
-            fill: "#604c6d",
-            fontSize: 11,
-            fontWeight: "bold",
-          }}
-          max={2.1}
-          min={-4.5}
-          numberOfTicks={5}
-          formatLabel={(value) => {
+          tickValues={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]}
+          tickFormat={(value, index) => {
             switch (value) {
-              case 2:
-                return "Happy";
               case 1:
+                return "Happy";
+              case 3:
                 return "Surprised";
-              case 0:
+              case 5:
                 return "Neutral";
-              case -1:
+              case 7:
                 return "Anxious";
-              case -2:
+              case 9:
                 return "Afraid";
-              case -3:
+              case 11:
                 return "Angry";
-              case -4:
+              case 13:
                 return "Sad";
               default:
                 return "";
             }
           }}
         />
-        <ScrollView horizontal={true} width={"100%"}>
-          <View style={{ marginLeft: 5 }}>
-            <LineChart
-              style={{
-                paddingTop: 2,
-                paddingBottom: 2,
-                width: additionalWidth,
-                flex: 1,
-                marginLeft: 5,
-                marginRight: 10,
-              }}
-              xScale={scale.scaleTime}
-              data={lineData}
-              curve={shape.curveLinear}
-              contentInset={{ chartInset }}
-              svg={{
-                strokeWidth: 3,
-                stroke: "url(#gradient)",
-                clipPath: "url(#clip-path-1)",
-              }}
-              yMax={2}
-              yMin={-4}
-              yAccessor={({ item }) => item.moodScale}
-            >
-              <CustomGrid belowChart={true} />
+      </View>
 
-              <Clips />
-              <GreenLine />
-              <YellowLine />
-              <DefaultLine />
-              <PurpleLine />
-              <OrangeLine />
-              <RedLine />
-              <BlueLine />
-            </LineChart>
-            <XAxis
+      <View style={{ paddingLeft: lineFrequency === 7 ? 45 : 55, paddingRight: 15, }}>
+        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} >
+          <VictoryChart
+            style={{
+              background: {
+              },
+            }}
+            backgroundComponent={<CustomBackground />}
+            padding={{ top: chartPadding, left: chartLeftPadding, bottom: chartBottomPadding, right: lineFrequency === 7 ? chartPadding : 0 }}
+            width={additionalWidth}
+            domain={{ y: [0, 14] }}>
+            <VictoryLine style={{
+              data: {
+                stroke: '#7D73C3',
+                strokeWidth: 2,
+              }
+            }}
+              data={lineData} />
+
+            <VictoryAxis
+              dependentAxis
               style={{
-                paddingTop: 5,
-                height: xAxisHeight,
-                width: "100%",
-              }}
-              numberOfTicks={lineFrequency}
-              data={lineData}
-              formatLabel={(value, index) => lineData[index].label}
-              contentInset={{ left: xAxisInset, right: xAxisInset }}
-              svg={{
-                fontWeight: "bold",
-                fontSize: 10,
-                fill: "#604c6d",
-                originY: 20,
+                axis: { stroke: "transparent" },
+                grid: {
+                  stroke: "white",
+                  strokeWidth: ({ tick }) => tick % 2 === 0 ? "1" : "0",
+                  strokeDasharray: "5,5"
+                }
               }}
             />
-          </View>
+            <VictoryAxis
+              style={{
+                tickLabels: {
+                  fill: "#604c6d",
+                  fontSize: 11,
+                  fontWeight: "bold",
+                }
+              }}
+              tickValues={Array.from({ length: lineData.length }, (_, i) => i + 1)}
+              tickCount={lineFrequency}
+              tickFormat={(value, index) => {
+
+                if (lineData && lineData.length > 0) {
+                  if (lineFrequency === 7) {
+                    return moment().day(index + 1).format("ddd");
+                  } else if (lineFrequency === 365) {
+                    let currentMoment = moment();
+                    currentMoment.dayOfYear(index);
+                    var day = currentMoment.format("DD");
+                    var month = currentMoment.format("MMM");
+                    var monthLabel = "";
+                    if (day === "01") {
+                      monthLabel = month;
+                    }
+                    return monthLabel;
+                  } else {
+                    return lineData[index].x;
+                  }
+                }
+                return "";
+              }}
+            />
+          </VictoryChart>
         </ScrollView>
       </View>
-    </BackgroundSecondary>
+    </BackgroundSecondary >
   );
 };
 
-const chartInset = { bottom: 0, top: 0 };
-const xAxisHeight = 40;
-
-const CustomGrid = ({ x, y, data, ticks }) => {
-  ticks = [-4, -3, -2, -1, 0, 1, 2];
-  const theme = useSelector((state) => state.themeActions.theme);
-
-  return (
-    <G>
-      {
-        // Horizontal grid
-        ticks.map((tick) => (
-          <Line
-            key={tick}
-            x1={"0%"}
-            x2={"100%"}
-            y1={y(tick)}
-            y2={y(tick)}
-            stroke={theme.PRIMARY_BACKGROUND_COLOR}
-          />
-        ))
-      }
-
-      {
-        // Vertical grid
-        data.map((_, index) => (
-          <Line
-            key={index}
-            y1={"0%"}
-            y2={"100%"}
-            x1={x(index)}
-            x2={x(index)}
-            stroke={theme.PRIMARY_BACKGROUND_COLOR}
-          />
-        ))
-      }
-    </G>
-  );
-};
 
 export default MyLineGraph;

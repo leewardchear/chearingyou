@@ -121,7 +121,7 @@ const MyBarChart = ({ frequency, dbResults }) => {
       <ScrollView horizontal={true} width={"100%"}>
         <VictoryChart
           maxDomain={{ y: maxY + 1 }}
-          domainPadding={{ x: (barWidth + 2) / 2 }}
+          domainPadding={{ x: (barWidth + 80) / 2 }}
           padding={{ left: 30, top: 20, bottom: 100, right: 50 }}
         >
           <VictoryAxis
@@ -158,6 +158,15 @@ const MyBarChart = ({ frequency, dbResults }) => {
                 data={graphData["happy"]}
                 barWidth={barWidth}
                 alignment="middle"
+                cornerRadius={3}
+                animate={{
+                  duration: 1000,
+                  onLoad: {
+                    duration: 1000,
+                    easing: "exp"
+                  }
+
+                }}
                 style={{ data: { fill: Colours["happy"].code } }}
               />
             )}
@@ -166,6 +175,14 @@ const MyBarChart = ({ frequency, dbResults }) => {
                 data={graphData["angry"]}
                 barWidth={barWidth}
                 alignment="middle"
+                cornerRadius={3}
+                animate={{
+                  duration: 1000,
+                  onLoad: {
+                    duration: 1000,
+                    easing: "exp"
+                  }
+                }}
                 style={{ data: { fill: Colours["angry"].code } }}
               />
             )}
@@ -174,6 +191,14 @@ const MyBarChart = ({ frequency, dbResults }) => {
                 data={graphData["afraid"]}
                 barWidth={barWidth}
                 alignment="middle"
+                cornerRadius={3}
+                animate={{
+                  duration: 1000,
+                  onLoad: {
+                    duration: 1000,
+                    easing: "exp"
+                  }
+                }}
                 style={{ data: { fill: Colours["afraid"].code } }}
               />
             )}
@@ -182,6 +207,14 @@ const MyBarChart = ({ frequency, dbResults }) => {
                 data={graphData["surprised"]}
                 barWidth={barWidth}
                 alignment="middle"
+                cornerRadius={3}
+                animate={{
+                  duration: 1000,
+                  onLoad: {
+                    duration: 1000,
+                    easing: "exp"
+                  }
+                }}
                 style={{ data: { fill: Colours["surprised"].code } }}
               />
             )}
@@ -190,6 +223,14 @@ const MyBarChart = ({ frequency, dbResults }) => {
                 data={graphData["anxious"]}
                 barWidth={barWidth}
                 alignment="middle"
+                cornerRadius={3}
+                animate={{
+                  duration: 1000,
+                  onLoad: {
+                    duration: 1000,
+                    easing: "exp"
+                  }
+                }}
                 style={{ data: { fill: Colours["anxious"].code } }}
               />
             )}
@@ -198,6 +239,14 @@ const MyBarChart = ({ frequency, dbResults }) => {
                 data={graphData["sad"]}
                 barWidth={barWidth}
                 alignment="middle"
+                cornerRadius={3}
+                animate={{
+                  duration: 1000,
+                  onLoad: {
+                    duration: 1000,
+                    easing: "exp"
+                  }
+                }}
                 style={{ data: { fill: Colours["sad"].code } }}
               />
             )}

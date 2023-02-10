@@ -7,6 +7,7 @@ import { ThemeProvider } from 'styled-components/native';
 import { lightTheme, darkTheme } from '../utils/Theme';
 import { TextPrimary, MaterialIconCY, } from "../components/ThemeStyles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { StatusBar } from "react-native";
 
 export default function SettingsScreen() {
     const [isDarkMode, setIsDarkModeSwitch] = useState(true);
@@ -16,8 +17,10 @@ export default function SettingsScreen() {
     const toggleDarkMode = async value => {
         setIsDarkModeSwitch(value);
         dispatch(value ? setTheme(darkTheme) : setTheme(lightTheme));
+
         try {
-            await AsyncStorage.setItem('darkMode', isDarkMode ? 'light' : 'dark');
+            const theme = value ? 'light' : 'dark';
+            await AsyncStorage.setItem('theme', theme);
         } catch (error) {
             console.error(error);
         }
@@ -29,12 +32,15 @@ export default function SettingsScreen() {
 
     const loadAppSettings = () => {
         try {
-            if (theme !== null && theme.mode === "light") {
-                setIsDarkModeSwitch(false);
-            } else if (theme !== null && theme.mode === "dark") {
-                setIsDarkModeSwitch(true);
+            if (theme === null) {
+                console.error('Error: theme is not defined');
+                return;
             }
 
+            const isDarkMode = theme.mode === "dark";
+            setIsDarkModeSwitch(isDarkMode);
+            StatusBar.setBackgroundColor(theme.PRIMARY_BACKGROUND_COLOR);
+            StatusBar.setBarStyle(isDarkMode ? 'light-content' : 'dark-content', true);
         } catch (error) {
             console.error(error);
         }

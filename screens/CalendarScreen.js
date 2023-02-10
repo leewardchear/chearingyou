@@ -96,14 +96,12 @@ function CalendarScreen({ route, navigation }) {
   );
 
   useEffect(() => {
-    // reloadData();
     const unsubscribe = navigation.addListener("tabPress", (e) => {
-      // reloadData();
     });
     return unsubscribe;
   }, [navigation, selectedDate, daylistshowing, sumEntries]);
 
-  useEffect(() => {}, [newEntry, journalentries]);
+  useEffect(() => { }, [newEntry, journalentries]);
 
   useEffect(() => {
     console.log(dbdate);
@@ -166,7 +164,7 @@ function CalendarScreen({ route, navigation }) {
                     if (
                       typeof journalentries[date.dateString] !== "undefined" &&
                       typeof journalentries[date.dateString].moodColors !==
-                        "undefined"
+                      "undefined"
                     ) {
                       setDate(date);
                     } else {

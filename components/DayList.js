@@ -56,7 +56,7 @@ const DayList = ({
     getData();
   }, [selecteddate, newEntry, dbdate, isSingleDate, searchText]);
 
-  useEffect(() => {}, [processing]);
+  useEffect(() => { }, [processing]);
 
   const RenderCalendarItem = ({ item }) => {
     return <CalendarItem entry={item} />;
@@ -72,7 +72,7 @@ const DayList = ({
       duration: 100,
       useNativeDriver: true,
       easing: Easing.linear,
-    }).start(({ finish }) => {});
+    }).start(({ finish }) => { });
   };
 
   const fadeOutAnim = () => {
@@ -81,7 +81,7 @@ const DayList = ({
       duration: 0,
       useNativeDriver: true,
       easing: Easing.linear,
-    }).start(({ finish }) => {});
+    }).start(({ finish }) => { });
   };
 
   const getData = () => {
@@ -121,17 +121,15 @@ const DayList = ({
     } else {
       showEmptyList(false);
     }
-    console.log(JSON.stringify(resultSet, null, 2));
 
     for (let i = 0; i < resultSet.rows.length; i++) {
-      // if (i == 0) {
-      //   newlist.push(headerObj);
-      // }
+      if (i == 0) {
+        newlist.push(headerObj);
+      }
 
       newlist.push(resultSet.rows.item(i));
     }
 
-    console.log(JSON.stringify(newlist, null, 2));
     categoryCount(newlist);
 
     if (isSingleDate) {
@@ -381,8 +379,7 @@ const DayList = ({
                 padding: 10,
                 flexDirection: "row",
                 borderRadius: 10,
-              }}
-            >
+              }} >
               <View
                 style={{
                   elevation: 5,
@@ -391,17 +388,14 @@ const DayList = ({
                   flex: 1,
                   borderRadius: 5,
                   backgroundColor: pSBC(0.5, Colours[entryMood].code, "c"),
-                }}
-              >
+                }}>
                 <View
                   style={{
                     flexDirection: "column",
                     justifyContent: "space-between",
-                  }}
-                >
+                  }}>
                   <TextPrimary
-                    style={{ fontWeight: "bold", textAlign: "left" }}
-                  >
+                    style={{ fontWeight: "bold", textAlign: "left" }}>
                     {entryDate}
                   </TextPrimary>
 
@@ -511,7 +505,7 @@ const DayList = ({
               <TouchableHighlight
                 borderRadius={50}
                 underlayColor="grey"
-                onPress={() => {}}
+                onPress={() => { }}
               >
                 <View
                   style={{

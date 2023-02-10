@@ -363,6 +363,7 @@ const MainScreen = ({ route, navigation }) => {
                   },
                   shadowRadius: 5,
                   shadowOpacity: 0.08,
+                  color: theme.PRIMARY_TEXT_COLOR
                 }}
                 multiline={true}
                 scrollEnabled={true}
@@ -381,14 +382,6 @@ const MainScreen = ({ route, navigation }) => {
                 position: "relative",
                 marginHorizontal: 10,
                 bottom: ctop,
-
-                // shadowColor: "#000000",
-                // shadowOffset: {
-                //   width: -3,
-                //   height: -3,
-                // },
-                // shadowRadius: 15,
-                // shadowOpacity: 0.25,
               }}
             />
 
