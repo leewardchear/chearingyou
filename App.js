@@ -69,10 +69,11 @@ export class ConnectedContainer extends Component {
 
   loadAppSettings = async () => {
     try {
-      const value = await AsyncStorage.getItem('darkMode');
-      if (value !== null) {
-        value === 'dark' ? this.props.setTheme(darkTheme) : this.props.setTheme(lightTheme)
-      }
+      const value = await AsyncStorage.getItem('theme') || 'light';
+      const theme = value === 'dark' ? darkTheme : lightTheme;
+      this.props.setTheme(theme);
+      StatusBar.setBackgroundColor(theme.PRIMARY_BACKGROUND_COLOR);
+      StatusBar.setBarStyle(value === 'dark' ? 'light-content' : 'dark-content', true);
     } catch (error) {
       console.error(error);
     }

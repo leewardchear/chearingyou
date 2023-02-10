@@ -130,12 +130,8 @@ const MyPieChart = ({ frequency, dbResults }) => {
           animate={{ duration: 1000 }}
           colorScale={colorData}
           data={graphicData}
-          // labelPosition={({ index }) => (index ? "centroid" : "startAngle")}
-          // labelPlacement={({ index }) => (index ? "parallel" : "vertical")}
           labels={({ datum }) => `${Math.round((datum.y / totalCount) * 100)}%`}
-          // radius={({ datum }) => 10 + datum.y * 1}
           labelRadius={({ innerRadius }) => innerRadius + 35}
-        // padAngle={0.5}
         />
 
         <VictoryLegend
