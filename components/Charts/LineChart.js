@@ -9,7 +9,7 @@ import {
   VictoryLine,
   VictoryAxis,
   Background,
-  VictoryLabel
+  VictoryScatter
 } from "victory-native";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
@@ -137,7 +137,7 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency, allResults, d
 
 
   const chartPadding = 10
-  const chartLeftPadding = lineFrequency === 7 ? 10 : 1;
+  const chartLeftPadding = lineFrequency === 7 ? 10 : 2;
   const chartBottomPadding = 80
 
   const CustomBackground = ({ width, scale }) => {
@@ -184,7 +184,7 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency, allResults, d
         }}>
         <VictoryAxis
           dependentAxis
-          padding={{ left: 58, top: chartPadding, bottom: 80 }}
+          padding={{ left: 59, top: chartPadding, bottom: 80 }}
           style={{
             tickLabels: {
               fill: "#604c6d",
@@ -227,13 +227,27 @@ const MyLineGraph = ({ month, year, weekStart, weekEnd, frequency, allResults, d
             padding={{ top: chartPadding, left: chartLeftPadding, bottom: chartBottomPadding, right: lineFrequency === 7 ? chartPadding : 0 }}
             width={additionalWidth}
             domain={{ y: [0, 14] }}>
-            <VictoryLine style={{
-              data: {
-                stroke: '#7D73C3',
-                strokeWidth: 2,
-              }
-            }}
+            <VictoryLine
+              style={{
+                data: {
+                  stroke: '#7D73C3',
+                  strokeWidth: 1.5,
+                }
+              }}
+              animate={{
+                duration: 2000,
+                onLoad: { duration: 1000 }
+              }}
               data={lineData} />
+            <VictoryScatter
+              style={{ data: { fill: "red" } }}
+              size={2}
+              data={lineData}
+              animate={{
+                duration: 2000,
+                onLoad: { duration: 1000 }
+              }}
+            />
 
             <VictoryAxis
               dependentAxis

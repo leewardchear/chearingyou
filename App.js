@@ -71,6 +71,7 @@ export class ConnectedContainer extends Component {
     try {
       const value = await AsyncStorage.getItem('theme') || 'light';
       const theme = value === 'dark' ? darkTheme : lightTheme;
+      console.log(theme)
       this.props.setTheme(theme);
       StatusBar.setBackgroundColor(theme.PRIMARY_BACKGROUND_COLOR);
       StatusBar.setBarStyle(value === 'dark' ? 'light-content' : 'dark-content', true);
