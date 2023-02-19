@@ -19,8 +19,9 @@ export default function SettingsScreen() {
         dispatch(value ? setTheme(darkTheme) : setTheme(lightTheme));
 
         try {
-            const theme = value ? 'light' : 'dark';
+            const theme = value ? 'dark' : 'light';
             await AsyncStorage.setItem('theme', theme);
+            console.log(theme)
         } catch (error) {
             console.error(error);
         }
