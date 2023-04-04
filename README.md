@@ -2,7 +2,7 @@
 
 Mood Tracking App. Let's you track how you feel on a daily basis. Over time you will be able to see your mood at a glance through colourful charts.
 
-![](https://github.com/leewardchear/chearingyou/chearingyou2.gif)
+![](chearingyou2.gif)
 
 ### Useful commands
 
