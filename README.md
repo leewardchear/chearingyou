@@ -4,7 +4,7 @@ Mood Tracking App. Let's you track how you feel on a daily basis. Over time you 
 
 ![](https://github.com/leewardchear/chearingyou/chearingyou2.gif)
 
-###Useful commands
+### Useful commands
 
 Install pods (usually needed after installing new node modules)
 
