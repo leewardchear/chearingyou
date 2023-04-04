@@ -16,6 +16,7 @@ import {
   Use,
   G,
   ClipPath,
+  TSpan,
 } from "react-native-svg";
 import React, { useEffect, useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -151,6 +152,100 @@ function MoodsButton(props) {
       />
     );
   };
+  const MoodCircle = ({ moods }) => {
+    console.log({ moods });
+    var angleincrement = moods.length > 0 ? 360 / moods.length : 1;
+    useEffect(() => {}, []);
+    return (
+      <G>
+        <Circle
+          cx="0"
+          cy="0"
+          r="15"
+          fill="red"
+          onPress={() => {
+            toggleShow(Colours.default.val);
+          }}
+        />
+        {moods.map((item, i) => (
+          <Wedgie
+            size={angleincrement}
+            arrkey={i}
+            item={item}
+            length={moods.length}
+          />
+        ))}
+      </G>
+    );
+  };
+
+  const Wedgie = ({ size, arrkey, item, length }) => {
+    var x1, y1, x2, y2;
+    var calcWedge = () => {
+      console.log("wedgie");
+      var startPointX = 0;
+      var startPointY = 0;
+      var startAngle = size * arrkey - 90;
+      var endAngle = startAngle + size;
+      var radius = 45;
+
+      x1 = startPointX + radius * Math.cos((Math.PI * startAngle) / 180);
+      y1 = startPointY + radius * Math.sin((Math.PI * startAngle) / 180);
+      x2 = startPointX + radius * Math.cos((Math.PI * endAngle) / 180);
+      y2 = startPointY + radius * Math.sin((Math.PI * endAngle) / 180);
+
+      var textr = radius / 1;
+      r1 = startPointX + textr * Math.cos((Math.PI * startAngle) / 180);
+      r2 = startPointY + textr * Math.sin((Math.PI * startAngle) / 180);
+
+      t1 = (x1 + x2) / 2.5;
+      t2 = (y1 + y2) / 2.5;
+
+      var shapeStr =
+        "M" +
+        startPointX +
+        " " +
+        startPointY +
+        " L" +
+        x1 +
+        " " +
+        y1 +
+        " A" +
+        radius +
+        " " +
+        radius +
+        " 0 0 1 " +
+        x2 +
+        " " +
+        y2 +
+        " z";
+      console.log(JSON.stringify({ mood: item.mood, t1, t2 }, null, 2));
+      return shapeStr;
+    };
+    useEffect(() => {
+      calcWedge();
+    }, []);
+    return (
+      <G>
+        <AnimatedPath
+          strokeWidth={0}
+          stroke="white"
+          d={calcWedge()}
+          fill={item.color}
+          // transform={"rotate(-90)"}
+          onPress={(e) => {
+            console.log(item.mood);
+          }}
+        />
+        {/* <Circle cx={x1} cy={y1} r="1" fill="pink" />
+        <Circle cx={x2} cy={y2} r="1" fill="white" />
+        <Circle cx={t1} cy={t2} r="1" fill="pink" /> */}
+        <SvgText x={t1} y={t2} fill="black" fontSize={5} textAnchor="middle">
+          {item.mood}
+        </SvgText>
+      </G>
+    );
+  };
 
   return (
     <Animated.View
@@ -183,13 +278,36 @@ function MoodsButton(props) {
             height={openanim}
             viewBox="-47 -47 95 95"
           >
-            <PathButton color={Colours.angry} rotation="rotate(60)" />
+            {/* <PathButton color={Colours.angry} rotation="rotate(60)" />
             <PathButton color={Colours.anxious} rotation="rotate(120)" />
             <PathButton color={Colours.afraid} rotation="rotate(0)" />
             <PathButton color={Colours.sad} rotation="rotate(180)" />
             <PathButton color={Colours.surprised} rotation="rotate(300)" />
-            <PathButton color={Colours.happy} rotation="rotate(240)" />
-
+            <PathButton color={Colours.happy} rotation="rotate(240)" /> */}
+            <MoodCircle
+              moods={[
+                { mood: "happy", color: "rgba(255,0,0,1)" },
+                { mood: "sad", color: "rgba(0,255,0,1)" },
+                { mood: "anxious", color: "rgba(0,0,255,1)" },
+                { mood: "bored", color: "rgba(255,0,0,1)" },
+                { mood: "tired", color: "rgba(0,255,0,1)" },
+                {
+                  mood: "annoyed",
+                  color: "rgba(0,0,255,1)",
+                  subnmoods: [
+                    { mood: "happy", color: "rgba(255,0,0,1)" },
+                    { mood: "sad", color: "rgba(0,255,0,1)" },
+                    { mood: "anxious", color: "rgba(0,0,255,1)" },
+                  ],
+                },
+                { mood: "happy", color: "rgba(255,0,0,1)" },
+                { mood: "sad", color: "rgba(0,255,0,1)" },
+                { mood: "anxious", color: "rgba(0,0,255,1)" },
+                { mood: "happy", color: "rgba(255,0,0,1)" },
+                { mood: "sad", color: "rgba(0,255,0,1)" },
+                { mood: "anxious", color: "rgba(0,0,255,1)" },
+              ]}
+            />
             <Circle
               cx="0"
               cy="0"
@@ -199,7 +317,7 @@ function MoodsButton(props) {
                 toggleShow(Colours.default.val);
               }}
             />
-            {relation && (
+            {/* {relation && (
               <G>
                 <SvgText x={5} y={30} fill="black" fontSize={5}>
                   {Colours.angry.name}
@@ -220,7 +338,8 @@ function MoodsButton(props) {
                   {Colours.sad.name}
                 </SvgText>
               </G>
-            )}
+            )} */}
+
             {!relation && (
               <Circle
                 cx="0"
