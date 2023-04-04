@@ -1,108 +1,262 @@
 import React, { useEffect } from "react";
-import { View, Text, Button, StyleSheet } from "react-native";
-import { Calendar, CalendarList, Agenda } from "react-native-calendars";
-import { LinearGradient } from "expo-linear-gradient";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { View, Animated, Text } from "react-native";
+import { Calendar } from "react-native-calendars";
 import { useState } from "react";
-
+import { useFocusEffect } from "@react-navigation/native";
 import Moment from "moment";
-
 import Database from "../db/database";
-import { isRejected } from "@reduxjs/toolkit";
+import { Colours } from "../constants.js";
+import DayList from "../components/DayList.js";
+
+import { setDayListUI, setSelectedDate } from "../app/calendar.js";
+import { useSelector, useDispatch } from "react-redux";
+import { hideProg, setProgState } from "../app/journalentry";
+
+import moment from "moment";
+import { LinearGradient } from "expo-linear-gradient";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { ThemeProvider } from "styled-components/native";
+
 const db = new Database();
 
 function CalendarScreen({ route, navigation }) {
   const [journalentries, setEntries] = useState({});
+  const dispatch = useDispatch();
+  const selectedDate = useSelector((state) => state.calendar.selectedDate);
+  const dbdate = useSelector((state) => state.loadedapp.dbupdate);
+  const [daylistshowing, setDayListShow] = useState(true);
+  const [sumEntries, setEntrySum] = useState(0);
+  const { newEntry, focusDate } = route.params;
+  const theme = useSelector((state) => state.themeActions.theme);
+
+  const [currentMonth, setCurrentMonth] = useState({
+    dateString: moment().format("YYYY-MM-DD"),
+    day: parseInt(moment().format("DD")),
+    month: parseInt(moment().format("MM")),
+    timestamp: parseInt(moment().toDate().getTime()),
+    year: parseInt(moment().format("YYYY")),
+  });
+
+  function mapColors(colour) {
+    if (colour == "") {
+      return Colours.default.code;
+    }
+    try {
+      return Colours[colour].code;
+    } catch (err) {
+      return Colours.default.code;
+    }
+  }
 
   function reloadData() {
     db.listItems()
       .then((resultSet) => {
         var marked = {};
         for (let i = 0; i < resultSet.rows.length; i++) {
-          console.log(resultSet.rows.item(i));
-          formattedDate = Moment(resultSet.rows.item(i).date).format(
+          formattedDate = Moment(resultSet.rows.item(i).savedate).format(
             "YYYY-MM-DD"
           );
+          var dateObj = {
+            moodColors: [],
+          };
+
           if (resultSet.rows.item(i).mood != null) {
-            var dateObj = {
-              moodColors: [resultSet.rows.item(i).mood],
-              color: "green",
-              selected: true,
-              customStyles: {
-                container: {
-                  borderRadius: 5,
-                },
-              },
-            };
-          } else {
-            var dateObj = {
-              moodColors: [],
-              color: "green",
-            };
+            dateObj.moodColors = [mapColors(resultSet.rows.item(i).mood)];
           }
+
           if (typeof marked[formattedDate] === "undefined") {
             marked[formattedDate] = dateObj;
           } else {
             if (resultSet.rows.item(i).mood != null) {
               marked[formattedDate].moodColors.push(
-                resultSet.rows.item(i).mood
+                mapColors(resultSet.rows.item(i).mood)
               );
             }
-            // entries[formattedDate] = test;
           }
         }
 
+        for (var key in marked) {
+          if (marked[key].moodColors.length == 1) {
+            marked[key].moodColors.push(marked[key].moodColors[0]);
+          }
+        }
         setEntries(marked);
-        // console.log(marked);
       })
       .catch((error) => {
         console.log(error);
       });
   }
-  useEffect(() => {
-    reloadData();
-    // setEntries(stuff);
-    // db.fakeData();
-    console.log(JSON.stringify(journalentries, null, 2));
 
-    const unsubscribe = navigation.addListener("tabPress", (e) => {
+  useFocusEffect(
+    React.useCallback(() => {
+      dispatch(setProgState(0));
+
       reloadData();
-      console.log(JSON.stringify(journalentries, null, 2));
+    }, [selectedDate, daylistshowing])
+  );
 
-      // setEntries(stuff);
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("tabPress", (e) => {
     });
     return unsubscribe;
-  }, [navigation]);
+  }, [navigation, selectedDate, daylistshowing, sumEntries]);
+
+  useEffect(() => { }, [newEntry, journalentries]);
+
+  useEffect(() => {
+    console.log(dbdate);
+    reloadData();
+  }, [dbdate]);
+
+  const setDate = (date) => {
+    dispatch(setSelectedDate(date));
+  };
+
+  const today = new Date().toISOString().split("T")[0];
   return (
-    <SafeAreaView style={[styles.container]}>
-      <View>
+    <ThemeProvider theme={theme}>
+      <Animated.View
+        style={{ backgroundColor: theme.PRIMARY_BACKGROUND_COLOR, flex: 1 }}
+      >
         <Calendar
+          style={{
+            backgroundColor: theme.SECONDARY_BACKGROUND_COLOR,
+            marginHorizontal: 10,
+            marginTop: 10,
+            borderRadius: 10,
+          }}
+          theme={{
+            backgroundColor: "black",
+            calendarBackground: "transparent",
+            textSectionTitleColor: "#b6c1cd",
+            textSectionTitleDisabledColor: "#d9e1e8",
+            selectedDayBackgroundColor: "#00adf5",
+            selectedDayTextColor: "#ffffff",
+            todayTextColor: "#00adf5",
+            dayTextColor: "#2d4150",
+            textDisabledColor: "#d9e1e8",
+            dotColor: "#00adf5",
+            selectedDotColor: "#ffffff",
+            arrowColor: "orange",
+            disabledArrowColor: "#d9e1e8",
+            monthTextColor: "white",
+            indicatorColor: "blue",
+            textDayFontFamily: "arial",
+            textMonthFontFamily: "arial",
+            textDayHeaderFontFamily: "arial",
+            textDayFontWeight: "300",
+            textMonthFontWeight: "normal",
+            textDayHeaderFontWeight: "300",
+            textDayFontSize: 16,
+            textMonthFontSize: 20,
+            textDayHeaderFontSize: 14,
+          }}
           markingType={"custom"}
           markedDates={journalentries}
-          onDayPress={(day) => {
-            navigation.navigate("HomeTab", { day: day });
-            // console.log("selected day", day);
+          onMonthChange={(month) => {
+            setCurrentMonth(month);
           }}
-          // Handler which gets executed on day long press. Default = undefined
-          onDayLongPress={(day) => {
-            // console.log("selected day", day);
+          dayComponent={({ date, state }) => {
+            return (
+              <View>
+                <TouchableOpacity
+                  onPress={() => {
+                    if (
+                      typeof journalentries[date.dateString] !== "undefined" &&
+                      typeof journalentries[date.dateString].moodColors !==
+                      "undefined"
+                    ) {
+                      setDate(date);
+                    } else {
+                      setDate(date);
+                      // navigation.navigate("HomeTab", { day: day });
+                    }
+                  }}
+                >
+                  <LinearGradient
+                    style={{
+                      borderWidth:
+                        selectedDate.dateString == date.dateString ? 2 : 0,
+                      borderColor: "white",
+                      width: 35,
+                      height: 35,
+                      borderRadius: 13,
+                      alignContent: "center",
+                      justifyContent: "center",
+                    }}
+                    start={{ x: 0, y: 0.5 }} // change angle of the gradient transition
+                    end={{ x: 1, y: 1 }}
+                    colors={
+                      typeof journalentries[date.dateString] === "undefined"
+                        ? ["transparent", "transparent"]
+                        : journalentries[date.dateString].moodColors
+                    }
+                  >
+                    {state === "today" && (
+                      <Text
+                        style={{
+                          textAlign: "center",
+                          color: "white",
+                        }}
+                      >
+                        {date.day}
+                      </Text>
+                    )}
+                    {state === "disabled" && (
+                      <Text
+                        style={{
+                          textAlign: "center",
+                          color: "grey",
+                        }}
+                      >
+                        {date.day}
+                      </Text>
+                    )}
+                    {state === "" && (
+                      <Text
+                        style={{
+                          textAlign: "center",
+                          color: theme.PRIMARY_TEXT_COLOR,
+                        }}
+                      >
+                        {date.day}
+                      </Text>
+                    )}
+                  </LinearGradient>
+                  {Moment().format("YYYY-MM-DD") == date.dateString && (
+                    <View
+                      style={{
+                        flex: 1,
+                        position: "absolute",
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        left: 0,
+                        backgroundColor: "rgba(255,255,255,0.5)",
+                        borderWidth: 2,
+                        borderColor:
+                          selectedDate.dateString == date.dateString
+                            ? "white"
+                            : "white",
+                        borderRadius: 10,
+                        borderStyle: "dotted",
+                      }}
+                    ></View>
+                  )}
+                </TouchableOpacity>
+              </View>
+            );
           }}
-        ></Calendar>
-      </View>
-      <LinearGradient
-        colors={["black", "teal", "teal"]}
-        style={{
-          flex: 1,
-        }}
-      />
-    </SafeAreaView>
+        />
+        <DayList
+          style={{ flex: 1 }}
+          navigation={navigation}
+          newEntry={newEntry}
+          isSingleDate={true}
+        />
+      </Animated.View>
+    </ThemeProvider>
   );
 }
 
 export default CalendarScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

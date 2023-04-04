@@ -65,7 +65,7 @@ index 6e1e36a..96241e0 100644
  export default BasicDay;
  BasicDay.displayName = 'BasicDay';
 diff --git a/node_modules/react-native-calendars/src/calendar/style.js b/node_modules/react-native-calendars/src/calendar/style.js
-index c9af755..7faa778 100644
+index c9af755..bd3bafc 100644
 --- a/node_modules/react-native-calendars/src/calendar/style.js
 +++ b/node_modules/react-native-calendars/src/calendar/style.js
 @@ -6,7 +6,7 @@ export default function getStyle(theme = {}) {
@@ -73,7 +73,7 @@ index c9af755..7faa778 100644
              paddingLeft: 5,
              paddingRight: 5,
 -            backgroundColor: appStyle.calendarBackground
-+            backgroundColor: 'black'
++            backgroundColor: 'transparent'
          },
          dayContainer: {
              flex: 1,
@@ -82,7 +82,7 @@ index c9af755..7faa778 100644
          },
          monthView: {
 -            backgroundColor: appStyle.calendarBackground
-+            backgroundColor: 'black'
++            backgroundColor: 'transparent'
          },
          week: {
              marginVertical: appStyle.weekVerticalMargin,
